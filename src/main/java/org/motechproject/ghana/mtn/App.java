@@ -1,4 +1,4 @@
-package org.ghana.mtn;
+package org.motechproject.ghana.mtn;
 
 public class App
 {
