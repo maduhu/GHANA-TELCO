@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.validation;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.exception.MessageParsingFailedException;
 
@@ -18,7 +19,7 @@ public class InputMessageParserTest {
     }
 
     @Test
-    public void ShouldParsePMessageAsPregnancyMessage() {
+    public void ShouldParsePregnancyMessage() {
         String inputText = "P 25";
         Subscription subscription = messageParser.parseMessage(inputText);
         assertThat(subscription.getType(), is(SubscriptionType.PREGNANCY));
@@ -26,7 +27,7 @@ public class InputMessageParserTest {
     }
 
     @Test
-    public void ShouldParseCMessageAsChildCareMessage() {
+    public void ShouldParseChildCareMessage() {
         String inputText = "C 25";
         Subscription subscription = messageParser.parseMessage(inputText);
         assertThat(subscription.getType(), is(SubscriptionType.CHILDCARE));
@@ -45,5 +46,12 @@ public class InputMessageParserTest {
     public void ShouldFailForMessagesThatAreNotValid() {
         String inputText = "q 25";
         messageParser.parseMessage(inputText);
+    }
+
+    @Test
+    public void ShouldCreateSubscriptionWithActiveStatusForValidInputMessage() {
+        Subscription subscription = messageParser.parseMessage("P 10");
+        assertThat(subscription.getSubscriptionStatus(), is(SubscriptionStatus.ACTIVE));
+
     }
 }

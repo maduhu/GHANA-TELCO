@@ -20,6 +20,6 @@ public class InputMessageParser {
             String startFrom = matcher.group(2);
             return new Subscription(campaignType, startFrom);
         }
-        throw new MessageParsingFailedException("Input Message is not valid");
+        throw new MessageParsingFailedException("Input Message is not valid <" + inputText + ">");
     }
 }

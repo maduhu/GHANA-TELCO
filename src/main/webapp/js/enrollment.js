@@ -10,14 +10,14 @@ function submitRequest() {
     else if (window.ActiveXObject) {
         self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    self.xmlHttpReq.open('GET', 'enrollSubscriber', true);
+    self.xmlHttpReq.open('GET', 'subscription/enroll?' + getQueryString(), true);
     self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     self.xmlHttpReq.onreadystatechange = function() {
         if (self.xmlHttpReq.readyState == 4) {
             updatePage(self.xmlHttpReq.responseText);
         }
     }
-    self.xmlHttpReq.send(getQueryString());
+    self.xmlHttpReq.send();
     document.getElementById('inputText').value = "";
     return false;
 }

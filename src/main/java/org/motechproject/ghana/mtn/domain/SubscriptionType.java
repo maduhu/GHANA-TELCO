@@ -1,11 +1,19 @@
 package org.motechproject.ghana.mtn.domain;
 
-public enum SubscriptionType {
-    PREGNANCY("P"), CHILDCARE("C");
-    private String matchingString;
+import org.apache.commons.lang.math.IntRange;
 
-    SubscriptionType(String matchingString) {
+public enum SubscriptionType {
+    PREGNANCY("P", "Pregnancy", new IntRange(5, 35)),
+    CHILDCARE("C", "Child Care", new IntRange(1, 52));
+
+    private String matchingString;
+    private IntRange campaignRange;
+    private String programName;
+
+    SubscriptionType(String matchingString, String programName, IntRange campaignRange) {
         this.matchingString = matchingString;
+        this.programName = programName;
+        this.campaignRange = campaignRange;
     }
 
 
@@ -15,5 +23,13 @@ public enum SubscriptionType {
                 return type;
         }
         return null;
+    }
+
+    public boolean isInRange(Integer startFrom) {
+        return campaignRange.containsInteger(startFrom);
+    }
+
+    public String getProgramName() {
+        return programName;
     }
 }

@@ -1,11 +1,16 @@
 package org.motechproject.ghana.mtn.repository;
 
-/**
- * Created by IntelliJ IDEA.
- * User: arvind
- * Date: 9/27/11
- * Time: 1:48 PM
- * To change this template use File | Settings | File Templates.
- */
-public class AllSubscribers {
+import org.ektorp.CouchDbConnector;
+import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.ghana.mtn.domain.Subscriber;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AllSubscribers extends MotechAuditableRepository<Subscriber> {
+    @Autowired
+    protected AllSubscribers(@Qualifier("ghanaMtnDBConnector") CouchDbConnector db) {
+        super(Subscriber.class, db);
+    }
 }

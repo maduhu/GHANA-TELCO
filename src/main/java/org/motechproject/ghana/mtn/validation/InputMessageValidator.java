@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 public class InputMessageValidator {
 
     public boolean validate(Subscription subscription) {
-        return false;
+        return subscription.getType().isInRange(subscription.getStartFrom());
     }
 }

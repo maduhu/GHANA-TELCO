@@ -9,7 +9,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.IOException;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -32,9 +34,19 @@ public class EnrollmentControllerTest {
     public void ShouldParseAndValidateInputMessage() throws IOException {
         String subscriberNumber = "1234567890";
         String inputMessage = "C 25";
-        String responseString = "{\"responseText\" : \"" + EnrollmentService.SUCCESSFUL_ENROLLMENT_MESSAGE + "\"}";
-        when(mockEnrollmentService.enrollSubscriber(subscriberNumber, inputMessage)).thenReturn(EnrollmentService.SUCCESSFUL_ENROLLMENT_MESSAGE);
+        String responseString = "{\"responseText\" : \"" + EnrollmentService.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT + "\"}";
+        when(mockEnrollmentService.enrollSubscriber(subscriberNumber, inputMessage)).thenReturn(EnrollmentService.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT);
         enrollmentController.enrollSubscriber(subscriberNumber, inputMessage, mockHttpServletResponse);
         assertEquals(responseString, mockHttpServletResponse.getContentAsString());
+    }
+
+    @Test
+    public void ShouldReturnJSONContentType() throws IOException {
+        String subscriberNumber = "1234567890";
+        String inputMessage = "C 25";
+        String responseString = "{\"responseText\" : \"" + EnrollmentService.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT + "\"}";
+        when(mockEnrollmentService.enrollSubscriber(subscriberNumber, inputMessage)).thenReturn(EnrollmentService.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT);
+        enrollmentController.enrollSubscriber(subscriberNumber, inputMessage, mockHttpServletResponse);
+        assertThat(mockHttpServletResponse.getContentType(), is(EnrollmentController.JSON_MIME_TYPE));
     }
 }
