@@ -11,31 +11,31 @@ import static org.junit.Assert.assertTrue;
 public class SubscriptionTypeTest {
     @Test
     public void ShouldCreatePregnancySubcriptionTypeForInputStringP() {
-        SubscriptionType type = SubscriptionType.fromString("P");
+        SubscriptionType type = SubscriptionType.of("P");
         assertThat(type, is(SubscriptionType.PREGNANCY));
     }
 
     @Test
     public void ShouldCreateChildCareSubscriptionTypeForInputStringC() {
-        SubscriptionType type = SubscriptionType.fromString("C");
+        SubscriptionType type = SubscriptionType.of("C");
         assertThat(type, is(SubscriptionType.CHILDCARE));
     }
 
     @Test
     public void ShouldCreateChildCareSubscriptionTypeForInputStringLowerCaseP() {
-        SubscriptionType type = SubscriptionType.fromString("p");
+        SubscriptionType type = SubscriptionType.of("p");
         assertThat(type, is(SubscriptionType.PREGNANCY));
     }
 
     @Test
     public void ShouldCreateChildCareSubscriptionTypeForInputStringLowerCaseC() {
-        SubscriptionType type = SubscriptionType.fromString("c");
+        SubscriptionType type = SubscriptionType.of("c");
         assertThat(type, is(SubscriptionType.CHILDCARE));
     }
 
     @Test
     public void ShouldReturnNullForInvalidInputString() {
-        SubscriptionType type = SubscriptionType.fromString("X");
+        SubscriptionType type = SubscriptionType.of("X");
         assertThat(type, is(Null.NULL));
     }
 

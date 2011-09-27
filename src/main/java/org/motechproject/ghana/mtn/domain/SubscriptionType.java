@@ -7,17 +7,17 @@ public enum SubscriptionType {
     CHILDCARE("C", "Child Care", new IntRange(1, 52));
 
     private String matchingString;
-    private IntRange campaignRange;
+    private IntRange weekRange;
     private String programName;
 
-    SubscriptionType(String matchingString, String programName, IntRange campaignRange) {
+    SubscriptionType(String matchingString, String programName, IntRange weekRange) {
         this.matchingString = matchingString;
         this.programName = programName;
-        this.campaignRange = campaignRange;
+        this.weekRange = weekRange;
     }
 
 
-    public static SubscriptionType fromString(String campaignType) {
+    public static SubscriptionType of(String campaignType) {
         for (SubscriptionType type: values()) {
             if (type.matchingString.equalsIgnoreCase(campaignType))
                 return type;
@@ -26,7 +26,7 @@ public enum SubscriptionType {
     }
 
     public boolean isInRange(Integer startFrom) {
-        return campaignRange.containsInteger(startFrom);
+        return weekRange.containsInteger(startFrom);
     }
 
     public String getProgramName() {

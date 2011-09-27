@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
-import org.motechproject.ghana.mtn.exception.MessageParsingFailedException;
+import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -21,37 +21,37 @@ public class InputMessageParserTest {
     @Test
     public void ShouldParsePregnancyMessage() {
         String inputText = "P 25";
-        Subscription subscription = messageParser.parseMessage(inputText);
+        Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getType(), is(SubscriptionType.PREGNANCY));
-        assertThat(subscription.getStartFrom(), is(25));
+        assertThat(subscription.getStartWeek().number(), is(25));
     }
 
     @Test
     public void ShouldParseChildCareMessage() {
         String inputText = "C 25";
-        Subscription subscription = messageParser.parseMessage(inputText);
+        Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getType(), is(SubscriptionType.CHILDCARE));
-        assertThat(subscription.getStartFrom(), is(25));
+        assertThat(subscription.getStartWeek().number(), is(25));
     }
 
     @Test
     public void ShouldParseMessagesEvenWithLowerCase() {
         String inputText = "c 25";
-        Subscription subscription = messageParser.parseMessage(inputText);
+        Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getType(), is(SubscriptionType.CHILDCARE));
-        assertThat(subscription.getStartFrom(), is(25));
+        assertThat(subscription.getStartWeek().number(), is(25));
     }
 
-    @Test(expected = MessageParsingFailedException.class)
+    @Test(expected = MessageParseFailException.class)
     public void ShouldFailForMessagesThatAreNotValid() {
         String inputText = "q 25";
-        messageParser.parseMessage(inputText);
+        messageParser.parse(inputText);
     }
 
     @Test
     public void ShouldCreateSubscriptionWithActiveStatusForValidInputMessage() {
-        Subscription subscription = messageParser.parseMessage("P 10");
-        assertThat(subscription.getSubscriptionStatus(), is(SubscriptionStatus.ACTIVE));
+        Subscription subscription = messageParser.parse("P 10");
+        assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
 
     }
 }

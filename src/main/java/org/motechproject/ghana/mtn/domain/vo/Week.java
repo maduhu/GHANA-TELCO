@@ -1,13 +1,17 @@
 package org.motechproject.ghana.mtn.domain.vo;
 
 public class Week {
-    private Integer value;
+    private Integer number;
 
-    public Week(Integer value) {
-        this.value = value;
+    public Week(Integer number) {
+        this.number = number;
     }
 
-    public boolean is(Integer inputValue) {
-        return value.equals(inputValue);
+    public boolean is(Integer value) {
+        return number.equals(value);
+    }
+
+    public Integer number() {
+        return number;
     }
 }

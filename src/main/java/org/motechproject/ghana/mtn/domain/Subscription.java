@@ -1,56 +1,62 @@
 package org.motechproject.ghana.mtn.domain;
 
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.DateTime;
+import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.model.MotechAuditableDataObject;
 
 @TypeDiscriminator("doc.type === 'Subscription'")
 public class Subscription extends MotechAuditableDataObject {
+    private Subscriber subscriber;
     private SubscriptionType type;
-    private Integer startFrom;
-    private SubscriptionStatus subscriptionStatus;
+    private SubscriptionStatus status;
+    private Week startWeek;
+    private DateTime registrationDate;
 
     public Subscription() {
     }
 
-    public Subscription(String campaignType, String startFrom) {
-        this.type = SubscriptionType.fromString(campaignType);
-        this.startFrom = Integer.parseInt(startFrom);
-        this.subscriptionStatus = SubscriptionStatus.ACTIVE;
+    public boolean isValid() {
+        return type.isInRange(startWeek.number());
+    }
+
+    public Subscriber getSubscriber() {
+        return subscriber;
+    }
+
+    public void setSubscriber(Subscriber subscriber) {
+        this.subscriber = subscriber;
     }
 
     public SubscriptionType getType() {
         return type;
     }
 
-    public Integer getStartFrom() {
-        return startFrom;
+    public void setType(SubscriptionType type) {
+        this.type = type;
     }
 
-    public SubscriptionStatus getSubscriptionStatus() {
-        return subscriptionStatus;
+    public SubscriptionStatus getStatus() {
+        return status;
     }
 
-    public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
-        this.subscriptionStatus = subscriptionStatus;
+    public void setStatus(SubscriptionStatus status) {
+        this.status = status;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Subscription that = (Subscription) o;
-
-        if (startFrom != null ? !startFrom.equals(that.startFrom) : that.startFrom != null) return false;
-        if (type != that.type) return false;
-
-        return true;
+    public Week getStartWeek() {
+        return startWeek;
     }
 
-    @Override
-    public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (startFrom != null ? startFrom.hashCode() : 0);
-        return result;
+    public void setStartWeek(Week startWeek) {
+        this.startWeek = startWeek;
+    }
+
+    public DateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(DateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 }

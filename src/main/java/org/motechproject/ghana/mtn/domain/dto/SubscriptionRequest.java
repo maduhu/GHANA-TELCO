@@ -1,8 +1,8 @@
 package org.motechproject.ghana.mtn.domain.dto;
 
-public class EnrollmentRequest {
+public class SubscriptionRequest {
     private String subscriberNumber;
-    private String week;
+    private String inputMessage;
 
     public String getSubscriberNumber() {
         return subscriberNumber;
@@ -12,11 +12,11 @@ public class EnrollmentRequest {
         this.subscriberNumber = subscriberNumber;
     }
 
-    public String getWeek() {
-        return week;
+    public String getInputMessage() {
+        return inputMessage;
     }
 
-    public void setWeek(String week) {
-        this.week = week;
+    public void setInputMessage(String inputMessage) {
+        this.inputMessage = inputMessage;
     }
 }
