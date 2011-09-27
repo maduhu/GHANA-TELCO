@@ -90,6 +90,18 @@
     </build>
 
     <dependencies>
+        <!--PLATFORM-->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-cmslite-api</artifactId>
+            <version>0.3-SNAPSHOT</version>
+        </dependency>
+         <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-message-campaign</artifactId>
+            <version>0.3-SNAPSHOT</version>
+        </dependency>
+        <!--GENERAL-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
