@@ -6,6 +6,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
+import org.motechproject.ghana.mtn.matchers.SubscriptionRequestMatcher;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,19 +53,4 @@ public class SubscriptionControllerTest {
         verify(writer).write("{\"responseText\" : \"" + MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT + "\"}");
     }
 
-    private class SubscriptionRequestMatcher extends ArgumentMatcher<SubscriptionRequest> {
-        private String subscriberNumber;
-        private String inputMessage;
-
-        private SubscriptionRequestMatcher(String subscriberNumber, String inputMessage) {
-            this.subscriberNumber = subscriberNumber;
-            this.inputMessage = inputMessage;
-        }
-
-        @Override
-        public boolean matches(Object o) {
-            SubscriptionRequest request = (SubscriptionRequest) o;
-            return request.getInputMessage().equals(inputMessage) && request.getSubscriberNumber().equals(subscriberNumber);
-        }
-    }
 }
