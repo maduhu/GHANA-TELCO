@@ -4,6 +4,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
 @TypeDiscriminator("doc.type === 'Subscription'")
 public class Subscription extends MotechAuditableDataObject {
@@ -58,5 +59,9 @@ public class Subscription extends MotechAuditableDataObject {
 
     public void setRegistrationDate(DateTime registrationDate) {
         this.registrationDate = registrationDate;
+    }
+
+    public CampaignRequest createCampaignRequest() {
+        return new CampaignRequest(subscriber.getNumber(), type.name(), null, null);
     }
 }
