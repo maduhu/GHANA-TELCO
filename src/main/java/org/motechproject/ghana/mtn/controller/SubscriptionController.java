@@ -13,6 +13,9 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/subscription")
 public class SubscriptionController {
+    public static final String JSON_PREFIX = "{\"responseText\" : \"";
+    public static final String JSON_SUFFIX = "\"}";
+    public static final String CONTENT_TYPE_JSON = "application/json";
     private SubscriptionService subscriptionService;
 
     @Autowired
@@ -23,7 +26,7 @@ public class SubscriptionController {
     @RequestMapping("/enroll")
     public void enroll(@ModelAttribute SubscriptionRequest subscriptionRequest, HttpServletResponse response) throws IOException {
         String status = subscriptionService.enroll(subscriptionRequest);
-        response.setContentType("application/json");
-        response.getWriter().write("{\"responseText\" : \"" + status + "\"}");
+        response.setContentType(CONTENT_TYPE_JSON);
+        response.getWriter().write(JSON_PREFIX + status + JSON_SUFFIX);
     }
 }

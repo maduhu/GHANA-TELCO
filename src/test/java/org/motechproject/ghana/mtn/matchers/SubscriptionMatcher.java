@@ -24,7 +24,7 @@ public class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
     public boolean matches(Object o) {
         Subscription subscription = (Subscription) o;
         return subscriber.getNumber().equals(subscription.getSubscriber().getNumber())
-                && type.equals(subscription.getType())
+                && type.equals(subscription.getSubscriptionType())
                 && status.equals(subscription.getStatus())
                 && startWeek.is(subscription.getStartWeek().getNumber());
     }

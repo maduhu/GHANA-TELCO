@@ -44,7 +44,7 @@ public class SubscriptionBuilder {
         subscription.setSubscriber(subscriber);
         subscription.setStartWeek(startWeek);
         subscription.setStatus(status);
-        subscription.setType(type);
+        subscription.setSubscriptionType(type);
         subscription.setRegistrationDate(registrationDate);
         return subscription;
     }

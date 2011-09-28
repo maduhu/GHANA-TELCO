@@ -10,6 +10,10 @@ public class SubscriberMatcher extends ArgumentMatcher<Subscriber> {
         this.number = number;
     }
 
+    public SubscriberMatcher(Subscriber subscriber) {
+        this.number = subscriber.getNumber();
+    }
+
     @Override
     public boolean matches(Object o) {
         Subscriber subscriber = (Subscriber) o;

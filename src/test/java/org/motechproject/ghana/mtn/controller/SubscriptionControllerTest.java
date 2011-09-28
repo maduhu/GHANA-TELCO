@@ -2,7 +2,6 @@ package org.motechproject.ghana.mtn.controller;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
@@ -50,7 +49,7 @@ public class SubscriptionControllerTest {
 
         verify(subscriptionService).enroll(argThat(new SubscriptionRequestMatcher("1234567890", "C 25")));
         verify(httpResponse).setContentType("application/json");
-        verify(writer).write("{\"responseText\" : \"" + MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT + "\"}");
+        verify(writer).write(SubscriptionController.JSON_PREFIX + MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT + SubscriptionController.JSON_SUFFIX);
     }
 
 }

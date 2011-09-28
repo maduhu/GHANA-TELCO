@@ -41,7 +41,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
             CampaignRequest campaignRequest = subscription.createCampaignRequest();
             campaignService.startFor(campaignRequest);
-            return String.format(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, subscription.getType().getProgramName());
+            return String.format(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, subscription.getSubscriptionType().getProgramName());
 
         } catch (MessageParseFailException e) {
             log.error("Parsing failed.", e);

@@ -1,5 +1,7 @@
 package org.motechproject.ghana.mtn.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.vo.Week;
@@ -8,8 +10,10 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
 @TypeDiscriminator("doc.type === 'Subscription'")
 public class Subscription extends MotechAuditableDataObject {
+    @JsonProperty("type")
+    private String type = "Subscription";
     private Subscriber subscriber;
-    private SubscriptionType type;
+    private SubscriptionType subscriptionType;
     private SubscriptionStatus status;
     private Week startWeek;
     private DateTime registrationDate;
@@ -17,8 +21,9 @@ public class Subscription extends MotechAuditableDataObject {
     public Subscription() {
     }
 
+    @JsonIgnore
     public boolean isValid() {
-        return type.isInRange(startWeek.getNumber());
+        return subscriptionType.isInRange(startWeek.getNumber());
     }
 
     public Subscriber getSubscriber() {
@@ -29,12 +34,12 @@ public class Subscription extends MotechAuditableDataObject {
         this.subscriber = subscriber;
     }
 
-    public SubscriptionType getType() {
-        return type;
+    public SubscriptionType getSubscriptionType() {
+        return subscriptionType;
     }
 
-    public void setType(SubscriptionType type) {
-        this.type = type;
+    public void setSubscriptionType(SubscriptionType subscriptionType) {
+        this.subscriptionType = subscriptionType;
     }
 
     public SubscriptionStatus getStatus() {
@@ -62,6 +67,6 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public CampaignRequest createCampaignRequest() {
-        return new CampaignRequest(subscriber.getNumber(), type.name(), null, null);
+        return new CampaignRequest(subscriber.getNumber(), subscriptionType.name(), null, null);
     }
 }

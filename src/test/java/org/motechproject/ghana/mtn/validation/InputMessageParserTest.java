@@ -22,7 +22,7 @@ public class InputMessageParserTest {
     public void ShouldParsePregnancyMessage() {
         String inputText = "P 25";
         Subscription subscription = messageParser.parse(inputText);
-        assertThat(subscription.getType(), is(SubscriptionType.PREGNANCY));
+        assertThat(subscription.getSubscriptionType(), is(SubscriptionType.PREGNANCY));
         assertThat(subscription.getStartWeek().getNumber(), is(25));
     }
 
@@ -30,7 +30,7 @@ public class InputMessageParserTest {
     public void ShouldParseChildCareMessage() {
         String inputText = "C 25";
         Subscription subscription = messageParser.parse(inputText);
-        assertThat(subscription.getType(), is(SubscriptionType.CHILDCARE));
+        assertThat(subscription.getSubscriptionType(), is(SubscriptionType.CHILDCARE));
         assertThat(subscription.getStartWeek().getNumber(), is(25));
     }
 
@@ -38,7 +38,7 @@ public class InputMessageParserTest {
     public void ShouldParseMessagesEvenWithLowerCase() {
         String inputText = "c 25";
         Subscription subscription = messageParser.parse(inputText);
-        assertThat(subscription.getType(), is(SubscriptionType.CHILDCARE));
+        assertThat(subscription.getSubscriptionType(), is(SubscriptionType.CHILDCARE));
         assertThat(subscription.getStartWeek().getNumber(), is(25));
     }
 
