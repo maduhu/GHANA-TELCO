@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 @Component
 public class InputMessageParser {
 
-    public static final String ENROLLMENT_EXPRESSION = "^([Pp|Cc])\\s([\\d]{2})$";
+    public static final String ENROLLMENT_EXPRESSION = "^([Pp|Cc])\\s([5-9]|[\\d]{2})$";
 
     public Subscription parse(String input) {
         Pattern pattern = Pattern.compile(ENROLLMENT_EXPRESSION);

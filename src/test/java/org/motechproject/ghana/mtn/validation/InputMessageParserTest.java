@@ -54,4 +54,10 @@ public class InputMessageParserTest {
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
 
     }
+
+    @Test
+    public void ShouldCreateSubscriptionForWeekWithSingleDigit() {
+        Subscription subscription = messageParser.parse("P 5");
+        assertThat(subscription.getStartWeek().getNumber(), is(5));
+    }
 }
