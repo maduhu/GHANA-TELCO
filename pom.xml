@@ -64,7 +64,7 @@
                         <contextPath>/${project.name}</contextPath>
                     </webAppConfig>
                     <stopKey>secret</stopKey>
-                    <stopPort>6667</stopPort>
+                    <stopPort>6669</stopPort>
                 </configuration>
                 <executions>
                     <execution>
