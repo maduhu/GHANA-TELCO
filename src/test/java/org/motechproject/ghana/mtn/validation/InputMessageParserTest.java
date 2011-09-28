@@ -23,7 +23,7 @@ public class InputMessageParserTest {
         String inputText = "P 25";
         Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getType(), is(SubscriptionType.PREGNANCY));
-        assertThat(subscription.getStartWeek().number(), is(25));
+        assertThat(subscription.getStartWeek().getNumber(), is(25));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class InputMessageParserTest {
         String inputText = "C 25";
         Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getType(), is(SubscriptionType.CHILDCARE));
-        assertThat(subscription.getStartWeek().number(), is(25));
+        assertThat(subscription.getStartWeek().getNumber(), is(25));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class InputMessageParserTest {
         String inputText = "c 25";
         Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getType(), is(SubscriptionType.CHILDCARE));
-        assertThat(subscription.getStartWeek().number(), is(25));
+        assertThat(subscription.getStartWeek().getNumber(), is(25));
     }
 
     @Test(expected = MessageParseFailException.class)

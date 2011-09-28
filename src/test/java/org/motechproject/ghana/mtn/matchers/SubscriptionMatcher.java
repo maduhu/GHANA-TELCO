@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.matchers;
 
-import org.joda.time.DateTime;
 import org.mockito.ArgumentMatcher;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
@@ -27,6 +26,6 @@ public class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
         return subscriber.getNumber().equals(subscription.getSubscriber().getNumber())
                 && type.equals(subscription.getType())
                 && status.equals(subscription.getStatus())
-                && startWeek.is(subscription.getStartWeek().number());
+                && startWeek.is(subscription.getStartWeek().getNumber());
     }
 }

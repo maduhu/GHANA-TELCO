@@ -3,6 +3,9 @@ package org.motechproject.ghana.mtn.domain.vo;
 public class Week {
     private Integer number;
 
+    public Week() {
+    }
+
     public Week(Integer number) {
         this.number = number;
     }
@@ -11,7 +14,11 @@ public class Week {
         return number.equals(value);
     }
 
-    public Integer number() {
+    public Integer getNumber() {
         return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 }

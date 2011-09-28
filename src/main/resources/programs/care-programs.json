@@ -1,0 +1,30 @@
+[
+    {
+        "name" : "Pregnancy",
+        "type" : "CRON",
+        "messages" : [
+            {
+                "name" : "cron-trigger",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "cron-message",
+                "cron" : "*/5 * * ? * MON,WED,FRI *"
+            }
+        ]
+    },
+
+    {
+        "name" : "Child Care",
+        "type" : "CRON",
+        "messages" : [
+            {
+                "name" : "cron-trigger",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "cron-message",
+                "cron" : "0 0 10 ? * MON,WED,FRI *"
+            }
+        ]
+    }
+
+]

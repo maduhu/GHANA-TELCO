@@ -18,7 +18,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public boolean isValid() {
-        return type.isInRange(startWeek.number());
+        return type.isInRange(startWeek.getNumber());
     }
 
     public Subscriber getSubscriber() {
