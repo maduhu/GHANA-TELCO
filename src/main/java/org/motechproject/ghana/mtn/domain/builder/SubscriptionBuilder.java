@@ -7,12 +7,16 @@ import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 
-public class SubscriptionBuilder {
+public class SubscriptionBuilder extends Builder<Subscription> {
     private Subscriber subscriber;
-    private SubscriptionType type;
+    private SubscriptionType subscriptionType;
     private SubscriptionStatus status;
     private Week startWeek;
     private DateTime registrationDate;
+
+    public SubscriptionBuilder() {
+        super(new Subscription());
+    }
 
     public SubscriptionBuilder withSubscriber(Subscriber subscriber) {
         this.subscriber = subscriber;
@@ -20,7 +24,7 @@ public class SubscriptionBuilder {
     }
 
     public SubscriptionBuilder withType(SubscriptionType type) {
-        this.type = type;
+        this.subscriptionType = type;
         return this;
     }
 
@@ -38,15 +42,4 @@ public class SubscriptionBuilder {
         this.registrationDate = dateTime;
         return this;
     }
-
-    public Subscription create() {
-        Subscription subscription = new Subscription();
-        subscription.setSubscriber(subscriber);
-        subscription.setStartWeek(startWeek);
-        subscription.setStatus(status);
-        subscription.setSubscriptionType(type);
-        subscription.setRegistrationDate(registrationDate);
-        return subscription;
-    }
-
 }

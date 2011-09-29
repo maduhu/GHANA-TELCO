@@ -67,6 +67,6 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public CampaignRequest createCampaignRequest() {
-        return new CampaignRequest(subscriber.getNumber(), subscriptionType.name(), null, null);
+        return new CampaignRequest(subscriber.getNumber(), subscriptionType.getProgramName(), null, null);
     }
 }

@@ -20,18 +20,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private AllSubscribers allSubscribers;
     private AllSubscriptions allSubscriptions;
     private MessageCampaignService campaignService;
+    private InputMessageParser inputMessageParser;
 
     @Autowired
-    public SubscriptionServiceImpl(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions, MessageCampaignService campaignService) {
+    public SubscriptionServiceImpl(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions,
+                      MessageCampaignService campaignService, InputMessageParser inputMessageParser) {
         this.allSubscribers = allSubscribers;
         this.allSubscriptions = allSubscriptions;
         this.campaignService = campaignService;
+        this.inputMessageParser = inputMessageParser;
     }
 
     @Override
     public String enroll(SubscriptionRequest subscriptionRequest) {
         try {
-            Subscription subscription = new InputMessageParser().parse(subscriptionRequest.getInputMessage());
+            Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
             if (!subscription.isValid()) return MessageBundle.FAILURE_ENROLLMENT_MESSAGE;
 
             Subscriber subscriber = new Subscriber(subscriptionRequest.getSubscriberNumber());

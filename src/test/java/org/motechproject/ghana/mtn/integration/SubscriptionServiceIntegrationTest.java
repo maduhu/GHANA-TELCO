@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.integration;
 
-import junit.framework.TestSuite;
 import org.apache.log4j.Logger;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
@@ -9,24 +8,31 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
+import org.motechproject.ghana.mtn.matchers.SubscriptionTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
+import org.motechproject.ghana.mtn.repository.AllSubscriptionTypes;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.util.List;
 
+import static org.apache.commons.lang.builder.EqualsBuilder.reflectionEquals;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testApplicationContext.xml"})
@@ -44,13 +50,21 @@ public class SubscriptionServiceIntegrationTest {
     private AllSubscriptions allSubscriptions;
     @Autowired
     private AllSubscribers allSubscribers;
+    @Autowired
+    private AllSubscriptionTypes allSubcriptionTypes;
 
     private MockHttpServletResponse mockHttpServletResponse;
 
     @Before
     public void setUp() {
         createIfDbDoesntExist();
+        createSubscriptionTypes();
         mockHttpServletResponse = new MockHttpServletResponse();
+    }
+
+    private void createSubscriptionTypes() {
+        allSubcriptionTypes.add(new SubscriptionTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build());
+        allSubcriptionTypes.add(new SubscriptionTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build());
     }
 
     private void createIfDbDoesntExist() {
@@ -61,7 +75,8 @@ public class SubscriptionServiceIntegrationTest {
 
     @Test
     public void ShouldEnrollSubscriber() throws IOException {
-        SubscriptionRequest subscriptionRequest = createSubscriptionRequest("P 25", "1234567890");
+        String shortCode = "P";
+        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "1234567890");
 
         String expectedResponse = SubscriptionController.JSON_PREFIX
                 + String.format(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, "Pregnancy") + SubscriptionController.JSON_SUFFIX;
@@ -72,11 +87,13 @@ public class SubscriptionServiceIntegrationTest {
         Subscription subscription = subscriptions.get(0);
 
         List<Subscriber> subscribers = allSubscribers.getAll();
+        SubscriptionType subscriptionType = allSubcriptionTypes.findByCampaignShortCode(shortCode);
 
         assertThat(mockHttpServletResponse.getContentType(), is(SubscriptionController.CONTENT_TYPE_JSON));
         assertThat(mockHttpServletResponse.getContentAsString(), is(expectedResponse));
         assertThat(subscriptions.size(), is(1));
-        assertThat(subscription.getSubscriptionType(), is(SubscriptionType.PREGNANCY));
+
+        assertThat(subscription.getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType));
         assertThat(subscription.getStartWeek().getNumber(), is(25));
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
 

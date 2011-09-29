@@ -1,35 +1,58 @@
 package org.motechproject.ghana.mtn.domain;
 
 import org.apache.commons.lang.math.IntRange;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.model.MotechAuditableDataObject;
 
-public enum SubscriptionType {
-    PREGNANCY("P", "Pregnancy", new IntRange(5, 35)),
-    CHILDCARE("C", "Child Care", new IntRange(1, 52));
+import java.util.List;
 
-    private String matchingString;
-    private IntRange weekRange;
+@TypeDiscriminator("doc.type === 'SubscriptionType'")
+public class SubscriptionType extends MotechAuditableDataObject {
+    @JsonProperty("type")
+    private String type = "SubscriptionType";
+    private List<String> shortCodes;
+    private Integer minWeek;
+    private Integer maxWeek;
     private String programName;
 
-    SubscriptionType(String matchingString, String programName, IntRange weekRange) {
-        this.matchingString = matchingString;
-        this.programName = programName;
-        this.weekRange = weekRange;
-    }
-
-
-    public static SubscriptionType of(String campaignType) {
-        for (SubscriptionType type: values()) {
-            if (type.matchingString.equalsIgnoreCase(campaignType))
-                return type;
-        }
-        return null;
+    public SubscriptionType() {
     }
 
     public boolean isInRange(Integer startFrom) {
+        IntRange weekRange = new IntRange(minWeek, maxWeek);
         return weekRange.containsInteger(startFrom);
     }
 
     public String getProgramName() {
         return programName;
+    }
+
+    public List<String> getShortCodes() {
+        return shortCodes;
+    }
+
+    public void setShortCodes(List<String> shortCodes) {
+        this.shortCodes = shortCodes;
+    }
+
+    public void setProgramName(String programName) {
+        this.programName = programName;
+    }
+
+    public Integer getMinWeek() {
+        return minWeek;
+    }
+
+    public void setMinWeek(Integer minWeek) {
+        this.minWeek = minWeek;
+    }
+
+    public Integer getMaxWeek() {
+        return maxWeek;
+    }
+
+    public void setMaxWeek(Integer maxWeek) {
+        this.maxWeek = maxWeek;
     }
 }
