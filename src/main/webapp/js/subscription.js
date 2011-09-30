@@ -23,7 +23,8 @@ function submitRequest() {
 }
 
 function getQueryString() {
-    return "subscriberNumber=1234567890&inputMessage=" + document.getElementById('inputText').value;
+    var subscriberNumber = "1234567890";
+    return "subscriberNumber=" + subscriberNumber + "&inputMessage=" + document.getElementById('inputText').value;
 }
 
 function updatePage(inputString) {

@@ -4,8 +4,10 @@ import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
+import org.motechproject.ghana.mtn.matchers.SubscriptionTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.validation.InputMessageParser;
@@ -13,6 +15,11 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+
+import static ch.lambdaj.Lambda.*;
 
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -37,14 +44,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
             if (!subscription.isValid()) return MessageBundle.FAILURE_ENROLLMENT_MESSAGE;
 
-            Subscriber subscriber = new Subscriber(subscriptionRequest.getSubscriberNumber());
-            allSubscribers.add(subscriber);
-            subscription.setSubscriber(subscriber);
-            allSubscriptions.add(subscription);
+            if (hasActiveSubscriptionWithType(subscriptionRequest.getSubscriberNumber(), subscription.getSubscriptionType())) return formatMessage(MessageBundle.ACTIVE_SUBSCRIPTION_ALREADY_PRESENT, subscription.getSubscriptionType().getProgramName());
 
-            CampaignRequest campaignRequest = subscription.createCampaignRequest();
-            campaignService.startFor(campaignRequest);
-            return String.format(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, subscription.getSubscriptionType().getProgramName());
+            persistSubscription(subscription, subscriptionRequest.getSubscriberNumber());
+            createCampaign(subscription);
+
+            return formatMessage(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, subscription.getSubscriptionType().getProgramName());
 
         } catch (MessageParseFailException e) {
             log.error("Parsing failed.", e);
@@ -52,4 +57,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return MessageBundle.FAILURE_ENROLLMENT_MESSAGE;
     }
 
+    private String formatMessage(String activeSubscriptionAlreadyPresent, String programName) {
+        return String.format(activeSubscriptionAlreadyPresent, programName);
+    }
+
+    void createCampaign(Subscription subscription) {
+        CampaignRequest campaignRequest = subscription.createCampaignRequest();
+        campaignService.startFor(campaignRequest);
+    }
+
+    void persistSubscription(Subscription subscription, String subscriberNumber) {
+        Subscriber subscriber = new Subscriber(subscriberNumber);
+        allSubscribers.add(subscriber);
+        subscription.setSubscriber(subscriber);
+        allSubscriptions.add(subscription);
+    }
+
+    boolean hasActiveSubscriptionWithType(String subscriberNumber, SubscriptionType subscriptionType) {
+        List<Subscription> activeSubscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
+        List<Subscription> subscriptions = select(activeSubscriptions, having(on(Subscription.class).getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType)));
+        return !CollectionUtils.isEmpty(subscriptions);
+    }
 }

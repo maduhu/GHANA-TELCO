@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>Mockup for MoTeCH</title>
-    <script type="text/javascript" src="js/enrollment.js"></script>
+    <script type="text/javascript" src="js/subscription.js"></script>
 </head>
 <body>
 <div id="requestResponse" style="height: 70%; width: 100%; border: 1px solid;"></div>

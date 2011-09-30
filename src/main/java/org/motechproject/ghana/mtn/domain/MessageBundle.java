@@ -7,4 +7,5 @@ public interface MessageBundle {
                     "To stop these messages send STOP";
     String FAILURE_ENROLLMENT_MESSAGE = "Sorry we are having trouble processing your request.";
 
+    String ACTIVE_SUBSCRIPTION_ALREADY_PRESENT = "You already have an active %s Program Subscription. Please wait for the program to complete, or stop it to start a new one";
 }
