@@ -28,5 +28,6 @@ public class SubscriptionTypeSeed extends Seed {
                 .withMaxWeek(52).withMinWeek(1).build();
 
         allSubscriptionTypes.add(pregnancySubscriptionType);
+        allSubscriptionTypes.add(childCareSubscriptionType);
     }
 }
