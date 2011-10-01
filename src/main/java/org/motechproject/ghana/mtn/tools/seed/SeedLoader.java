@@ -6,9 +6,9 @@ import java.util.List;
 
 public class SeedLoader {
     private static Logger LOG = Logger.getLogger(SeedLoader.class);
-    private final List<Seed> seeds;
+    private final List<? extends Seed> seeds;
 
-    public SeedLoader(List<Seed> seeds) {
+    public SeedLoader(List<? extends Seed> seeds) {
         this.seeds = seeds;
     }
 

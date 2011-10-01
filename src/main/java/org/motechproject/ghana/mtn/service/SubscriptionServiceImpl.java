@@ -57,6 +57,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return MessageBundle.FAILURE_ENROLLMENT_MESSAGE;
     }
 
+    @Override
+    public Subscription findBy(String subscriberNumber, String programName) {
+        return allSubscriptions.findBy(subscriberNumber, programName);
+    }
+
     private String formatMessage(String activeSubscriptionAlreadyPresent, String programName) {
         return String.format(activeSubscriptionAlreadyPresent, programName);
     }

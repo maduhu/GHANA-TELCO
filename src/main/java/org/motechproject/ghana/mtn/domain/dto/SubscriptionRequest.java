@@ -8,15 +8,17 @@ public class SubscriptionRequest {
         return subscriberNumber;
     }
 
-    public void setSubscriberNumber(String subscriberNumber) {
+    public SubscriptionRequest setSubscriberNumber(String subscriberNumber) {
         this.subscriberNumber = subscriberNumber;
+        return this;
     }
 
     public String getInputMessage() {
         return inputMessage;
     }
 
-    public void setInputMessage(String inputMessage) {
+    public SubscriptionRequest setInputMessage(String inputMessage) {
         this.inputMessage = inputMessage;
+        return this;
     }
 }

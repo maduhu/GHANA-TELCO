@@ -202,4 +202,17 @@ public class SubscriptionServiceImplTest {
 
         assertTrue(hasSubscriptionOfType);
     }
+    
+    @Test
+    public void shouldFindSubscriptionByMobileNumberAndProgram() {
+        Subscription subscription = mock(Subscription.class);
+        String programName = "Pregnancy";
+        String subscriberNumber = "9343223432";
+        when(mockAllSubscriptions.findBy(subscriberNumber, programName)).thenReturn(subscription);
+
+        Subscription actual = service.findBy(subscriberNumber, programName);
+        assertEquals(subscription, actual);
+
+        assertNull(service.findBy("Child Care", subscriberNumber));
+    }
 }

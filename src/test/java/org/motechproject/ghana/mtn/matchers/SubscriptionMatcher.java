@@ -5,27 +5,27 @@ import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
+import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 
 public class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
-    private Subscriber subscriber;
-    private SubscriptionType type;
-    private SubscriptionStatus status;
-    private Week startWeek;
+    private Subscription subscription;
 
     public SubscriptionMatcher(Subscriber subscriber, SubscriptionType type, SubscriptionStatus status, Week startWeek) {
-        this.subscriber = subscriber;
-        this.type = type;
-        this.status = status;
-        this.startWeek = startWeek;
+        subscription = new SubscriptionBuilder().withSubscriber(subscriber).withType(type)
+                .withStatus(status).withStartWeek(startWeek).build();
+    }
+
+    public SubscriptionMatcher(Subscription subscription) {
+        this.subscription = subscription;
     }
 
     @Override
     public boolean matches(Object o) {
-        Subscription subscription = (Subscription) o;
-        return subscriber.getNumber().equals(subscription.getSubscriber().getNumber())
-                && type.getProgramName().equals(subscription.getSubscriptionType().getProgramName())
-                && status.equals(subscription.getStatus())
-                && startWeek.is(subscription.getStartWeek().getNumber());
+        Subscription toCompare = (Subscription) o;
+        return subscription.getSubscriber().getNumber().equals(toCompare.getSubscriber().getNumber())
+                && subscription.getSubscriptionType().getProgramName().equals(toCompare.getSubscriptionType().getProgramName())
+                && subscription.getStatus().equals(toCompare.getStatus())
+                && subscription.getStartWeek().is(toCompare.getStartWeek().getNumber());
     }
 }

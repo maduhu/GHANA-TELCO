@@ -8,7 +8,7 @@
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "cron-message",
-                "cron" : "*/5 * * ? * MON,WED,FRI *"
+                "cron" : "0/5 * * 1/1 * ? *"
             }
         ]
     },
