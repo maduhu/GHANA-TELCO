@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.listener;
 
-import org.motechproject.ghana.mtn.service.listener.PregnancyMessageListener;
 import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.listener;
 import org.junit.Test;
 import org.motechproject.context.Context;
 import org.motechproject.ghana.mtn.SpringTestContext;
-import org.motechproject.ghana.mtn.service.listener.PregnancyMessageListener;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
 

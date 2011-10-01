@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.matchers.SubscriptionTypeMatcher;
@@ -31,7 +30,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Autowired
     public SubscriptionServiceImpl(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions,
-                      MessageCampaignService campaignService, InputMessageParser inputMessageParser) {
+                                   MessageCampaignService campaignService, InputMessageParser inputMessageParser) {
         this.allSubscribers = allSubscribers;
         this.allSubscriptions = allSubscriptions;
         this.campaignService = campaignService;
@@ -41,15 +40,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public String enroll(SubscriptionRequest subscriptionRequest) {
         try {
+            String subscriberNumber = subscriptionRequest.getSubscriberNumber();
             Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
-            if (!subscription.isValid()) return MessageBundle.FAILURE_ENROLLMENT_MESSAGE;
 
-            if (hasActiveSubscriptionWithType(subscriptionRequest.getSubscriberNumber(), subscription.getSubscriptionType())) return formatMessage(MessageBundle.ACTIVE_SUBSCRIPTION_ALREADY_PRESENT, subscription.getSubscriptionType().getProgramName());
+            if (subscription.isNotValid())
+                return MessageBundle.FAILURE_ENROLLMENT_MESSAGE;
+            if (hasActiveSubscription(subscriberNumber, subscription))
+                return format(MessageBundle.ACTIVE_SUBSCRIPTION_ALREADY_PRESENT, subscription);
 
-            persistSubscription(subscription, subscriptionRequest.getSubscriberNumber());
+            persist(subscriberNumber, subscription);
             createCampaign(subscription);
-
-            return formatMessage(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, subscription.getSubscriptionType().getProgramName());
+            return format(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, subscription);
 
         } catch (MessageParseFailException e) {
             log.error("Parsing failed.", e);
@@ -62,25 +63,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return allSubscriptions.findBy(subscriberNumber, programName);
     }
 
-    private String formatMessage(String activeSubscriptionAlreadyPresent, String programName) {
-        return String.format(activeSubscriptionAlreadyPresent, programName);
-    }
-
-    void createCampaign(Subscription subscription) {
+    private void createCampaign(Subscription subscription) {
         CampaignRequest campaignRequest = subscription.createCampaignRequest();
         campaignService.startFor(campaignRequest);
     }
 
-    void persistSubscription(Subscription subscription, String subscriberNumber) {
+    private void persist(String subscriberNumber, Subscription subscription) {
         Subscriber subscriber = new Subscriber(subscriberNumber);
         allSubscribers.add(subscriber);
         subscription.setSubscriber(subscriber);
         allSubscriptions.add(subscription);
     }
 
-    boolean hasActiveSubscriptionWithType(String subscriberNumber, SubscriptionType subscriptionType) {
+    private String format(String activeSubscriptionAlreadyPresent, Subscription subscription) {
+        return String.format(activeSubscriptionAlreadyPresent, subscription.programName());
+    }
+
+    private boolean hasActiveSubscription(String subscriberNumber, Subscription subscription) {
         List<Subscription> activeSubscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
-        List<Subscription> subscriptions = select(activeSubscriptions, having(on(Subscription.class).getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType)));
+        List<Subscription> subscriptions = select(activeSubscriptions, having(on(Subscription.class).getSubscriptionType(),
+                new SubscriptionTypeMatcher(subscription.getSubscriptionType())));
         return !CollectionUtils.isEmpty(subscriptions);
     }
 }

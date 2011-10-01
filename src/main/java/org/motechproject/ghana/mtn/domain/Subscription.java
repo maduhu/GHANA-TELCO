@@ -29,8 +29,8 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     @JsonIgnore
-    public boolean isValid() {
-        return subscriptionType.isInRange(startWeek.getNumber());
+    public boolean isNotValid() {
+        return !subscriptionType.isInRange(startWeek.getNumber());
     }
 
     public Subscriber getSubscriber() {
@@ -80,5 +80,9 @@ public class Subscription extends MotechAuditableDataObject {
     public Week runningWeek() {
         Period period = new Period(registrationDate, dateUtils.now(), PeriodType.weeks());
         return startWeek.add(period.getWeeks());
+    }
+
+    public String programName() {
+        return subscriptionType.getProgramName();
     }
 }

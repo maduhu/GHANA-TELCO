@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service.listener;
+package org.motechproject.ghana.mtn.listener;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,6 @@
-package org.motechproject.ghana.mtn.service.listener;
+package org.motechproject.ghana.mtn.listener;
 
 import org.apache.log4j.Logger;
-import org.motechproject.cmslite.api.CMSLiteService;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
@@ -25,7 +24,6 @@ public class PregnancyMessageListener {
 
     @MotechListener(subjects = {MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT})
     public void handleWeeklyReminder(MotechEvent motechEvent) {
-
         Map<String,Object> params = motechEvent.getParameters();
         String programName = (String) params.get(EventKeys.CAMPAIGN_NAME_KEY);
         String subscriberNo = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
