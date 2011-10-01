@@ -21,4 +21,8 @@ public class Week {
     public void setNumber(Integer number) {
         this.number = number;
     }
+
+    public Week add(int weeks) {
+        return new Week(number + weeks); 
+    }
 }

@@ -15,7 +15,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
+@ContextConfiguration(locations = {"classpath:/testApplicationContext.xml"})
 public class SpringTestContext extends AbstractJUnit4SpringContextTests {
 
     protected MockHttpServletResponse response;

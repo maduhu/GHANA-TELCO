@@ -4,9 +4,13 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @TypeDiscriminator("doc.type === 'Subscription'")
 public class Subscription extends MotechAuditableDataObject {
@@ -17,6 +21,9 @@ public class Subscription extends MotechAuditableDataObject {
     private SubscriptionStatus status;
     private Week startWeek;
     private DateTime registrationDate;
+
+    @Autowired
+    DateUtils dateUtils;
 
     public Subscription() {
     }
@@ -68,5 +75,10 @@ public class Subscription extends MotechAuditableDataObject {
 
     public CampaignRequest createCampaignRequest() {
         return new CampaignRequest(subscriber.getNumber(), subscriptionType.getProgramName(), null, null);
+    }
+
+    public Week runningWeek() {
+        Period period = new Period(registrationDate, dateUtils.now(), PeriodType.weeks());
+        return startWeek.add(period.getWeeks());
     }
 }

@@ -36,8 +36,9 @@ public class SubscriptionType extends MotechAuditableDataObject {
         this.shortCodes = shortCodes;
     }
 
-    public void setProgramName(String programName) {
+    public SubscriptionType setProgramName(String programName) {
         this.programName = programName;
+        return this;
     }
 
     public Integer getMinWeek() {

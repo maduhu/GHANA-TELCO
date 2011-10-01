@@ -1,7 +1,9 @@
 package org.motechproject.ghana.mtn.service.listener;
 
 import org.apache.log4j.Logger;
+import org.motechproject.cmslite.api.CMSLiteService;
 import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -38,5 +40,9 @@ public class PregnancyMessageListener {
         // Find the actual week for which the message has to be sent
         //  - find the Subscription - registered date and week- with the current date - what is the current week
         // Get the message based on the week from CMS Lite service
+        if( subscription != null) {
+            Week currentWeek = subscription.runningWeek();
+            //cmsLiteService.getContent(new ResourceQuery())
+        }
     }
 }
