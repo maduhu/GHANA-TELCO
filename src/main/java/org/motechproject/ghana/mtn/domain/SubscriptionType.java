@@ -11,10 +11,10 @@ import java.util.List;
 public class SubscriptionType extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "SubscriptionType";
+    private String programName;
     private List<String> shortCodes;
     private Integer minWeek;
     private Integer maxWeek;
-    private String programName;
 
     public SubscriptionType() {
     }

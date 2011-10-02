@@ -18,20 +18,16 @@ public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
     protected AllSubscriptions(@Qualifier("ghanaMtnDBConnector") CouchDbConnector db) {
         super(Subscription.class, db);
     }
-    
-        @View(name = "get_all_active_subscriptions_for_subscriber", map = "function(doc, req) { if(doc.status === 'ACTIVE') { emit(doc.subscriber.number, doc) } }")
+
+    @View(name = "get_all_active_subscriptions_for_subscriber", map = "function(doc, req) { if(doc.status === 'ACTIVE') { emit(doc.subscriber.number, doc) } }")
     public List<Subscription> getAllActiveSubscriptionsForSubscriber(String subscriberNumber) {
         ViewQuery viewQuery = createQuery("get_all_active_subscriptions_for_subscriber").key(subscriberNumber).includeDocs(true);
         return db.queryView(viewQuery, Subscription.class);
     }
-    
-    //@View(name = "find_by_mobile_number_and_program_name", map = "function(doc) { if(doc.status === 'ACTIVE') { emit(doc.subscriber.number, doc.subscriptionType.programName, doc); } }")
+
     @View(name = "find_by_mobile_number_and_program_name", map = "function(doc) { if(doc.status === 'ACTIVE') { emit([doc.subscriber.number, doc.subscriptionType.programName], null) } }")
     public Subscription findBy(String subscriberNumber, String programName) {
-
         List<Subscription> subscriptions = queryView("find_by_mobile_number_and_program_name", ComplexKey.of(subscriberNumber, programName));
-        //ViewQuery viewQuery = createQuery("find_by_mobile_number_and_program_name").keys(asList(subscriberNumber, programName)).includeDocs(true);
-        //List<Subscription> subscriptions =  db.queryView(viewQuery, Subscription.class);
-        return subscriptions.size() > 0 ? subscriptions.get(0): null;
+        return subscriptions.size() > 0 ? subscriptions.get(0) : null;
     }
 }

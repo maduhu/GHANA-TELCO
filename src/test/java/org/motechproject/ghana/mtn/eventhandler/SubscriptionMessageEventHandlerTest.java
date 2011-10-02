@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.listener;
+package org.motechproject.ghana.mtn.eventhandler;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,16 +16,16 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
 
-public class PregnancyMessageListenerTest extends SpringTestContext {
+public class SubscriptionMessageEventHandlerTest extends SpringTestContext {
 
-    PregnancyMessageListener pregnancyMessageListener;
+    SubscriptionMessageEventHandler subscriptionMessageHandler;
     @Mock
     SubscriptionService subscriptionService;
 
     @Before
     public void setUp() {
-        pregnancyMessageListener = spy(new PregnancyMessageListener());
-        ReflectionTestUtils.setField(pregnancyMessageListener, "subscriptionService", subscriptionService);                
+        subscriptionMessageHandler = spy(new SubscriptionMessageEventHandler());
+        ReflectionTestUtils.setField(subscriptionMessageHandler, "subscriptionService", subscriptionService);
     }
 
     @Test
@@ -34,10 +34,10 @@ public class PregnancyMessageListenerTest extends SpringTestContext {
         String subscriberNumber = "9812398123", programName = "Pregnancy";
         Subscription subscription = mock(Subscription.class);
         when(subscriptionService.findBy(subscriberNumber, programName)).thenReturn(subscription);
-        pregnancyMessageListener.handleWeeklyReminder(motechEvent(subscriberNumber, programName));
+        subscriptionMessageHandler.handleMessageReminder(motechEvent(subscriberNumber, programName));
 
         verify(subscriptionService).findBy(subscriberNumber, programName);
-        verify(pregnancyMessageListener).sendReminder(subscription);
+        verify(subscriptionMessageHandler).sendReminder(subscription);
         
     }
 

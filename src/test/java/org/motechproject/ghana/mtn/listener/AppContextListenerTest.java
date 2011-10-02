@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.listener;
 
+import org.motechproject.ghana.mtn.eventhandler.SubscriptionMessageEventHandler;
 import org.junit.Test;
 import org.motechproject.context.Context;
 import org.motechproject.ghana.mtn.SpringTestContext;
@@ -23,6 +24,6 @@ public class AppContextListenerTest extends SpringTestContext {
 
         Set<EventListener> eventListeners = Context.getInstance().getEventListenerRegistry().getListeners(MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT);
         MotechListenerEventProxy pregnancyListener = (MotechListenerEventProxy) eventListeners.iterator().next();
-        assertEquals(PregnancyMessageListener.class.getCanonicalName(), pregnancyListener.getIdentifier());
+        assertEquals(SubscriptionMessageEventHandler.class.getCanonicalName(), pregnancyListener.getIdentifier());
     }
 }

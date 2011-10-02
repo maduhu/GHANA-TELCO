@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SubscriptionTypeSeed extends Seed {
+    private Logger log = Logger.getLogger(SubscriptionTypeSeed.class);
     @Autowired
     private AllSubscriptionTypes allSubscriptionTypes;
-    private Logger log = Logger.getLogger(SubscriptionTypeSeed.class);
 
     @Override
     protected void load() {

@@ -75,8 +75,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         allSubscriptions.add(subscription);
     }
 
-    private String format(String activeSubscriptionAlreadyPresent, Subscription subscription) {
-        return String.format(activeSubscriptionAlreadyPresent, subscription.programName());
+    private String format(String message, Subscription subscription) {
+        return String.format(message, subscription.programName());
     }
 
     private boolean hasActiveSubscription(String subscriberNumber, Subscription subscription) {

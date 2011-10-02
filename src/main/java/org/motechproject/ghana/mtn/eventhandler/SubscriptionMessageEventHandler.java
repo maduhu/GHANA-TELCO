@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.listener;
+package org.motechproject.ghana.mtn.eventhandler;
 
 import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.Subscription;
@@ -15,15 +15,15 @@ import java.util.Map;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
 
 @Service
-public class PregnancyMessageListener {
+public class SubscriptionMessageEventHandler {
+
+    private final static Logger log = Logger.getLogger(SubscriptionMessageEventHandler.class);
 
     @Autowired
     SubscriptionService subscriptionService;
 
-    private final static Logger log = Logger.getLogger(PregnancyMessageListener.class);
-
     @MotechListener(subjects = {MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT})
-    public void handleWeeklyReminder(MotechEvent motechEvent) {
+    public void handleMessageReminder(MotechEvent motechEvent) {
         Map<String,Object> params = motechEvent.getParameters();
         String programName = (String) params.get(EventKeys.CAMPAIGN_NAME_KEY);
         String subscriberNo = (String) params.get(EventKeys.EXTERNAL_ID_KEY);

@@ -16,9 +16,6 @@
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
 
-    <bean id="pregnancyMessageListener"
-            class="org.motechproject.ghana.mtn.listener.PregnancyMessageListener"/>
-
     <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
         <constructor-arg ref="httpClient"/>
     </bean>
