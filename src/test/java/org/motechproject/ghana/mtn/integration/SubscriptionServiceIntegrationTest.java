@@ -38,7 +38,7 @@ public class SubscriptionServiceIntegrationTest {
     @Autowired
     private CouchDbInstance couchDbInstance;
     @Autowired
-    @Qualifier("ghanaMtnDBConnector")
+    @Qualifier("dbConnector")
     private CouchDbConnector dbConnector;
     @Autowired
     private SubscriptionController subscriptionController;
@@ -47,23 +47,23 @@ public class SubscriptionServiceIntegrationTest {
     @Autowired
     private AllSubscribers allSubscribers;
     @Autowired
-    private AllSubscriptionTypes allSubcriptionTypes;
+    private AllSubscriptionTypes allSubscriptionTypes;
 
     private MockHttpServletResponse mockHttpServletResponse;
 
     @Before
     public void setUp() {
-        createIfDbDoesntExist();
+        createIfDbDoesNotExist();
         createSubscriptionTypes();
         mockHttpServletResponse = new MockHttpServletResponse();
     }
 
     private void createSubscriptionTypes() {
-        allSubcriptionTypes.add(new SubscriptionTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build());
-        allSubcriptionTypes.add(new SubscriptionTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build());
+        allSubscriptionTypes.add(new SubscriptionTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build());
+        allSubscriptionTypes.add(new SubscriptionTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build());
     }
 
-    private void createIfDbDoesntExist() {
+    private void createIfDbDoesNotExist() {
         String databaseName = dbConnector.getDatabaseName();
         if (!couchDbInstance.checkIfDbExists(new DbPath(databaseName)))
             couchDbInstance.createDatabase(databaseName);
@@ -83,7 +83,7 @@ public class SubscriptionServiceIntegrationTest {
         Subscription subscription = subscriptions.get(0);
 
         List<Subscriber> subscribers = allSubscribers.getAll();
-        SubscriptionType subscriptionType = allSubcriptionTypes.findByCampaignShortCode(shortCode);
+        SubscriptionType subscriptionType = allSubscriptionTypes.findByCampaignShortCode(shortCode);
 
         assertThat(mockHttpServletResponse.getContentType(), is(SubscriptionController.CONTENT_TYPE_JSON));
         assertThat(mockHttpServletResponse.getContentAsString(), is(expectedResponse));

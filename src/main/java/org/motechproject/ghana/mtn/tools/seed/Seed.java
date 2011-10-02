@@ -11,12 +11,12 @@ public abstract class Seed {
         postLoad();
     }
 
-    private void postLoad() {
-        LOG.info("Seed finished.");
+    private void preLoad() {
+        LOG.info("loading: START");
     }
 
-    private void preLoad() {
-        LOG.info("Seed started.");
+    private void postLoad() {
+        LOG.info("loading: END");
     }
 
     protected abstract void load();

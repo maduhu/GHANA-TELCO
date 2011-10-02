@@ -6,11 +6,11 @@ import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.model.MotechAuditableDataObject;
 
-@TypeDiscriminator("doc.type === 'SubscriptionType'")
+@TypeDiscriminator("doc.type === 'SubscriptionMessage'")
 public class SubscriptionMessage extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "SubscriptionMessage";
-    private String subscriptionId;
+    private String programName;
     private String content;
     private Week week;
     private Day day;
@@ -18,19 +18,19 @@ public class SubscriptionMessage extends MotechAuditableDataObject {
     public SubscriptionMessage() {
     }
 
-    public SubscriptionMessage(String subscriptionId, String content, Week week, Day day) {
-        this.subscriptionId = subscriptionId;
+    public SubscriptionMessage(String programName, String content, Week week, Day day) {
+        this.programName = programName;
         this.content = content;
         this.week = week;
         this.day = day;
     }
 
-    public String getSubscriptionId() {
-       return subscriptionId;
+    public String getProgramName() {
+       return programName;
     }
 
-    public void setSubscriptionId(String subscriptionId) {
-        this.subscriptionId = subscriptionId;
+    public void setProgramName(String programName) {
+        this.programName = programName;
     }
 
     public String getContent() {

@@ -1,6 +1,7 @@
-package org.motechproject.ghana.mtn.tools.seed;
+package org.motechproject.ghana.mtn.tools;
 
 import org.apache.log4j.Logger;
+import org.motechproject.ghana.mtn.tools.seed.SeedLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

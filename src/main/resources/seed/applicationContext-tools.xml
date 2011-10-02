@@ -8,6 +8,7 @@
         <constructor-arg>
             <list>
                 <ref bean="subscriptionTypeSeed"/>
+                <ref bean="subscriptionMessageSeed"/>
             </list>
         </constructor-arg>
     </bean>

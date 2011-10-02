@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AllSubscriptionMessages extends MotechAuditableRepository<SubscriptionMessage> {
     @Autowired
-    protected AllSubscriptionMessages(@Qualifier("ghanaMtnDBConnector") CouchDbConnector db) {
+    protected AllSubscriptionMessages(@Qualifier("dbConnector") CouchDbConnector db) {
         super(SubscriptionMessage.class, db);
     }
 }

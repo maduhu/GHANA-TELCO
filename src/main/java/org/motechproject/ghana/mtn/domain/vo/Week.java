@@ -23,6 +23,12 @@ public class Week {
     }
 
     public Week add(int weeks) {
-        return new Week(number + weeks); 
+        return new Week(number + weeks);
     }
+
+    @Override
+    public String toString() {
+        return "WEEK " + number.toString();
+    }
+
 }

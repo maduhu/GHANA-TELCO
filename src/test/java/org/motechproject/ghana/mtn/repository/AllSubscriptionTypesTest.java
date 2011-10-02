@@ -20,11 +20,11 @@ import static org.junit.Assert.assertThat;
 
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationContext.xml"})
+@ContextConfiguration(locations = {"/testApplicationContext.xml"})
 public class AllSubscriptionTypesTest {
 
     @Autowired
-    @Qualifier("ghanaMtnDBConnector")
+    @Qualifier("dbConnector")
     private CouchDbConnector couchDbConnector;
 
     @Autowired

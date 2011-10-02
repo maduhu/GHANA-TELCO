@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.EXPIRED;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationContext.xml"})
+@ContextConfiguration(locations = {"/testApplicationContext.xml"})
 public class AllSubscriptionsTest {
     @Autowired
     private AllSubscriptions allSubscriptions;
@@ -41,7 +41,7 @@ public class AllSubscriptionsTest {
     private Subscriber subscriber1 = new Subscriber("0987654321");
 
     @Autowired
-    @Qualifier("ghanaMtnDBConnector")
+    @Qualifier("dbConnector")
     CouchDbConnector db;
 
     @Autowired
@@ -100,21 +100,21 @@ public class AllSubscriptionsTest {
     @Test
     public void shouldFetchSubscriptionBasedOnMobileNumberAndEnrolledProgram() {
         String user1Mobile = "9999933333";
-        Subscription pregProgForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build();
+        Subscription pregnancyProgramForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build();
         Subscription childCareForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 3, 0, 0), new Week(7), childCare).build();
-        allSubscriptions.add(pregProgForUser1);
+        allSubscriptions.add(pregnancyProgramForUser1);
         allSubscriptions.add(childCareForUser1);
 
-        Subscription pregProgForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build();
-        allSubscriptions.add(pregProgForUser2);
+        Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build();
+        allSubscriptions.add(pregnancyProgramForUser2);
 
-        Subscription actualPregProgramForUsr1 = allSubscriptions.findBy(user1Mobile, pregnancy.getProgramName());
+        Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findBy(user1Mobile, pregnancy.getProgramName());
         Subscription actualChildCareForUsr1 = allSubscriptions.findBy(user1Mobile, childCare.getProgramName());
-        assertEquals(pregProgForUser1.getRevision(), actualPregProgramForUsr1.getRevision());
+        assertEquals(pregnancyProgramForUser1.getRevision(), actualPregnancyProgramForUsr1.getRevision());
         assertEquals(childCareForUser1.getRevision(), actualChildCareForUsr1.getRevision());
 
         assertEquals(null, allSubscriptions.findBy(mobileNumber, childCare.getProgramName()));
-        removeSubs(asList(pregProgForUser1, childCareForUser1, pregProgForUser2));
+        removeSubs(asList(pregnancyProgramForUser1, childCareForUser1, pregnancyProgramForUser2));
     }
 
     private void removeSubs(List<Subscription> subscriptions) {

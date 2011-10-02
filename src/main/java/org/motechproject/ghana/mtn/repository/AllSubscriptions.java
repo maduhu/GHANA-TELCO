@@ -8,7 +8,6 @@ import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
 @Repository
 public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
     @Autowired
-    protected AllSubscriptions(@Qualifier("ghanaMtnDBConnector") CouchDbConnector db) {
+    protected AllSubscriptions(@Qualifier("dbConnector") CouchDbConnector db) {
         super(Subscription.class, db);
     }
 

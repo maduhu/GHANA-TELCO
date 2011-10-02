@@ -9,7 +9,7 @@ public class CouchDB {
     @Autowired
     private CouchDbInstance couchDbInstance;
     @Autowired
-    @Qualifier("ghanaMtnDBConnector")
+    @Qualifier("dbConnector")
     private CouchDbConnector dbConnector;
 
     public void recreate() {

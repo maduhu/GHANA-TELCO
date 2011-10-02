@@ -49,34 +49,6 @@
                 <version>2.1.1</version>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>${exec-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>recreate-db</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>org.motechproject.ghana.mtn.tools.RecreateDB</mainClass>
-                            <includePluginDependencies>true</includePluginDependencies>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>seed-db</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>org.motechproject.ghana.mtn.tools.seed.SetupSeedData</mainClass>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.0.1.v20110908</version>
@@ -123,7 +95,7 @@
                 <executions>
                     <execution>
                         <id>setup-quartz-schema</id>
-                        <phase>test-compile</phase>
+                        <phase>pre-integration-test</phase>
                         <configuration>
                             <target>
                                 <echo message="Quartz schema loading: START"/>
@@ -145,6 +117,44 @@
                                      password="${mysql.password}"
                                      src="${project.basedir}/build/sql/tables_mysql_innodb.sql"/>
                                 <echo message="Quartz schema loading: END"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>recreate-Db</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Recreating DB: START"/>
+                                <property name="compile_classpath" refid="maven.compile.classpath"/>
+                                <java classname="org.motechproject.ghana.mtn.tools.RecreateDB">
+                                    <classpath>
+                                        <pathelement path="${compile_classpath}"/>
+                                    </classpath>
+                                </java>
+                                <echo message="Recreating DB: END"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>load-seed-data-in-Db</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Seed data loading: START"/>
+                                <property name="compile_classpath" refid="maven.compile.classpath"/>
+                                <java classname="org.motechproject.ghana.mtn.tools.SetupSeedData">
+                                    <classpath>
+                                        <pathelement path="${compile_classpath}"/>
+                                    </classpath>
+                                </java>
+                                <echo message="Seed data loading: END"/>
                             </target>
                         </configuration>
                         <goals>
@@ -179,6 +189,7 @@
                 <configuration>
                     <includes>
                         <include>**/integration/*Test.java</include>
+                        <include>**/repository/*Test.java</include>
                     </includes>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                 </configuration>
