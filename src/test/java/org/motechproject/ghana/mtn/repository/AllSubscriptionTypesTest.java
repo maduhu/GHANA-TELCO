@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class AllSubscriptionTypesTest {
 
     @Autowired

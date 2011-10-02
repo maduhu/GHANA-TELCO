@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.EXPIRED;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class AllSubscriptionsTest {
     @Autowired
     private AllSubscriptions allSubscriptions;

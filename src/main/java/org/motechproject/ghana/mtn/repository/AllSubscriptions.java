@@ -9,10 +9,11 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Component
+@Repository
 public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
     @Autowired
     protected AllSubscriptions(@Qualifier("ghanaMtnDBConnector") CouchDbConnector db) {
