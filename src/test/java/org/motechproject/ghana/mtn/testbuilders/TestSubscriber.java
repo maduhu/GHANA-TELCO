@@ -4,14 +4,14 @@ import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
-import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 
 public class TestSubscriber {
 
-     public static Subscription with(Subscriber subscriber, SubscriptionType type, DateTime dateTime, Week week) {
+     public static Subscription with(Subscriber subscriber, SubscriptionType type, DateTime dateTime, WeekAndDay weekAndDay) {
         Subscription subscription = new Subscription();
         subscription.setSubscriber(subscriber);
-        subscription.setStartWeek(week);
+        subscription.setStartWeekAndDay(weekAndDay);
         subscription.setSubscriptionType(type);
         subscription.setRegistrationDate(dateTime);
         return subscription;

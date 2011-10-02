@@ -5,13 +5,13 @@ import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
-import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 
 public class SubscriptionBuilder extends Builder<Subscription> {
     private Subscriber subscriber;
     private SubscriptionType subscriptionType;
     private SubscriptionStatus status;
-    private Week startWeek;
+    private WeekAndDay startWeekAndDay;
     private DateTime registrationDate;
 
     public SubscriptionBuilder() {
@@ -33,8 +33,8 @@ public class SubscriptionBuilder extends Builder<Subscription> {
         return this;
     }
 
-    public SubscriptionBuilder withStartWeek(Week week) {
-        this.startWeek = week;
+    public SubscriptionBuilder withStartWeekAndDay(WeekAndDay week) {
+        this.startWeekAndDay = week;
         return this;
     }
 

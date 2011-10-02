@@ -6,18 +6,18 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
-import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 
 public class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
     private Subscription subscription;
 
-    public SubscriptionMatcher(Subscriber subscriber, SubscriptionType type, SubscriptionStatus status, Week startWeek) {
-        subscription = new SubscriptionBuilder().withSubscriber(subscriber).withType(type)
-                .withStatus(status).withStartWeek(startWeek).build();
-    }
-
     public SubscriptionMatcher(Subscription subscription) {
         this.subscription = subscription;
+    }
+
+    public SubscriptionMatcher(Subscriber subscriber, SubscriptionType type, SubscriptionStatus status, WeekAndDay startWeekAndDay) {
+        subscription = new SubscriptionBuilder().withSubscriber(subscriber).withType(type)
+                .withStatus(status).withStartWeekAndDay(startWeekAndDay).build();
     }
 
     @Override
@@ -26,6 +26,6 @@ public class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
         return subscription.getSubscriber().getNumber().equals(toCompare.getSubscriber().getNumber())
                 && subscription.getSubscriptionType().getProgramName().equals(toCompare.getSubscriptionType().getProgramName())
                 && subscription.getStatus().equals(toCompare.getStatus())
-                && subscription.getStartWeek().is(toCompare.getStartWeek().getNumber());
+                && subscription.getStartWeekAndDay().isSameAs(toCompare.getStartWeekAndDay());
     }
 }

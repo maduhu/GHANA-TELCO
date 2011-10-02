@@ -38,7 +38,7 @@ public class InputMessageParserTest {
         Subscription subscription = messageParser.parse(inputText);
 
         assertThat(subscription.getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType));
-        assertThat(subscription.getStartWeek().getNumber(), is(startFrom));
+        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(startFrom));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class InputMessageParserTest {
         Subscription subscription = messageParser.parse(inputText);
 
         assertThat(subscription.getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType));
-        assertThat(subscription.getStartWeek().getNumber(), is(25));
+        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class InputMessageParserTest {
 
         Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getSubscriptionType(), is(subscriptionType));
-        assertThat(subscription.getStartWeek().getNumber(), is(25));
+        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
     }
 
     @Test(expected = MessageParseFailException.class)
@@ -81,6 +81,6 @@ public class InputMessageParserTest {
     @Test
     public void ShouldCreateSubscriptionForWeekWithSingleDigit() {
         Subscription subscription = messageParser.parse("P 5");
-        assertThat(subscription.getStartWeek().getNumber(), is(5));
+        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(5));
     }
 }

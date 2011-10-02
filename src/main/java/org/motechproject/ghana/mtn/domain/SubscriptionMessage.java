@@ -1,10 +1,13 @@
 package org.motechproject.ghana.mtn.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.model.MotechAuditableDataObject;
+
+import java.util.Arrays;
 
 @TypeDiscriminator("doc.type === 'SubscriptionMessage'")
 public class SubscriptionMessage extends MotechAuditableDataObject {
@@ -59,5 +62,10 @@ public class SubscriptionMessage extends MotechAuditableDataObject {
 
     public boolean isOf(Week week, Day day) {
         return this.week.equals(week) && this.day.equals(day);
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.join(Arrays.asList(programName, week, day, content), "|");
     }
 }

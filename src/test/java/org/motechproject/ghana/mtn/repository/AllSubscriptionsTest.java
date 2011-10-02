@@ -13,7 +13,9 @@ import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
+import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
 import org.motechproject.ghana.mtn.tools.seed.SeedLoader;
 import org.motechproject.ghana.mtn.tools.seed.SubscriptionTypeSeed;
@@ -63,7 +65,7 @@ public class AllSubscriptionsTest {
         SubscriptionType subscriptionType = new SubscriptionTypeBuilder()
                 .withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
         subscription = new SubscriptionBuilder().withRegistrationDate(new DateTime())
-                .withStartWeek(new Week(6)).withStatus(SubscriptionStatus.ACTIVE)
+                .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(new Subscriber(mobileNumber))
                 .withType(subscriptionType).build();
 
@@ -83,9 +85,9 @@ public class AllSubscriptionsTest {
         SubscriptionType subscriptionType = new SubscriptionTypeBuilder()
                 .withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
         Subscription subscription = new SubscriptionBuilder().withRegistrationDate(new DateTime())
-                .withStartWeek(new Week(6)).withStatus(SubscriptionStatus.ACTIVE)
-                .withSubscriber(subscriber1)
-                .withType(subscriptionType).build();
+                .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
+                        .withSubscriber(subscriber1)
+                        .withType(subscriptionType).build();
         allSubscriptions.add(subscription);
 
         List<Subscription> subscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(mobileNumber);
@@ -126,7 +128,7 @@ public class AllSubscriptionsTest {
     }
 
     private SubscriptionBuilder subscription(String mobileNumber, DateTime registeredDate, Week startWeek, SubscriptionType program) {
-        return new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeek(startWeek)
+        return new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, Day.MONDAY))
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program);
     }

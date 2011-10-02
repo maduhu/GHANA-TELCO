@@ -2,7 +2,8 @@ package org.motechproject.ghana.mtn.eventhandler;
 
 import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
+import org.motechproject.ghana.mtn.repository.AllSubscriptionMessages;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -16,31 +17,23 @@ import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIG
 
 @Service
 public class SubscriptionMessageEventHandler {
-
     private final static Logger log = Logger.getLogger(SubscriptionMessageEventHandler.class);
-
     @Autowired
-    SubscriptionService subscriptionService;
+    private SubscriptionService subscriptionService;
+    @Autowired
+    private AllSubscriptionMessages allSubscriptionMessages;
 
     @MotechListener(subjects = {MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT})
-    public void handleMessageReminder(MotechEvent motechEvent) {
-        Map<String,Object> params = motechEvent.getParameters();
+    public void sendMessageReminder(MotechEvent motechEvent) {
+        Map params = motechEvent.getParameters();
         String programName = (String) params.get(EventKeys.CAMPAIGN_NAME_KEY);
         String subscriberNo = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
-        log.info("Program Name" + programName + ": Mobile Number" + subscriberNo);
 
         Subscription subscription = subscriptionService.findBy(subscriberNo, programName);
-        sendReminder(subscription);
-        
+        SubscriptionMessage subscriptionMessage = allSubscriptionMessages.findBy(subscription.getSubscriptionType(), subscription.currentWeek(), subscription.currentDay());
+        if (subscription.canSend(subscriptionMessage))
+            log.info("sent:" + subscriptionMessage);
+        subscription.updateLastMessageSent();
     }
 
-    void sendReminder(Subscription subscription) {
-        // Find the actual week for which the message has to be sent
-        //  - find the Subscription - registered date and week- with the current date - what is the current week
-        // Get the message based on the week from CMS Lite service
-        if( subscription != null) {
-            Week currentWeek = subscription.runningWeek();
-            //cmsLiteService.getContent(new ResourceQuery())
-        }
-    }
 }

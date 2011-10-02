@@ -9,7 +9,9 @@ import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
+import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.testbuilders.TestSubscription;
@@ -47,7 +49,7 @@ public class SubscriptionServiceImplTest {
     public void shouldNotEnrollIfSubscriptionIsNotValid() {
         SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
         SubscriptionType subscriptionType = TestSubscriptionType.with("Pregnancy", 3, 12, Arrays.asList("P"));
-        Subscription subscription = TestSubscription.with(null, subscriptionType, DateTime.now(), new Week(92));
+        Subscription subscription = TestSubscription.with(null, subscriptionType, DateTime.now(), new WeekAndDay(new Week(92), Day.MONDAY));
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
 
@@ -64,8 +66,8 @@ public class SubscriptionServiceImplTest {
     public void shouldNotEnrollIfSubscriberAlreadyHasAnActiveSubscriptionOfSameType() {
         SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
         SubscriptionType subscriptionType = TestSubscriptionType.with("Pregnancy", 3, 12, Arrays.asList("P"));
-        Subscription subscription = TestSubscription.with(null, subscriptionType, DateTime.now(), new Week(12));
-        Subscription existingActiveSubscription = TestSubscription.with(null, subscriptionType, DateTime.now(), new Week(31));
+        Subscription subscription = TestSubscription.with(null, subscriptionType, DateTime.now(), new WeekAndDay(new Week(12), Day.MONDAY));
+        Subscription existingActiveSubscription = TestSubscription.with(null, subscriptionType, DateTime.now(), new WeekAndDay(new Week(31), Day.MONDAY));
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Arrays.asList(existingActiveSubscription));
@@ -83,7 +85,7 @@ public class SubscriptionServiceImplTest {
     public void shouldPersistSubscriptionAndCampaignRequestForAValidSubscription() {
         SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
         SubscriptionType subscriptionType = TestSubscriptionType.with("Pregnancy", 3, 12, Arrays.asList("P"));
-        Subscription subscription = TestSubscription.with(null, subscriptionType, DateTime.now(), new Week(12));
+        Subscription subscription = TestSubscription.with(null, subscriptionType, DateTime.now(), new WeekAndDay(new Week(12), Day.MONDAY));
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);

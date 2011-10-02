@@ -169,8 +169,8 @@
                 <version>2.9</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/integration/*Test.java
-                        </exclude>
+                        <exclude>**/integration/*Test.java</exclude>
+                        <exclude>**/repository/*Test.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

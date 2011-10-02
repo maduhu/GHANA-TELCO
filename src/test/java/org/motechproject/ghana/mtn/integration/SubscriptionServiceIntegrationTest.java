@@ -90,7 +90,7 @@ public class SubscriptionServiceIntegrationTest {
         assertThat(subscriptions.size(), is(1));
 
         assertThat(subscription.getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType));
-        assertThat(subscription.getStartWeek().getNumber(), is(25));
+        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
 
         assertThat(subscribers.size(), is(1));

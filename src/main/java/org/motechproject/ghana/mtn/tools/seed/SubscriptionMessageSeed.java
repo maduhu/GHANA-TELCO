@@ -40,6 +40,7 @@ public class SubscriptionMessageSeed extends Seed {
             allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.MONDAY.name(), week, Day.MONDAY));
             allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.WEDNESDAY.name(), week, Day.WEDNESDAY));
             allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.FRIDAY.name(), week, Day.FRIDAY));
+            allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.SUNDAY.name(), week, Day.SUNDAY));
         }
     }
 
