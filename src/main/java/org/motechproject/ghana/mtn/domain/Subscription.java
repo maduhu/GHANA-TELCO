@@ -95,10 +95,10 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public void updateLastMessageSent() {
-        //To change body of created methods use File | Settings | File Templates.
+        lastMsgSentWeekAndDay = new WeekAndDay(currentWeek(), currentDay());
     }
 
-    public boolean canSend(SubscriptionMessage subscriptionMessage) {
-        return true;  //To change body of created methods use File | Settings | File Templates.
+    public boolean alreadySent(SubscriptionMessage subscriptionMessage) {
+        return !lastMsgSentWeekAndDay.isBefore(subscriptionMessage.getWeekAndDay());
     }
 }

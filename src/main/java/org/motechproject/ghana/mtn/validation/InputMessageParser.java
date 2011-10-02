@@ -9,7 +9,6 @@ import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.repository.AllSubscriptionTypes;
 import org.motechproject.ghana.mtn.utils.DateUtils;
-import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +17,9 @@ import java.util.regex.Pattern;
 
 @Component
 public class InputMessageParser {
+    public static final String ENROLLMENT_EXPRESSION = "^([Pp|Cc])\\s([\\d]{1,2})$";
 
     private AllSubscriptionTypes allSubscriptionTypes;
-    public static final String ENROLLMENT_EXPRESSION = "^([Pp|Cc])\\s([\\d]{1,2})$";
 
     @Autowired
     public InputMessageParser(AllSubscriptionTypes allSubscriptionTypes) {
@@ -31,13 +30,10 @@ public class InputMessageParser {
         Pattern pattern = Pattern.compile(ENROLLMENT_EXPRESSION);
         Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
-            String shortCode = matcher.group(1);
-            String week = matcher.group(2);
-            WeekAndDay weekAndDay = new WeekAndDay(new Week(Integer.parseInt(week)), new DateUtils().currentDay());
             return new SubscriptionBuilder()
-                    .withType(allSubscriptionTypes.findByCampaignShortCode(shortCode))
+                    .withType(allSubscriptionTypes.findByCampaignShortCode(matcher.group(1)))
                     .withStatus(SubscriptionStatus.ACTIVE)
-                    .withStartWeekAndDay(weekAndDay)
+                    .withStartWeekAndDay(new WeekAndDay(new Week(Integer.parseInt(matcher.group(2))), new DateUtils().today()))
                     .withRegistrationDate(DateTime.now())
                     .build();
         }

@@ -5,6 +5,7 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
 import org.motechproject.ghana.mtn.repository.AllSubscriptionMessages;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
+import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
@@ -30,9 +31,10 @@ public class SubscriptionMessageEventHandler {
         String subscriberNo = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
 
         Subscription subscription = subscriptionService.findBy(subscriberNo, programName);
-        SubscriptionMessage subscriptionMessage = allSubscriptionMessages.findBy(subscription.getSubscriptionType(), subscription.currentWeek(), subscription.currentDay());
-        if (subscription.canSend(subscriptionMessage))
-            log.info("sent:" + subscriptionMessage);
+        SubscriptionMessage message = allSubscriptionMessages.findBy(subscription.getSubscriptionType(), subscription.currentWeek(), subscription.currentDay());
+        if (subscription.alreadySent(message))
+            log.info("message already sent:" + message);
+        log.info("message sent:" + message);
         subscription.updateLastMessageSent();
     }
 

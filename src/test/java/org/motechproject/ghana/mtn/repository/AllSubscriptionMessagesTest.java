@@ -7,6 +7,7 @@ import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.assertEquals;
@@ -25,7 +26,7 @@ public class AllSubscriptionMessagesTest extends BaseRepositoryTest{
         markForDeletion(type);
 
         Week week = new Week(12);
-        SubscriptionMessage subscriptionMessage = new SubscriptionMessage(programName,"content",week,Day.FRIDAY);
+        SubscriptionMessage subscriptionMessage = new SubscriptionMessage(programName,"content", new WeekAndDay(week, Day.FRIDAY));
         allSubscriptionMessages.add(subscriptionMessage);
         markForDeletion(subscriptionMessage);
 

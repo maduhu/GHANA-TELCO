@@ -10,7 +10,7 @@ public class DateUtils {
         return DateTime.now();
     }
 
-    public Day currentDay() {
+    public Day today() {
         String day = DateTime.now().dayOfWeek().getAsText();
         return Day.valueOf(day.toUpperCase());
     }

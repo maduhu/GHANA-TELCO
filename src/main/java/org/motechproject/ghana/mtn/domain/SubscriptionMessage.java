@@ -5,6 +5,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Arrays;
@@ -15,17 +16,15 @@ public class SubscriptionMessage extends MotechAuditableDataObject {
     private String type = "SubscriptionMessage";
     private String programName;
     private String content;
-    private Week week;
-    private Day day;
+    private WeekAndDay weekAndDay;
 
     public SubscriptionMessage() {
     }
 
-    public SubscriptionMessage(String programName, String content, Week week, Day day) {
+    public SubscriptionMessage(String programName, String content, WeekAndDay weekAndDay) {
         this.programName = programName;
         this.content = content;
-        this.week = week;
-        this.day = day;
+        this.weekAndDay = weekAndDay;
     }
 
     public String getProgramName() {
@@ -44,28 +43,20 @@ public class SubscriptionMessage extends MotechAuditableDataObject {
         this.content = content;
     }
 
-    public Week getWeek() {
-        return week;
+    public WeekAndDay getWeekAndDay() {
+        return weekAndDay;
     }
 
-    public void setWeek(Week week) {
-        this.week = week;
-    }
-
-    public Day getDay() {
-        return day;
-    }
-
-    public void setDay(Day day) {
-        this.day = day;
+    public void setWeekAndDay(WeekAndDay weekAndDay) {
+        this.weekAndDay = weekAndDay;
     }
 
     public boolean isOf(Week week, Day day) {
-        return this.week.equals(week) && this.day.equals(day);
+        return this.weekAndDay.getWeek().equals(week) && this.weekAndDay.getDay().equals(day);
     }
 
     @Override
     public String toString() {
-        return StringUtils.join(Arrays.asList(programName, week, day, content), "|");
+        return StringUtils.join(Arrays.asList(programName, weekAndDay.getWeek(), weekAndDay.getDay(), content), "|");
     }
 }
