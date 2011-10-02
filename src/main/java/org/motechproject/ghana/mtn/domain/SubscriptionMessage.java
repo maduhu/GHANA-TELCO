@@ -26,7 +26,7 @@ public class SubscriptionMessage extends MotechAuditableDataObject {
     }
 
     public String getProgramName() {
-       return programName;
+        return programName;
     }
 
     public void setProgramName(String programName) {
@@ -55,5 +55,9 @@ public class SubscriptionMessage extends MotechAuditableDataObject {
 
     public void setDay(Day day) {
         this.day = day;
+    }
+
+    public boolean isOf(Week week, Day day) {
+        return this.week.equals(week) && this.day.equals(day);
     }
 }

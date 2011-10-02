@@ -31,4 +31,17 @@ public class Week {
         return "WEEK " + number.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Week week = (Week) o;
+        if (number != null ? !number.equals(week.number) : week.number != null) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return number != null ? number.hashCode() : 0;
+    }
 }
