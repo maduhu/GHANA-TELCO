@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.validation;
 import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -15,9 +16,14 @@ import org.springframework.stereotype.Component;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ch.lambdaj.Lambda.*;
+
 @Component
 public class InputMessageParser {
-    public static final Pattern SUBCRIBER_ENROLLMENT_PATTERN = Pattern.compile("^([Pp|Cc])\\s([\\d]{1,2})$");
+    public static final String START_OF_PATTERN = "^(";
+    private static String programCodes = "P|p|C|c";
+    public static final String END_OF_PATTERN = ")\\s([\\d]{1,2})$";
+    public static Pattern SUBSCRIBER_ENROLLMENT_PATTERN = Pattern.compile(START_OF_PATTERN + programCodes + END_OF_PATTERN);
     private AllSubscriptionTypes allSubscriptionTypes;
 
     @Autowired
@@ -26,7 +32,7 @@ public class InputMessageParser {
     }
 
     public Subscription parse(String input) {
-        Matcher matcher = SUBCRIBER_ENROLLMENT_PATTERN.matcher(input);
+        Matcher matcher = SUBSCRIBER_ENROLLMENT_PATTERN.matcher(input.toUpperCase());
         if (matcher.find()) {
             return new SubscriptionBuilder()
                     .withType(allSubscriptionTypes.findByCampaignShortCode(matcher.group(1)))
@@ -36,5 +42,10 @@ public class InputMessageParser {
                     .build();
         }
         throw new MessageParseFailException("Input Message is not valid <" + input + ">");
+    }
+
+    public void recompilePattern() {
+        programCodes = joinFrom(flatten(extract(allSubscriptionTypes.getAll(), on(SubscriptionType.class).getShortCodes())), "|").toString();
+        SUBSCRIBER_ENROLLMENT_PATTERN = Pattern.compile(START_OF_PATTERN + programCodes + END_OF_PATTERN);
     }
 }
