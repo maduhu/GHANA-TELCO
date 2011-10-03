@@ -33,6 +33,6 @@ public class WeekAndDay {
     }
 
     public boolean isBefore(WeekAndDay weekAndDay) {
-        return week.getNumber() <= weekAndDay.getWeek().getNumber() && day.compareTo(weekAndDay.getDay()) <= 0;
+        return week.getNumber() <= weekAndDay.getWeek().getNumber() && day.compareTo(weekAndDay.getDay()) < 0;
     }
 }

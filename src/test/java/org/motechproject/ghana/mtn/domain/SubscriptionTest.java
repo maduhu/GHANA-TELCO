@@ -11,7 +11,6 @@ import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -43,12 +42,7 @@ public class SubscriptionTest {
         Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), subscriptionType("Pregnancy"));
         mockCurrentDate(new DateTime(2012, 1, 1, 1, 1));
         assertEquals(Day.SUNDAY, sub1.currentDay());
-    }
 
-    @Test
-    public void shouldCheckIfMessageAlreadySent() {
-        Subscription sub1 = new Subscription();
-        assertFalse(sub1.alreadySent(new SubscriptionMessage()));
     }
 
     private SubscriptionType subscriptionType(String programName) {

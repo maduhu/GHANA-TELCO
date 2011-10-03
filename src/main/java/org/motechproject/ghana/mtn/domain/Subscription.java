@@ -76,14 +76,6 @@ public class Subscription extends MotechAuditableDataObject {
         this.registrationDate = registrationDate;
     }
 
-    public WeekAndDay getLastMsgSentWeekAndDay() {
-        return lastMsgSentWeekAndDay;
-    }
-
-    public void setLastMsgSentWeekAndDay(WeekAndDay lastMsgSentWeekAndDay) {
-        this.lastMsgSentWeekAndDay = lastMsgSentWeekAndDay;
-    }
-
     public CampaignRequest createCampaignRequest() {
         return new CampaignRequest(subscriber.getNumber(), subscriptionType.getProgramName(), null, null);
     }
@@ -107,6 +99,6 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public boolean alreadySent(SubscriptionMessage subscriptionMessage) {
-        return lastMsgSentWeekAndDay != null ? subscriptionMessage.getWeekAndDay().isBefore(lastMsgSentWeekAndDay) : false;
+        return !lastMsgSentWeekAndDay.isBefore(subscriptionMessage.getWeekAndDay());
     }
 }
