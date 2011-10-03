@@ -98,7 +98,15 @@ public class Subscription extends MotechAuditableDataObject {
         lastMsgSentWeekAndDay = new WeekAndDay(currentWeek(), currentDay());
     }
 
+    public WeekAndDay getLastMsgSentWeekAndDay() {
+        return lastMsgSentWeekAndDay;
+    }
+
+    public void setLastMsgSentWeekAndDay(WeekAndDay lastMsgSentWeekAndDay) {
+        this.lastMsgSentWeekAndDay = lastMsgSentWeekAndDay;
+    }
+
     public boolean alreadySent(SubscriptionMessage subscriptionMessage) {
-        return !lastMsgSentWeekAndDay.isBefore(subscriptionMessage.getWeekAndDay());
+        return lastMsgSentWeekAndDay != null ? subscriptionMessage.getWeekAndDay().isBefore(lastMsgSentWeekAndDay) : false;
     }
 }

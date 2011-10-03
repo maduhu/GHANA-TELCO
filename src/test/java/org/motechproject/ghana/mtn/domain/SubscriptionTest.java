@@ -11,7 +11,7 @@ import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -66,4 +66,10 @@ public class SubscriptionTest {
         return subscription;
     }
 
+     @Test
+
+    public void shouldCheckIfMessageAlreadySent() {
+        Subscription sub1 = new Subscription();
+        assertFalse(sub1.alreadySent(new SubscriptionMessage()));
+     }
 }
