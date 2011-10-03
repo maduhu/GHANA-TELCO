@@ -17,8 +17,7 @@ import java.util.regex.Pattern;
 
 @Component
 public class InputMessageParser {
-    public static final String ENROLLMENT_EXPRESSION = "^([Pp|Cc])\\s([\\d]{1,2})$";
-
+    public static final Pattern SUBCRIBER_ENROLLMENT_PATTERN = Pattern.compile("^([Pp|Cc])\\s([\\d]{1,2})$");
     private AllSubscriptionTypes allSubscriptionTypes;
 
     @Autowired
@@ -27,8 +26,7 @@ public class InputMessageParser {
     }
 
     public Subscription parse(String input) {
-        Pattern pattern = Pattern.compile(ENROLLMENT_EXPRESSION);
-        Matcher matcher = pattern.matcher(input);
+        Matcher matcher = SUBCRIBER_ENROLLMENT_PATTERN.matcher(input);
         if (matcher.find()) {
             return new SubscriptionBuilder()
                     .withType(allSubscriptionTypes.findByCampaignShortCode(matcher.group(1)))

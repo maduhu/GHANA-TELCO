@@ -17,8 +17,6 @@ import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
-import org.motechproject.ghana.mtn.tools.seed.SeedLoader;
-import org.motechproject.ghana.mtn.tools.seed.SubscriptionTypeSeed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,16 +47,22 @@ public class AllSubscriptionsTest {
     @Autowired
     private AllSubscriptionTypes subscriptionTypes;
 
-    @Autowired
-    SubscriptionTypeSeed subscriptionTypeSeed;
-
     SubscriptionType pregnancy;
     SubscriptionType childCare;
 
     @Before
     public void setUp() {
+        subscriptionTypes.add(new SubscriptionTypeBuilder()
+                .withProgramName("Pregnancy")
+                .withShortCode("P")
+                .withShortCode("p")
+                .withMaxWeek(35).withMinWeek(5).build());
+        subscriptionTypes.add(new SubscriptionTypeBuilder()
+                .withProgramName("Child Care")
+                .withShortCode("C")
+                .withShortCode("c")
+                .withMaxWeek(52).withMinWeek(1).build());
 
-        new SeedLoader(asList(subscriptionTypeSeed)).load();
         pregnancy = subscriptionTypes.findByCampaignShortCode("P");
         childCare = subscriptionTypes.findByCampaignShortCode("C");
 

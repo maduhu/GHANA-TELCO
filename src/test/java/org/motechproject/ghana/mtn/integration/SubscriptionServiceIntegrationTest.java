@@ -51,22 +51,18 @@ public class SubscriptionServiceIntegrationTest {
 
     private MockHttpServletResponse mockHttpServletResponse;
 
+    public final SubscriptionType childCarePregnancyType = new SubscriptionTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+    public final SubscriptionType pregnancySubscriptionType = new SubscriptionTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
+
     @Before
     public void setUp() {
-        createIfDbDoesNotExist();
         createSubscriptionTypes();
         mockHttpServletResponse = new MockHttpServletResponse();
     }
 
     private void createSubscriptionTypes() {
-        allSubscriptionTypes.add(new SubscriptionTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build());
-        allSubscriptionTypes.add(new SubscriptionTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build());
-    }
-
-    private void createIfDbDoesNotExist() {
-        String databaseName = dbConnector.getDatabaseName();
-        if (!couchDbInstance.checkIfDbExists(new DbPath(databaseName)))
-            couchDbInstance.createDatabase(databaseName);
+        allSubscriptionTypes.add(pregnancySubscriptionType);
+        allSubscriptionTypes.add(childCarePregnancyType);
     }
 
     @Test
@@ -116,6 +112,8 @@ public class SubscriptionServiceIntegrationTest {
 
     @After
     public void destroy() {
-        couchDbInstance.deleteDatabase(dbConnector.getDatabaseName());
+        allSubscriptionTypes.remove(pregnancySubscriptionType);
+        allSubscriptionTypes.remove(childCarePregnancyType);
     }
+
 }
