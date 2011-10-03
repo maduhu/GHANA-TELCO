@@ -1,5 +1,18 @@
 function submitRequest() {
-    updatePage(document.getElementById('inputText').value);
+
+    var subscriberNumber = document.getElementsByName('subscriberNumber')[0].value;
+    var queryParam = "subscriberNumber=" + subscriberNumber + "&inputMessage=" + document.getElementById('smsText').value;
+    var url = 'subscription/enroll?' + queryParam;
+    http(url, updatePage);
+    document.getElementById('smsText').value = "";
+    return false;
+}
+
+function submitEventRequest() {
+    return false;
+}
+
+function http(url, fn) {
     var xmlHttpReq = false;
     var self = this;
     // Mozilla/Safari
@@ -10,21 +23,15 @@ function submitRequest() {
     else if (window.ActiveXObject) {
         self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    self.xmlHttpReq.open('GET', 'subscription/enroll?' + getQueryString(), true);
+    self.xmlHttpReq.open('GET', url, true);
     self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     self.xmlHttpReq.onreadystatechange = function() {
         if (self.xmlHttpReq.readyState == 4) {
-            updatePage(self.xmlHttpReq.responseText);
+            fn(self.xmlHttpReq.responseText);
         }
     }
     self.xmlHttpReq.send();
-    document.getElementById('inputText').value = "";
     return false;
-}
-
-function getQueryString() {
-    var subscriberNumber = "1234567890";
-    return "subscriberNumber=" + subscriberNumber + "&inputMessage=" + document.getElementById('inputText').value;
 }
 
 function updatePage(inputString) {
