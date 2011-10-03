@@ -2,9 +2,14 @@ package org.motechproject.ghana.mtn;
 
 import org.ektorp.BulkDeleteDocument;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.scheduler.MotechSchedulerServiceImpl;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -12,12 +17,14 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -34,7 +41,13 @@ public abstract class BaseIntegrationTest extends AbstractJUnit4SpringContextTes
     @Autowired
     protected CouchDbConnector dbConnector;
 
+    @Autowired
+    protected CouchDbInstance couchDbInstance;
+
     protected ArrayList<BulkDeleteDocument> toDelete;
+
+    @Autowired
+    private SchedulerFactoryBean schedulerFactoryBean;
 
     @Before
     public void before() {
@@ -59,6 +72,7 @@ public abstract class BaseIntegrationTest extends AbstractJUnit4SpringContextTes
     @After
     public void after() {
         deleteAll();
+        //removeAllQuatzJob();
     }
 
     protected void deleteAll() {
@@ -75,4 +89,19 @@ public abstract class BaseIntegrationTest extends AbstractJUnit4SpringContextTes
         toDelete.add(BulkDeleteDocument.of(document));
     }
 
+    protected void removeAllQuatzJob () {
+        try {
+            schedulerFactoryBean.getScheduler().deleteJob("%*%" , MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected <T extends MotechBaseDataObject> void remove(List<T> subscriptions) {
+        List<BulkDeleteDocument> bulkDelete = new ArrayList<BulkDeleteDocument>();
+        for (MotechBaseDataObject object : subscriptions) {
+            bulkDelete.add(new BulkDeleteDocument(object.getId(), object.getRevision()));
+        }
+        dbConnector.executeAllOrNothing(bulkDelete);
+    }
 }

@@ -1,12 +1,11 @@
 package org.motechproject.ghana.mtn.repository;
 
-import org.ektorp.BulkDeleteDocument;
-import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.ghana.mtn.BaseIntegrationTest;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
@@ -18,11 +17,9 @@ import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -33,16 +30,12 @@ import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.EXPIRED;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testApplicationContext.xml"})
-public class AllSubscriptionsTest {
+public class AllSubscriptionsTest extends BaseIntegrationTest {
     @Autowired
     private AllSubscriptions allSubscriptions;
     private String mobileNumber = "1234567890";
     private Subscription subscription;
     private Subscriber subscriber1 = new Subscriber("0987654321");
-
-    @Autowired
-    @Qualifier("dbConnector")
-    CouchDbConnector db;
 
     @Autowired
     private AllSubscriptionTypes subscriptionTypes;
@@ -120,15 +113,7 @@ public class AllSubscriptionsTest {
         assertEquals(childCareForUser1.getRevision(), actualChildCareForUsr1.getRevision());
 
         assertEquals(null, allSubscriptions.findBy(mobileNumber, childCare.getProgramName()));
-        removeSubs(asList(pregnancyProgramForUser1, childCareForUser1, pregnancyProgramForUser2));
-    }
-
-    private void removeSubs(List<Subscription> subscriptions) {
-        List<BulkDeleteDocument> bulkDelete = new ArrayList<BulkDeleteDocument>();
-        for(Subscription sub : subscriptions) {
-            bulkDelete.add(new BulkDeleteDocument(sub.getId(), sub.getRevision()));
-        }
-        db.executeAllOrNothing(bulkDelete);
+        remove(asList(pregnancyProgramForUser1, childCareForUser1, pregnancyProgramForUser2));
     }
 
     private SubscriptionBuilder subscription(String mobileNumber, DateTime registeredDate, Week startWeek, SubscriptionType program) {
@@ -139,6 +124,6 @@ public class AllSubscriptionsTest {
 
     @After
     public void destroy() {
-        removeSubs(allSubscriptions.getAll());
+        remove(allSubscriptions.getAll());
     }                                            
 }

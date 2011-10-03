@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.ghana.mtn.BaseIntegrationTest;
 import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
@@ -30,16 +31,9 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
-public class SubscriptionServiceIntegrationTest {
+public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     private Logger log = Logger.getLogger(SubscriptionServiceIntegrationTest.class);
 
-    @Autowired
-    private CouchDbInstance couchDbInstance;
-    @Autowired
-    @Qualifier("dbConnector")
-    private CouchDbConnector dbConnector;
     @Autowired
     private SubscriptionController subscriptionController;
     @Autowired
@@ -49,15 +43,12 @@ public class SubscriptionServiceIntegrationTest {
     @Autowired
     private AllSubscriptionTypes allSubscriptionTypes;
 
-    private MockHttpServletResponse mockHttpServletResponse;
-
     public final SubscriptionType childCarePregnancyType = new SubscriptionTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
     public final SubscriptionType pregnancySubscriptionType = new SubscriptionTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
     @Before
     public void setUp() {
         createSubscriptionTypes();
-        mockHttpServletResponse = new MockHttpServletResponse();
     }
 
     private void createSubscriptionTypes() {
@@ -73,7 +64,7 @@ public class SubscriptionServiceIntegrationTest {
         String expectedResponse = SubscriptionController.JSON_PREFIX
                 + String.format(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, "Pregnancy") + SubscriptionController.JSON_SUFFIX;
 
-        subscriptionController.enroll(subscriptionRequest, mockHttpServletResponse);
+        subscriptionController.enroll(subscriptionRequest, response);
 
         List<Subscription> subscriptions = allSubscriptions.getAll();
         Subscription subscription = subscriptions.get(0);
@@ -81,8 +72,8 @@ public class SubscriptionServiceIntegrationTest {
         List<Subscriber> subscribers = allSubscribers.getAll();
         SubscriptionType subscriptionType = allSubscriptionTypes.findByCampaignShortCode(shortCode);
 
-        assertThat(mockHttpServletResponse.getContentType(), is(SubscriptionController.CONTENT_TYPE_JSON));
-        assertThat(mockHttpServletResponse.getContentAsString(), is(expectedResponse));
+        assertThat(response.getContentType(), is(SubscriptionController.CONTENT_TYPE_JSON));
+        assertThat(response.getContentAsString(), is(expectedResponse));
         assertThat(subscriptions.size(), is(1));
 
         assertThat(subscription.getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType));
@@ -97,9 +88,9 @@ public class SubscriptionServiceIntegrationTest {
     public void ShouldSendFailureResponseForInvalidMessage() throws IOException {
         SubscriptionRequest subscriptionRequest = createSubscriptionRequest("P25", "1234567890");
 
-        subscriptionController.enroll(subscriptionRequest, mockHttpServletResponse);
+        subscriptionController.enroll(subscriptionRequest, response);
 
-        assertThat(mockHttpServletResponse.getContentAsString(), is(SubscriptionController.JSON_PREFIX + MessageBundle.FAILURE_ENROLLMENT_MESSAGE + SubscriptionController.JSON_SUFFIX));
+        assertThat(response.getContentAsString(), is(SubscriptionController.JSON_PREFIX + MessageBundle.FAILURE_ENROLLMENT_MESSAGE + SubscriptionController.JSON_SUFFIX));
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
     }
 
@@ -111,9 +102,11 @@ public class SubscriptionServiceIntegrationTest {
     }
 
     @After
-    public void destroy() {
-        allSubscriptionTypes.remove(pregnancySubscriptionType);
-        allSubscriptionTypes.remove(childCarePregnancyType);
+    public void after() {
+        super.after();
+        markForDeletion(pregnancySubscriptionType, childCarePregnancyType);
+        remove(allSubscriptions.getAll());
+        remove(allSubscribers.getAll());
     }
 
 }
