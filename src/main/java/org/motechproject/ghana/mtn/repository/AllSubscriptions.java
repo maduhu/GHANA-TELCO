@@ -19,7 +19,7 @@ public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
         super(Subscription.class, db);
     }
 
-    @View(name = "get_all_active_subscriptions_for_subscriber", map = "function(doc, req) { if(doc.status === 'ACTIVE') { emit(doc.subscriber.number, doc) } }")
+    @View(name = "get_all_active_subscriptions_for_subscriber", map = "function(doc) { if(doc.status === 'ACTIVE') { emit(doc.subscriber.number, doc) } }")
     public List<Subscription> getAllActiveSubscriptionsForSubscriber(String subscriberNumber) {
         ViewQuery viewQuery = createQuery("get_all_active_subscriptions_for_subscriber").key(subscriberNumber).includeDocs(true);
         return db.queryView(viewQuery, Subscription.class);

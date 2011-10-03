@@ -1,9 +1,10 @@
-package org.motechproject.ghana.mtn.listener;
+package org.motechproject.ghana.mtn.integration.listener;
 
-import org.motechproject.ghana.mtn.eventhandler.SubscriptionMessageEventHandler;
 import org.junit.Test;
 import org.motechproject.context.Context;
 import org.motechproject.ghana.mtn.SpringTestContext;
+import org.motechproject.ghana.mtn.eventhandler.SubscriptionMessageEventHandler;
+import org.motechproject.ghana.mtn.listener.AppContextListener;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
 
