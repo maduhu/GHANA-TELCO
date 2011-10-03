@@ -6,9 +6,8 @@ import org.ektorp.CouchDbInstance;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.scheduler.MotechSchedulerServiceImpl;
+import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -72,7 +71,6 @@ public abstract class BaseIntegrationTest extends AbstractJUnit4SpringContextTes
     @After
     public void after() {
         deleteAll();
-        //removeAllQuatzJob();
     }
 
     protected void deleteAll() {
@@ -89,9 +87,15 @@ public abstract class BaseIntegrationTest extends AbstractJUnit4SpringContextTes
         toDelete.add(BulkDeleteDocument.of(document));
     }
 
-    protected void removeAllQuatzJob () {
+    protected void removeAllQuartzJobs() {
         try {
-            schedulerFactoryBean.getScheduler().deleteJob("%*%" , MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+            Scheduler scheduler = schedulerFactoryBean.getScheduler();
+            String[] groupNames = scheduler.getJobGroupNames();
+            for(String group : groupNames) {
+                String[] jobNames = scheduler.getJobNames(group);
+                for(String job : jobNames)
+                    scheduler.deleteJob(job, group);
+            }
         } catch (SchedulerException e) {
             e.printStackTrace();
         }

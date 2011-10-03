@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.ghana.mtn.BaseIntegrationTest;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +20,14 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @Ignore
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
-public class AllSubscriptionTypesTest {
+public class AllSubscriptionTypesTest extends BaseIntegrationTest {
 
-    @Autowired
-    @Qualifier("dbConnector")
-    private CouchDbConnector couchDbConnector;
-
-    @Autowired
-    private CouchDbInstance couchDbInstance;
     @Autowired
     private AllSubscriptionTypes allSubscriptionTypes;
 
     @Before
     public void setUp() {
-        String databaseName = couchDbConnector.getDatabaseName();
+        String databaseName = dbConnector.getDatabaseName();
         if (couchDbInstance.checkIfDbExists(new DbPath(databaseName)))
             couchDbInstance.deleteDatabase(databaseName);
         couchDbInstance.createDatabase(databaseName);
@@ -66,6 +59,6 @@ public class AllSubscriptionTypesTest {
 
     @After
     public void destroy() {
-        couchDbInstance.deleteDatabase(couchDbConnector.getDatabaseName());
+        couchDbInstance.deleteDatabase(dbConnector.getDatabaseName());
     }
 }
