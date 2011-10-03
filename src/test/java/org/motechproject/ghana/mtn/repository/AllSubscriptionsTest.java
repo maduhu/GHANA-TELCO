@@ -28,8 +28,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.EXPIRED;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
 public class AllSubscriptionsTest extends BaseIntegrationTest {
     @Autowired
     private AllSubscriptions allSubscriptions;

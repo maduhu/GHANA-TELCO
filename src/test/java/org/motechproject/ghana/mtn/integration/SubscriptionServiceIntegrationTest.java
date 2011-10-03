@@ -103,10 +103,11 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
 
     @After
     public void after() {
-        super.after();
         markForDeletion(pregnancySubscriptionType, childCarePregnancyType);
+        super.after();
         remove(allSubscriptions.getAll());
         remove(allSubscribers.getAll());
+        removeAllQuartzJobs();
     }
 
 }
