@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.repository;
 
 
 import org.junit.Test;
+import org.motechproject.ghana.mtn.BaseIntegrationTest;
 import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
 import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.assertEquals;
 
-public class AllSubscriptionMessagesTest extends BaseRepositoryTest{
+public class AllSubscriptionMessagesTest extends BaseIntegrationTest {
     @Autowired
     private AllSubscriptionTypes allSubscriptionTypes;
     @Autowired
