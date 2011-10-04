@@ -33,17 +33,17 @@ public class SubscriptionMessageEventHandler {
     public void sendMessageReminder(MotechEvent motechEvent) {
         Map params = motechEvent.getParameters();
         String programName = (String) params.get(EventKeys.CAMPAIGN_NAME_KEY);
-        String subscriberNo = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
+        String subscriberNumber = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
 
-        Subscription subscription = allSubscriptions.findBy(subscriberNo, programName);
+        Subscription subscription = allSubscriptions.findBy(subscriberNumber, programName);
         SubscriptionMessage message = allSubscriptionMessages.findBy(subscription.getProgramType(), subscription.currentWeek(), subscription.currentDay());
 
         if(message == null) return;        
         if (subscription.alreadySent(message)) {
-            log("Subscriber : " + subscriberNo + " : Message already sent:" + message);
+            log("Subscriber : " + subscriberNumber + " : Message already sent:" + message);
             return;
         }
-        log("Subscriber : " + subscriberNo + " : Message sent:" + message);
+        log("Subscriber : " + subscriberNumber + " : Message sent:" + message);
         subscription.updateLastMessageSent();
         allSubscriptions.update(subscription);
     }
