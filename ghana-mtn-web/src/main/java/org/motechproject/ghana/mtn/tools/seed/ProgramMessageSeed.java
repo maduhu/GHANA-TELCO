@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProgramMessageSeed extends Seed {
+    public static final String DUMMY = "message content for ";
     @Autowired
     private AllProgramMessages allSubscriptionMessages;
     @Autowired
@@ -37,9 +38,10 @@ public class ProgramMessageSeed extends Seed {
         for (int i = programType.getMinWeek(); i <= programType.getMaxWeek(); i++) {
             String programName = programType.getProgramName();
             Week week = new Week(i);
-            allSubscriptionMessages.add(new ProgramMessage(programName, week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
-            allSubscriptionMessages.add(new ProgramMessage(programName, week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
-            allSubscriptionMessages.add(new ProgramMessage(programName, week + "-" + Day.FRIDAY.name(),  new WeekAndDay(week, Day.FRIDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.TUESDAY.name(), new WeekAndDay(week, Day.TUESDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.FRIDAY.name(), new WeekAndDay(week, Day.FRIDAY)));
         }
     }
 
