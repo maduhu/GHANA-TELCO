@@ -33,26 +33,26 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
     private Subscriber subscriber1 = new Subscriber("0987654321");
 
     @Autowired
-    private AllProgramTypes subscriptionTypes;
+    private AllProgramTypes programTypes;
 
     ProgramType pregnancy;
     ProgramType childCare;
 
     @Before
     public void setUp() {
-        subscriptionTypes.add(new ProgramTypeBuilder()
+        programTypes.add(new ProgramTypeBuilder()
                 .withProgramName("Pregnancy")
                 .withShortCode("P")
                 .withShortCode("p")
                 .withMaxWeek(35).withMinWeek(5).build());
-        subscriptionTypes.add(new ProgramTypeBuilder()
+        programTypes.add(new ProgramTypeBuilder()
                 .withProgramName("Child Care")
                 .withShortCode("C")
                 .withShortCode("c")
                 .withMaxWeek(52).withMinWeek(1).build());
 
-        pregnancy = subscriptionTypes.findByCampaignShortCode("P");
-        childCare = subscriptionTypes.findByCampaignShortCode("C");
+        pregnancy = programTypes.findByCampaignShortCode("P");
+        childCare = programTypes.findByCampaignShortCode("C");
 
         ProgramType programType = new ProgramTypeBuilder()
                 .withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();

@@ -31,10 +31,10 @@ public class SubscriptionTest {
         DateTime sunFeb6 = date(2012, 2, 6);
         DateTime wedFeb24 = date(2012, 2, 24);
 
-        Subscription registeredOn_wedFeb2 = subscription("9999933333", wedFeb2, new Week(6), subscriptionType("Pregnancy"));
-        Subscription registeredOn_satFeb5 = subscription("9999933333", satFeb5, new Week(6), subscriptionType("Child"));
-        Subscription registeredOn_sunFeb6 = subscription("9999933333", sunFeb6, new Week(8), subscriptionType("Child"));
-        Subscription registeredOn_wedFeb24 = subscription("9999933333", wedFeb24, new Week(9), subscriptionType("Child"));
+        Subscription registeredOn_wedFeb2 = subscription("9999933333", wedFeb2, new Week(6), programType("Pregnancy"));
+        Subscription registeredOn_satFeb5 = subscription("9999933333", satFeb5, new Week(6), programType("Child"));
+        Subscription registeredOn_sunFeb6 = subscription("9999933333", sunFeb6, new Week(8), programType("Child"));
+        Subscription registeredOn_wedFeb24 = subscription("9999933333", wedFeb24, new Week(9), programType("Child"));
 
         mockCurrentDate(date(2012, 2, 5)); // sat
         assertWeek(new Week(6), registeredOn_wedFeb2.currentWeek());
@@ -59,13 +59,13 @@ public class SubscriptionTest {
     
     @Test
     public void shouldReturnCurrentDay() {
-        Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), subscriptionType("Pregnancy"));
+        Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), programType("Pregnancy"));
         mockCurrentDate(new DateTime(2012, 1, 1, 1, 1));
         assertEquals(Day.SUNDAY, sub1.currentDay());
 
     }
 
-    private ProgramType subscriptionType(String programName) {
+    private ProgramType programType(String programName) {
         return new ProgramType().setProgramName(programName);
     }
 
