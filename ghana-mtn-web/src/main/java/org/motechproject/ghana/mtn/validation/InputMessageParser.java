@@ -1,14 +1,14 @@
 package org.motechproject.ghana.mtn.validation;
 
 import org.joda.time.DateTime;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
-import org.motechproject.ghana.mtn.repository.AllSubscriptionTypes;
+import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,18 +24,18 @@ public class InputMessageParser {
     private static String programCodes = "P|p|C|c";
     public static final String END_OF_PATTERN = ")\\s([\\d]{1,2})$";
     public static Pattern SUBSCRIBER_ENROLLMENT_PATTERN = Pattern.compile(START_OF_PATTERN + programCodes + END_OF_PATTERN);
-    private AllSubscriptionTypes allSubscriptionTypes;
+    private AllProgramTypes allProgramTypes;
 
     @Autowired
-    public InputMessageParser(AllSubscriptionTypes allSubscriptionTypes) {
-        this.allSubscriptionTypes = allSubscriptionTypes;
+    public InputMessageParser(AllProgramTypes allProgramTypes) {
+        this.allProgramTypes = allProgramTypes;
     }
 
     public Subscription parse(String input) {
         Matcher matcher = SUBSCRIBER_ENROLLMENT_PATTERN.matcher(input.toUpperCase());
         if (matcher.find()) {
             return new SubscriptionBuilder()
-                    .withType(allSubscriptionTypes.findByCampaignShortCode(matcher.group(1)))
+                    .withType(allProgramTypes.findByCampaignShortCode(matcher.group(1)))
                     .withStatus(SubscriptionStatus.ACTIVE)
                     .withStartWeekAndDay(new WeekAndDay(new Week(Integer.parseInt(matcher.group(2))), new DateUtils().today()))
                     .withRegistrationDate(DateTime.now())
@@ -45,7 +45,7 @@ public class InputMessageParser {
     }
 
     public void recompilePattern() {
-        programCodes = joinFrom(flatten(extract(allSubscriptionTypes.getAll(), on(SubscriptionType.class).getShortCodes())), "|").toString();
+        programCodes = joinFrom(flatten(extract(allProgramTypes.getAll(), on(ProgramType.class).getShortCodes())), "|").toString();
         SUBSCRIBER_ENROLLMENT_PATTERN = Pattern.compile(START_OF_PATTERN + programCodes + END_OF_PATTERN);
     }
 }

@@ -1,13 +1,12 @@
 package org.motechproject.ghana.mtn.tools.seed;
 
-import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.repository.AllSubscriptionMessages;
-import org.motechproject.ghana.mtn.repository.AllSubscriptionTypes;
+import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,7 @@ public class SubscriptionMessageSeed extends Seed {
     @Autowired
     private AllSubscriptionMessages allSubscriptionMessages;
     @Autowired
-    private AllSubscriptionTypes allSubscriptionTypes;
+    private AllProgramTypes allProgramTypes;
 
     @Override
     protected void load() {
@@ -25,23 +24,22 @@ public class SubscriptionMessageSeed extends Seed {
     }
 
     private void loadPregnancyCareMessages() {
-        SubscriptionType subscriptionType = allSubscriptionTypes.findByCampaignShortCode("P");
-        persistMessagesFor(subscriptionType);
+        ProgramType programType = allProgramTypes.findByCampaignShortCode("P");
+        persistMessagesFor(programType);
     }
 
     private void loadChildCareMessages() {
-        SubscriptionType subscriptionType = allSubscriptionTypes.findByCampaignShortCode("C");
-        persistMessagesFor(subscriptionType);
+        ProgramType programType = allProgramTypes.findByCampaignShortCode("C");
+        persistMessagesFor(programType);
     }
 
-    private void persistMessagesFor(SubscriptionType subscriptionType) {
-        for (int i = subscriptionType.getMinWeek(); i <= subscriptionType.getMaxWeek(); i++) {
-            String programName = subscriptionType.getProgramName();
+    private void persistMessagesFor(ProgramType programType) {
+        for (int i = programType.getMinWeek(); i <= programType.getMaxWeek(); i++) {
+            String programName = programType.getProgramName();
             Week week = new Week(i);
             allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
             allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
             allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.FRIDAY.name(),  new WeekAndDay(week, Day.FRIDAY)));
-            allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.SUNDAY.name(), new WeekAndDay(week, Day.SUNDAY)));
         }
     }
 

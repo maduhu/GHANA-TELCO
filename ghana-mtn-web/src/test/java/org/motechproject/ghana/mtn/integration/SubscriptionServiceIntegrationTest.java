@@ -1,28 +1,21 @@
 package org.motechproject.ghana.mtn.integration;
 
 import org.apache.log4j.Logger;
-import org.ektorp.CouchDbConnector;
-import org.ektorp.CouchDbInstance;
 import org.ektorp.DbPath;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.motechproject.ghana.mtn.BaseIntegrationTest;
 import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.*;
-import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
-import org.motechproject.ghana.mtn.matchers.SubscriptionTypeMatcher;
+import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
-import org.motechproject.ghana.mtn.repository.AllSubscriptionTypes;
+import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,19 +34,19 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     @Autowired
     private AllSubscribers allSubscribers;
     @Autowired
-    private AllSubscriptionTypes allSubscriptionTypes;
+    private AllProgramTypes allProgramTypes;
 
-    public final SubscriptionType childCarePregnancyType = new SubscriptionTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
-    public final SubscriptionType pregnancySubscriptionType = new SubscriptionTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
+    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
     @Before
     public void setUp() {
-        createSubscriptionTypes();
+        createProgramTypes();
     }
 
-    private void createSubscriptionTypes() {
-        allSubscriptionTypes.add(pregnancySubscriptionType);
-        allSubscriptionTypes.add(childCarePregnancyType);
+    private void createProgramTypes() {
+        allProgramTypes.add(pregnancyProgramType);
+        allProgramTypes.add(childCarePregnancyType);
     }
 
     @Test
@@ -70,13 +63,13 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
         Subscription subscription = subscriptions.get(0);
 
         List<Subscriber> subscribers = allSubscribers.getAll();
-        SubscriptionType subscriptionType = allSubscriptionTypes.findByCampaignShortCode(shortCode);
+        ProgramType programType = allProgramTypes.findByCampaignShortCode(shortCode);
 
         assertThat(response.getContentType(), is(SubscriptionController.CONTENT_TYPE_JSON));
         assertThat(response.getContentAsString(), is(expectedResponse));
         assertThat(subscriptions.size(), is(1));
 
-        assertThat(subscription.getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType));
+        assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
 
@@ -103,7 +96,7 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
 
     @After
     public void after() {
-        markForDeletion(pregnancySubscriptionType, childCarePregnancyType);
+        markForDeletion(pregnancyProgramType, childCarePregnancyType);
         super.after();
         remove(allSubscriptions.getAll());
         remove(allSubscribers.getAll());

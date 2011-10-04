@@ -7,16 +7,16 @@ import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.List;
 
-@TypeDiscriminator("doc.type === 'SubscriptionType'")
-public class SubscriptionType extends MotechAuditableDataObject {
+@TypeDiscriminator("doc.type === 'ProgramType'")
+public class ProgramType extends MotechAuditableDataObject {
     @JsonProperty("type")
-    private String type = "SubscriptionType";
+    private String type = "ProgramType";
     private String programName;
     private List<String> shortCodes;
     private Integer minWeek;
     private Integer maxWeek;
 
-    public SubscriptionType() {
+    public ProgramType() {
     }
 
     public boolean isInRange(Integer startFrom) {
@@ -36,7 +36,7 @@ public class SubscriptionType extends MotechAuditableDataObject {
         this.shortCodes = shortCodes;
     }
 
-    public SubscriptionType setProgramName(String programName) {
+    public ProgramType setProgramName(String programName) {
         this.programName = programName;
         return this;
     }

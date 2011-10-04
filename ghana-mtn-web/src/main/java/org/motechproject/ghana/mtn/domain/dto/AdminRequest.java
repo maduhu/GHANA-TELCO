@@ -1,18 +1,18 @@
 package org.motechproject.ghana.mtn.domain.dto;
 
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 
 import java.util.List;
 
 public class AdminRequest {
 
-    private List<SubscriptionType> subscriptionTypes;
+    private List<ProgramType> programTypes;
 
-    public List<SubscriptionType> getSubscriptionTypes() {
-        return subscriptionTypes;
+    public List<ProgramType> getProgramTypes() {
+        return programTypes;
     }
 
-    public void setSubscriptionTypes(List<SubscriptionType> subscriptionTypes) {
-        this.subscriptionTypes = subscriptionTypes;
+    public void setProgramTypes(List<ProgramType> programTypes) {
+        this.programTypes = programTypes;
     }
 }

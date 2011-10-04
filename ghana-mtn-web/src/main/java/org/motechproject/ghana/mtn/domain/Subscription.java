@@ -17,7 +17,7 @@ public class Subscription extends MotechAuditableDataObject {
     private String type = "Subscription";
 
     private Subscriber subscriber;
-    private SubscriptionType subscriptionType;
+    private ProgramType programType;
     private SubscriptionStatus status;
 
     private WeekAndDay startWeekAndDay;
@@ -31,7 +31,7 @@ public class Subscription extends MotechAuditableDataObject {
 
     @JsonIgnore
     public boolean isNotValid() {
-        return !subscriptionType.isInRange(startWeekAndDay.getWeek().getNumber());
+        return !programType.isInRange(startWeekAndDay.getWeek().getNumber());
     }
 
     public Subscriber getSubscriber() {
@@ -42,12 +42,12 @@ public class Subscription extends MotechAuditableDataObject {
         this.subscriber = subscriber;
     }
 
-    public SubscriptionType getSubscriptionType() {
-        return subscriptionType;
+    public ProgramType getProgramType() {
+        return programType;
     }
 
-    public void setSubscriptionType(SubscriptionType subscriptionType) {
-        this.subscriptionType = subscriptionType;
+    public void setProgramType(ProgramType programType) {
+        this.programType = programType;
     }
 
     public SubscriptionStatus getStatus() {
@@ -75,7 +75,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public CampaignRequest createCampaignRequest() {
-        return new CampaignRequest(subscriber.getNumber(), subscriptionType.getProgramName(), null, null);
+        return new CampaignRequest(subscriber.getNumber(), programType.getProgramName(), null, null);
     }
 
     public Week currentWeek() {
@@ -92,7 +92,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public String programName() {
-        return subscriptionType.getProgramName();
+        return programType.getProgramName();
     }
 
     public void updateLastMessageSent() {

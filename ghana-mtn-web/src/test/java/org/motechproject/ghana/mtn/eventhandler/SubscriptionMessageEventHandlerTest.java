@@ -2,9 +2,9 @@ package org.motechproject.ghana.mtn.eventhandler;
 
 import org.junit.Before;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.repository.AllSubscriptionMessages;
@@ -45,16 +45,16 @@ public class SubscriptionMessageEventHandlerTest {
 
         Week week = new Week(21);
         Day day = Day.FRIDAY;
-        SubscriptionType subscriptionType = new SubscriptionType();
+        ProgramType programType = new ProgramType();
         Subscription subscription = mock(Subscription.class);
         SubscriptionMessage subscriptionMessage = mock(SubscriptionMessage.class);
 
         when(subscription.currentDay()).thenReturn(day);
         when(subscription.currentWeek()).thenReturn(week);
-        when(subscription.getSubscriptionType()).thenReturn(subscriptionType);
+        when(subscription.getProgramType()).thenReturn(programType);
         when(subscription.alreadySent(subscriptionMessage)).thenReturn(false);
         when(allSubscriptions.findBy(subscriberNo, programName)).thenReturn(subscription);
-        when(allSubscriptionMessages.findBy(subscriptionType, week, day)).thenReturn(subscriptionMessage);
+        when(allSubscriptionMessages.findBy(programType, week, day)).thenReturn(subscriptionMessage);
 
         subscriptionMessageHandler.sendMessageReminder(motechEvent);
         verify(subscription).updateLastMessageSent();

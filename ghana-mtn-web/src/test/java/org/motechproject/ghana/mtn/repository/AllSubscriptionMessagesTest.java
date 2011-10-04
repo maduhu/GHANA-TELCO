@@ -3,9 +3,9 @@ package org.motechproject.ghana.mtn.repository;
 
 import org.junit.Test;
 import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
-import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -15,15 +15,15 @@ import static org.junit.Assert.assertEquals;
 
 public class AllSubscriptionMessagesTest extends BaseIntegrationTest {
     @Autowired
-    private AllSubscriptionTypes allSubscriptionTypes;
+    private AllProgramTypes allProgramTypes;
     @Autowired
     private AllSubscriptionMessages allSubscriptionMessages;
 
     @Test
     public void shouldFindByProgramAndWeekAndDay(){
         String programName = "test-program";
-        SubscriptionType type = new SubscriptionTypeBuilder().withProgramName(programName).build();
-        allSubscriptionTypes.add(type);
+        ProgramType type = new ProgramTypeBuilder().withProgramName(programName).build();
+        allProgramTypes.add(type);
         markForDeletion(type);
 
         Week week = new Week(12);

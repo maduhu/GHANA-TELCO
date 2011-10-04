@@ -36,7 +36,7 @@ public class SubscriptionMessageEventHandler {
         String subscriberNo = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
 
         Subscription subscription = allSubscriptions.findBy(subscriberNo, programName);
-        SubscriptionMessage message = allSubscriptionMessages.findBy(subscription.getSubscriptionType(), subscription.currentWeek(), subscription.currentDay());
+        SubscriptionMessage message = allSubscriptionMessages.findBy(subscription.getProgramType(), subscription.currentWeek(), subscription.currentDay());
 
         if(message == null) return;        
         if (subscription.alreadySent(message)) {

@@ -6,7 +6,7 @@ import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
-import org.motechproject.ghana.mtn.matchers.SubscriptionTypeMatcher;
+import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.validation.InputMessageParser;
@@ -81,8 +81,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private boolean hasActiveSubscription(String subscriberNumber, Subscription subscription) {
         List<Subscription> activeSubscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
-        List<Subscription> subscriptions = select(activeSubscriptions, having(on(Subscription.class).getSubscriptionType(),
-                new SubscriptionTypeMatcher(subscription.getSubscriptionType())));
+        List<Subscription> subscriptions = select(activeSubscriptions, having(on(Subscription.class).getProgramType(),
+                new ProgramTypeMatcher(subscription.getProgramType())));
         return !CollectionUtils.isEmpty(subscriptions);
     }
 }

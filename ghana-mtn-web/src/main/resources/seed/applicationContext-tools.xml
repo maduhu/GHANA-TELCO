@@ -7,7 +7,7 @@
     <bean id="seedLoader" class="org.motechproject.ghana.mtn.tools.seed.SeedLoader">
         <constructor-arg>
             <list>
-                <ref bean="subscriptionTypeSeed"/>
+                <ref bean="programTypeSeed"/>
                 <ref bean="subscriptionMessageSeed"/>
             </list>
         </constructor-arg>

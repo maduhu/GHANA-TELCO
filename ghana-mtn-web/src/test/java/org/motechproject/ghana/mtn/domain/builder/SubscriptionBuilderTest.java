@@ -23,6 +23,6 @@ public class SubscriptionBuilderTest {
 
         assertThat(subscription. getRegistrationDate(), is(dateTime));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(weekNumber));
-        assertNull(subscription.getSubscriptionType());
+        assertNull(subscription.getProgramType());
     }
 }

@@ -5,11 +5,11 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
-import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
-import org.motechproject.ghana.mtn.matchers.SubscriptionTypeMatcher;
-import org.motechproject.ghana.mtn.repository.AllSubscriptionTypes;
+import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
+import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 
 import java.util.Arrays;
 
@@ -21,7 +21,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class InputMessageParserTest {
     InputMessageParser messageParser;
     @Mock
-    private AllSubscriptionTypes mockAllSubcriptionTypes;
+    private AllProgramTypes mockAllSubcriptionTypes;
 
     @Before
     public void setUp() {
@@ -33,37 +33,37 @@ public class InputMessageParserTest {
     public void ShouldParsePregnancyMessage() {
         int startFrom = 25;
         String inputText = "P " + startFrom;
-        SubscriptionType subscriptionType = new SubscriptionTypeBuilder().withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
+        ProgramType programType = new ProgramTypeBuilder().withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode("P")).thenReturn(subscriptionType);
+        when(mockAllSubcriptionTypes.findByCampaignShortCode("P")).thenReturn(programType);
 
         Subscription subscription = messageParser.parse(inputText);
 
-        assertThat(subscription.getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType));
+        assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(startFrom));
     }
 
     @Test
     public void ShouldParseChildCareMessage() {
         String inputText = "C 25";
-        SubscriptionType subscriptionType = new SubscriptionTypeBuilder().withShortCode("C").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
+        ProgramType programType = new ProgramTypeBuilder().withShortCode("C").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode("C")).thenReturn(subscriptionType);
+        when(mockAllSubcriptionTypes.findByCampaignShortCode("C")).thenReturn(programType);
         Subscription subscription = messageParser.parse(inputText);
 
-        assertThat(subscription.getSubscriptionType(), new SubscriptionTypeMatcher(subscriptionType));
+        assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
     }
 
     @Test
     public void ShouldParseMessagesEvenWithLowerCase() {
         String inputText = "c 25";
-        SubscriptionType subscriptionType = new SubscriptionTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
+        ProgramType programType = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode("C")).thenReturn(subscriptionType);
+        when(mockAllSubcriptionTypes.findByCampaignShortCode("C")).thenReturn(programType);
 
         Subscription subscription = messageParser.parse(inputText);
-        assertThat(subscription.getSubscriptionType(), is(subscriptionType));
+        assertThat(subscription.getProgramType(), is(programType));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
     }
 
@@ -89,14 +89,14 @@ public class InputMessageParserTest {
     @Test
     public void ShouldParseBasedOnNewShortCodes() {
         String shortCode = "CHI";
-        SubscriptionType childCareSubscriptionType = new SubscriptionTypeBuilder().withShortCode(shortCode).withShortCode("C").withProgramName("ChildCare").withMinWeek(5).withMaxWeek(35).build();
+        ProgramType childCareProgramType = new ProgramTypeBuilder().withShortCode(shortCode).withShortCode("C").withProgramName("ChildCare").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode(shortCode)).thenReturn(childCareSubscriptionType);
-        when(mockAllSubcriptionTypes.getAll()).thenReturn(Arrays.asList(childCareSubscriptionType));
+        when(mockAllSubcriptionTypes.findByCampaignShortCode(shortCode)).thenReturn(childCareProgramType);
+        when(mockAllSubcriptionTypes.getAll()).thenReturn(Arrays.asList(childCareProgramType));
 
         messageParser.recompilePattern();
         Subscription actualSubscription = messageParser.parse(shortCode + " 5");
 
-        assertThat(actualSubscription.getSubscriptionType(), new SubscriptionTypeMatcher(childCareSubscriptionType));
+        assertThat(actualSubscription.getProgramType(), new ProgramTypeMatcher(childCareProgramType));
     }
 }

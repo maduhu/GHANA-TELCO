@@ -4,12 +4,12 @@ import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 
 public class SubscriptionBuilder extends Builder<Subscription> {
     private Subscriber subscriber;
-    private SubscriptionType subscriptionType;
+    private ProgramType programType;
     private SubscriptionStatus status;
     private WeekAndDay startWeekAndDay;
     private DateTime registrationDate;
@@ -23,8 +23,8 @@ public class SubscriptionBuilder extends Builder<Subscription> {
         return this;
     }
 
-    public SubscriptionBuilder withType(SubscriptionType type) {
-        this.subscriptionType = type;
+    public SubscriptionBuilder withType(ProgramType type) {
+        this.programType = type;
         return this;
     }
 

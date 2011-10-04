@@ -5,12 +5,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
-import org.motechproject.ghana.mtn.domain.builder.SubscriptionTypeBuilder;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -33,19 +33,19 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
     private Subscriber subscriber1 = new Subscriber("0987654321");
 
     @Autowired
-    private AllSubscriptionTypes subscriptionTypes;
+    private AllProgramTypes subscriptionTypes;
 
-    SubscriptionType pregnancy;
-    SubscriptionType childCare;
+    ProgramType pregnancy;
+    ProgramType childCare;
 
     @Before
     public void setUp() {
-        subscriptionTypes.add(new SubscriptionTypeBuilder()
+        subscriptionTypes.add(new ProgramTypeBuilder()
                 .withProgramName("Pregnancy")
                 .withShortCode("P")
                 .withShortCode("p")
                 .withMaxWeek(35).withMinWeek(5).build());
-        subscriptionTypes.add(new SubscriptionTypeBuilder()
+        subscriptionTypes.add(new ProgramTypeBuilder()
                 .withProgramName("Child Care")
                 .withShortCode("C")
                 .withShortCode("c")
@@ -54,12 +54,12 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
         pregnancy = subscriptionTypes.findByCampaignShortCode("P");
         childCare = subscriptionTypes.findByCampaignShortCode("C");
 
-        SubscriptionType subscriptionType = new SubscriptionTypeBuilder()
+        ProgramType programType = new ProgramTypeBuilder()
                 .withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
         subscription = new SubscriptionBuilder().withRegistrationDate(new DateTime())
                 .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(new Subscriber(mobileNumber))
-                .withType(subscriptionType).build();
+                .withType(programType).build();
 
         allSubscriptions.add(subscription);
     }
@@ -74,12 +74,12 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
 
     @Test
     public void ShouldFetchOnlyTheSubscriptionsThatAreActiveAndRelatedToParticularSubscriber() {
-        SubscriptionType subscriptionType = new SubscriptionTypeBuilder()
+        ProgramType programType = new ProgramTypeBuilder()
                 .withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
         Subscription subscription = new SubscriptionBuilder().withRegistrationDate(new DateTime())
                 .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                         .withSubscriber(subscriber1)
-                        .withType(subscriptionType).build();
+                        .withType(programType).build();
         allSubscriptions.add(subscription);
 
         List<Subscription> subscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(mobileNumber);
@@ -111,7 +111,7 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
         remove(asList(pregnancyProgramForUser1, childCareForUser1, pregnancyProgramForUser2));
     }
 
-    private SubscriptionBuilder subscription(String mobileNumber, DateTime registeredDate, Week startWeek, SubscriptionType program) {
+    private SubscriptionBuilder subscription(String mobileNumber, DateTime registeredDate, Week startWeek, ProgramType program) {
         return new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, Day.MONDAY))
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program);

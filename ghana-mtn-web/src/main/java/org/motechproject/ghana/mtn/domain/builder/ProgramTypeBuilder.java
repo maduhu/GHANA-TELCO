@@ -1,37 +1,37 @@
 package org.motechproject.ghana.mtn.domain.builder;
 
-import org.motechproject.ghana.mtn.domain.SubscriptionType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubscriptionTypeBuilder extends Builder<SubscriptionType> {
+public class ProgramTypeBuilder extends Builder<ProgramType> {
     private List<String> shortCodes;
     private String programName;
     private Integer minWeek;
     private Integer maxWeek;
 
-    public SubscriptionTypeBuilder() {
-        super(new SubscriptionType());
+    public ProgramTypeBuilder() {
+        super(new ProgramType());
         this.shortCodes = new ArrayList<String>();
     }
 
-    public SubscriptionTypeBuilder withMinWeek(Integer minWeek) {
+    public ProgramTypeBuilder withMinWeek(Integer minWeek) {
         this.minWeek = minWeek;
         return this;
     }
 
-    public SubscriptionTypeBuilder withMaxWeek(Integer maxWeek) {
+    public ProgramTypeBuilder withMaxWeek(Integer maxWeek) {
         this.maxWeek = maxWeek;
         return this;
     }
 
-    public SubscriptionTypeBuilder withProgramName(String programName) {
+    public ProgramTypeBuilder withProgramName(String programName) {
         this.programName = programName;
         return this;
     }
 
-    public SubscriptionTypeBuilder withShortCode(String shortCode) {
+    public ProgramTypeBuilder withShortCode(String shortCode) {
         this.shortCodes.add(shortCode);
         return this;
     }

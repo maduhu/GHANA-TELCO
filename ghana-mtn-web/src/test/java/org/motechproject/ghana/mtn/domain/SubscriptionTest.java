@@ -65,8 +65,8 @@ public class SubscriptionTest {
 
     }
 
-    private SubscriptionType subscriptionType(String programName) {
-        return new SubscriptionType().setProgramName(programName);
+    private ProgramType subscriptionType(String programName) {
+        return new ProgramType().setProgramName(programName);
     }
 
     private void assertWeek(Week w1, Week w2) {
@@ -78,7 +78,7 @@ public class SubscriptionTest {
         return dateUtils;
     }
 
-    private Subscription subscription(String mobileNumber, DateTime registeredDate, Week startWeek, SubscriptionType program) {
+    private Subscription subscription(String mobileNumber, DateTime registeredDate, Week startWeek, ProgramType program) {
         Subscription subscription = new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, Day.MONDAY))
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program).build();
