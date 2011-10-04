@@ -128,6 +128,24 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+                     <execution>
+                        <id>drop ghana-integration-mtn DB => rules</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${couchdb.server}:${couchdb.port}/ghana-mtn-integration-test"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>recreate-Db</id>
                         <phase>pre-integration-test</phase>
