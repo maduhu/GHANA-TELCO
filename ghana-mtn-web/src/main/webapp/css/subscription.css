@@ -1,0 +1,39 @@
+div {
+    padding-bottom: 10px;
+}
+
+.title_box {
+    font-size: 30px;
+    font-weight: bold;
+}
+fieldset{
+    background-color: #fafad2;
+}
+
+legend {
+    font-weight: bold;
+    color: #4169e1;
+}
+
+.enrollment_box {
+    height: 250px;
+    width: 80%;
+    float: left;
+}
+
+#requestResponse {
+    height: 150px;
+    width: 95%;
+    border: 1px solid;
+    border-color:black;
+    overflow-y: scroll;
+    font-size: 15px;
+    background-color: white;
+
+}
+
+.send_event_box {
+    width: 80%;
+    height: 10%;
+    float: left;
+}

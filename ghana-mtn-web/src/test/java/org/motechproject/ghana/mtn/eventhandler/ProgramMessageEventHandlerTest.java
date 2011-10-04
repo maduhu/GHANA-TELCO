@@ -4,21 +4,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.motechproject.ghana.mtn.domain.MessageAudit;
+import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
-import org.motechproject.ghana.mtn.repository.AllMessageAudits;
+import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.messagecampaign.EventKeys;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
@@ -33,7 +31,7 @@ public class ProgramMessageEventHandlerTest {
     @Mock
     private AllProgramMessages allSubscriptionMessages;
     @Mock
-    private AllMessageAudits allMessageAudits;
+    private AllProgramMessageAudits allMessageAudits;
 
     @Before
     public void setUp() {
@@ -68,12 +66,13 @@ public class ProgramMessageEventHandlerTest {
         when(allSubscriptionMessages.findBy(programType, week, day)).thenReturn(programMessage);
 
         programMessageEventHandler.sendMessageReminder(motechEvent);
+
         verify(subscription).updateLastMessageSent();
         verify(allSubscriptions).update(subscription);
 
-        ArgumentCaptor<MessageAudit> auditCapture = ArgumentCaptor.forClass(MessageAudit.class);
+        ArgumentCaptor<ProgramMessageAudit> auditCapture = ArgumentCaptor.forClass(ProgramMessageAudit.class);
         verify(allMessageAudits).add(auditCapture.capture());
-        MessageAudit capturedAudit = auditCapture.getValue();
+        ProgramMessageAudit capturedAudit = auditCapture.getValue();
         assertEquals(programName, capturedAudit.getProgramName());
         assertEquals(messageContent, capturedAudit.getContent());
     }

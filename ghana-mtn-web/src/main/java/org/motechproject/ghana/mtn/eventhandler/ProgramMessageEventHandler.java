@@ -1,10 +1,10 @@
 package org.motechproject.ghana.mtn.eventhandler;
 
 import org.apache.log4j.Logger;
-import org.motechproject.ghana.mtn.domain.MessageAudit;
+import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
-import org.motechproject.ghana.mtn.repository.AllMessageAudits;
+import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.model.MotechEvent;
@@ -21,14 +21,14 @@ import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIG
 @Service
 public class ProgramMessageEventHandler {
     private final static Logger log = Logger.getLogger(ProgramMessageEventHandler.class);
-    private AllProgramMessages allSubscriptionMessages;
     private AllSubscriptions allSubscriptions;
-    private AllMessageAudits allMessageAudits;
+    private AllProgramMessages allProgramMessages;
+    private AllProgramMessageAudits allMessageAudits;
 
     @Autowired
-    public ProgramMessageEventHandler(AllSubscriptions allSubscriptions, AllProgramMessages allSubscriptionMessages, AllMessageAudits allMessageAudits) {
+    public ProgramMessageEventHandler(AllSubscriptions allSubscriptions, AllProgramMessages allProgramMessages, AllProgramMessageAudits allMessageAudits) {
         this.allSubscriptions = allSubscriptions;
-        this.allSubscriptionMessages = allSubscriptionMessages;
+        this.allProgramMessages = allProgramMessages;
         this.allMessageAudits = allMessageAudits;
     }
 
@@ -39,7 +39,7 @@ public class ProgramMessageEventHandler {
         String subscriberNumber = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
 
         Subscription subscription = allSubscriptions.findBy(subscriberNumber, programName);
-        ProgramMessage message = allSubscriptionMessages.findBy(subscription.getProgramType(), subscription.currentWeek(), subscription.currentDay());
+        ProgramMessage message = allProgramMessages.findBy(subscription.getProgramType(), subscription.currentWeek(), subscription.currentDay());
 
         if (message == null) return;
         if (subscription.alreadySent(message)) return;
@@ -49,7 +49,7 @@ public class ProgramMessageEventHandler {
 
     private void audit(String programName, String subscriberNumber, ProgramMessage message) {
         log.info("Subscriber: " + subscriberNumber + ":" + message);
-        MessageAudit audit = new MessageAudit(subscriberNumber, programName, DateUtil.now(), message.getContent());
+        ProgramMessageAudit audit = new ProgramMessageAudit(subscriberNumber, programName, DateUtil.now(), message.getContent());
         allMessageAudits.add(audit);
     }
 
