@@ -107,7 +107,7 @@ public class Subscription extends MotechAuditableDataObject {
         this.lastMsgSentWeekAndDay = lastMsgSentWeekAndDay;
     }
 
-    public boolean alreadySent(SubscriptionMessage subscriptionMessage) {
+    public boolean alreadySent(ProgramMessage subscriptionMessage) {
         return lastMsgSentWeekAndDay != null && subscriptionMessage.getWeekAndDay().isBefore(lastMsgSentWeekAndDay);
     }
 }

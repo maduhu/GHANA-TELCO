@@ -5,10 +5,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
+import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
-import org.motechproject.ghana.mtn.repository.AllSubscriptionMessages;
+import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.messagecampaign.EventKeys;
@@ -21,16 +21,16 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SubscriptionMessageEventHandlerTest {
 
-    private SubscriptionMessageEventHandler subscriptionMessageHandler;
+    private ProgramMessageEventHandler subscriptionMessageHandler;
     @Mock
     private AllSubscriptions allSubscriptions;
     @Mock
-    private AllSubscriptionMessages allSubscriptionMessages;
+    private AllProgramMessages allSubscriptionMessages;
 
     @Before
     public void setUp() {
         initMocks(this);
-        subscriptionMessageHandler = new SubscriptionMessageEventHandler(allSubscriptions, allSubscriptionMessages);
+        subscriptionMessageHandler = new ProgramMessageEventHandler(allSubscriptions, allSubscriptionMessages);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class SubscriptionMessageEventHandlerTest {
         Day day = Day.FRIDAY;
         ProgramType programType = new ProgramType();
         Subscription subscription = mock(Subscription.class);
-        SubscriptionMessage subscriptionMessage = mock(SubscriptionMessage.class);
+        ProgramMessage subscriptionMessage = mock(ProgramMessage.class);
 
         when(subscription.currentDay()).thenReturn(day);
         when(subscription.currentWeek()).thenReturn(week);

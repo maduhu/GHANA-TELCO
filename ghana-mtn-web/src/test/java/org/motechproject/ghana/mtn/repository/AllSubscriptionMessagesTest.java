@@ -4,7 +4,7 @@ package org.motechproject.ghana.mtn.repository;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.BaseIntegrationTest;
 import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
+import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
@@ -17,7 +17,7 @@ public class AllSubscriptionMessagesTest extends BaseIntegrationTest {
     @Autowired
     private AllProgramTypes allProgramTypes;
     @Autowired
-    private AllSubscriptionMessages allSubscriptionMessages;
+    private AllProgramMessages allSubscriptionMessages;
 
     @Test
     public void shouldFindByProgramAndWeekAndDay(){
@@ -27,11 +27,11 @@ public class AllSubscriptionMessagesTest extends BaseIntegrationTest {
         markForDeletion(type);
 
         Week week = new Week(12);
-        SubscriptionMessage subscriptionMessage = new SubscriptionMessage(programName,"content", new WeekAndDay(week, Day.FRIDAY));
+        ProgramMessage subscriptionMessage = new ProgramMessage(programName,"content", new WeekAndDay(week, Day.FRIDAY));
         allSubscriptionMessages.add(subscriptionMessage);
         markForDeletion(subscriptionMessage);
 
-        SubscriptionMessage dbSubscriptionMessage = allSubscriptionMessages.findBy(type, week, Day.FRIDAY);
+        ProgramMessage dbSubscriptionMessage = allSubscriptionMessages.findBy(type, week, Day.FRIDAY);
         assertEquals(subscriptionMessage.getContent(),dbSubscriptionMessage.getContent());
     }
 }

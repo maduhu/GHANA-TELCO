@@ -89,7 +89,7 @@ public class SubscriptionTest {
      @Test
     public void shouldCheckIfMessageAlreadySent() {
         Subscription sub1 = new Subscription();
-        assertFalse(sub1.alreadySent(new SubscriptionMessage()));
+        assertFalse(sub1.alreadySent(new ProgramMessage()));
      }
 
     private DateTime date(int year, int month, int date) {

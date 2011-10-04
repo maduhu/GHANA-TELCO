@@ -10,18 +10,18 @@ import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Arrays;
 
-@TypeDiscriminator("doc.type === 'SubscriptionMessage'")
-public class SubscriptionMessage extends MotechAuditableDataObject {
+@TypeDiscriminator("doc.type === 'ProgramMessage'")
+public class ProgramMessage extends MotechAuditableDataObject {
     @JsonProperty("type")
-    private String type = "SubscriptionMessage";
+    private String type = "ProgramMessage";
     private String programName;
     private String content;
     private WeekAndDay weekAndDay;
 
-    public SubscriptionMessage() {
+    public ProgramMessage() {
     }
 
-    public SubscriptionMessage(String programName, String content, WeekAndDay weekAndDay) {
+    public ProgramMessage(String programName, String content, WeekAndDay weekAndDay) {
         this.programName = programName;
         this.content = content;
         this.weekAndDay = weekAndDay;

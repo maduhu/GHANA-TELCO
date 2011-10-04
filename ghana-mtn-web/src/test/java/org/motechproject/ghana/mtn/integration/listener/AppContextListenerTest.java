@@ -3,7 +3,7 @@ package org.motechproject.ghana.mtn.integration.listener;
 import org.junit.Test;
 import org.motechproject.context.Context;
 import org.motechproject.ghana.mtn.BaseIntegrationTest;
-import org.motechproject.ghana.mtn.eventhandler.SubscriptionMessageEventHandler;
+import org.motechproject.ghana.mtn.eventhandler.ProgramMessageEventHandler;
 import org.motechproject.ghana.mtn.listener.AppContextListener;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
@@ -25,6 +25,6 @@ public class AppContextListenerTest extends BaseIntegrationTest {
 
         Set<EventListener> eventListeners = Context.getInstance().getEventListenerRegistry().getListeners(MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT);
         MotechListenerEventProxy pregnancyListener = (MotechListenerEventProxy) eventListeners.iterator().next();
-        assertEquals(SubscriptionMessageEventHandler.class.getCanonicalName(), pregnancyListener.getIdentifier());
+        assertEquals(ProgramMessageEventHandler.class.getCanonicalName(), pregnancyListener.getIdentifier());
     }
 }

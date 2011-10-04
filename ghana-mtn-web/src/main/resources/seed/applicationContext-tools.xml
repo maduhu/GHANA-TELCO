@@ -8,7 +8,7 @@
         <constructor-arg>
             <list>
                 <ref bean="programTypeSeed"/>
-                <ref bean="subscriptionMessageSeed"/>
+                <ref bean="programMessageSeed"/>
             </list>
         </constructor-arg>
     </bean>

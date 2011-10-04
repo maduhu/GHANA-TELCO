@@ -1,19 +1,19 @@
 package org.motechproject.ghana.mtn.tools.seed;
 
-import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
+import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
-import org.motechproject.ghana.mtn.repository.AllSubscriptionMessages;
+import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionMessageSeed extends Seed {
+public class ProgramMessageSeed extends Seed {
     @Autowired
-    private AllSubscriptionMessages allSubscriptionMessages;
+    private AllProgramMessages allSubscriptionMessages;
     @Autowired
     private AllProgramTypes allProgramTypes;
 
@@ -37,9 +37,9 @@ public class SubscriptionMessageSeed extends Seed {
         for (int i = programType.getMinWeek(); i <= programType.getMaxWeek(); i++) {
             String programName = programType.getProgramName();
             Week week = new Week(i);
-            allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
-            allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
-            allSubscriptionMessages.add(new SubscriptionMessage(programName, week + "-" + Day.FRIDAY.name(),  new WeekAndDay(week, Day.FRIDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programName, week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programName, week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programName, week + "-" + Day.FRIDAY.name(),  new WeekAndDay(week, Day.FRIDAY)));
         }
     }
 

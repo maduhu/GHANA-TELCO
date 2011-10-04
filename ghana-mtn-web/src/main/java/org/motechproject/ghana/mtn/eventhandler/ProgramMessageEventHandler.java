@@ -2,8 +2,8 @@ package org.motechproject.ghana.mtn.eventhandler;
 
 import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionMessage;
-import org.motechproject.ghana.mtn.repository.AllSubscriptionMessages;
+import org.motechproject.ghana.mtn.domain.ProgramMessage;
+import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -16,15 +16,15 @@ import java.util.Map;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
 
 @Service
-public class SubscriptionMessageEventHandler {
-    private final static Logger log = Logger.getLogger(SubscriptionMessageEventHandler.class);
+public class ProgramMessageEventHandler {
+    private final static Logger log = Logger.getLogger(ProgramMessageEventHandler.class);
     @Autowired
-    private AllSubscriptionMessages allSubscriptionMessages;
+    private AllProgramMessages allSubscriptionMessages;
     @Autowired
     private AllSubscriptions allSubscriptions;
 
     @Autowired
-    public SubscriptionMessageEventHandler(AllSubscriptions allSubscriptions, AllSubscriptionMessages allSubscriptionMessages) {
+    public ProgramMessageEventHandler(AllSubscriptions allSubscriptions, AllProgramMessages allSubscriptionMessages) {
         this.allSubscriptions = allSubscriptions;
         this.allSubscriptionMessages = allSubscriptionMessages;
     }
@@ -36,7 +36,7 @@ public class SubscriptionMessageEventHandler {
         String subscriberNumber = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
 
         Subscription subscription = allSubscriptions.findBy(subscriberNumber, programName);
-        SubscriptionMessage message = allSubscriptionMessages.findBy(subscription.getProgramType(), subscription.currentWeek(), subscription.currentDay());
+        ProgramMessage message = allSubscriptionMessages.findBy(subscription.getProgramType(), subscription.currentWeek(), subscription.currentDay());
 
         if(message == null) return;        
         if (subscription.alreadySent(message)) {
@@ -50,7 +50,6 @@ public class SubscriptionMessageEventHandler {
 
     private void log(String message) {
         log.info(message);
-        System.out.println(message);
     }
 
 }
