@@ -41,12 +41,8 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
 
     @Before
     public void setUp() {
-        createProgramTypes();
-    }
-
-    private void createProgramTypes() {
-        allProgramTypes.add(pregnancyProgramType);
-        allProgramTypes.add(childCarePregnancyType);
+        addAndMarkForDeletion(allProgramTypes, pregnancyProgramType);
+        addAndMarkForDeletion(allProgramTypes, childCarePregnancyType);
     }
 
     @Test
@@ -96,7 +92,6 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
 
     @After
     public void after() {
-        markForDeletion(pregnancyProgramType, childCarePregnancyType);
         super.after();
         remove(allSubscriptions.getAll());
         remove(allSubscribers.getAll());

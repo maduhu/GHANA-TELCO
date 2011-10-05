@@ -23,13 +23,11 @@ public class AllSubscriptionMessagesTest extends BaseIntegrationTest {
     public void shouldFindByProgramAndWeekAndDay(){
         String programName = "test-program";
         ProgramType type = new ProgramTypeBuilder().withProgramName(programName).build();
-        allProgramTypes.add(type);
-        markForDeletion(type);
+        addAndMarkForDeletion(allProgramTypes, type);
 
         Week week = new Week(12);
         ProgramMessage subscriptionMessage = new ProgramMessage(programName,"content", new WeekAndDay(week, Day.FRIDAY));
-        allSubscriptionMessages.add(subscriptionMessage);
-        markForDeletion(subscriptionMessage);
+        addAndMarkForDeletion(allSubscriptionMessages, subscriptionMessage);
 
         ProgramMessage dbSubscriptionMessage = allSubscriptionMessages.findBy(type, week, Day.FRIDAY);
         assertEquals(subscriptionMessage.getContent(),dbSubscriptionMessage.getContent());

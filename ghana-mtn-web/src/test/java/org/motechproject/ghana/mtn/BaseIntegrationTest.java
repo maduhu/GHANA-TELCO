@@ -6,6 +6,8 @@ import org.ektorp.CouchDbInstance;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.model.MotechBaseDataObject;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -85,6 +87,11 @@ public abstract class BaseIntegrationTest extends AbstractJUnit4SpringContextTes
 
     protected void markForDeletion(Object document) {
         toDelete.add(BulkDeleteDocument.of(document));
+    }
+
+    protected void addAndMarkForDeletion(MotechAuditableRepository repository, MotechAuditableDataObject auditableDataObject) {
+        repository.add(auditableDataObject);
+        markForDeletion(auditableDataObject);
     }
 
     protected void removeAllQuartzJobs() {
