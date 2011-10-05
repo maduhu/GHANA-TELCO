@@ -1,13 +1,19 @@
 div {
     padding-bottom: 10px;
+    font-size: 15px;
+}
+label{
+    width: 400px;
 }
 
 .title_box {
     font-size: 30px;
     font-weight: bold;
 }
-fieldset{
+
+fieldset {
     background-color: #fafad2;
+    -moz-border-radius: 5px;
 }
 
 legend {
@@ -25,7 +31,7 @@ legend {
     height: 150px;
     width: 95%;
     border: 1px solid;
-    border-color:black;
+    border-color: black;
     overflow-y: scroll;
     font-size: 15px;
     background-color: white;
@@ -33,7 +39,26 @@ legend {
 }
 
 .send_event_box {
+    margin-top: 10px;
     width: 80%;
     height: 10%;
     float: left;
+}
+
+.refresh_audit_box {
+    margin-top: 10px;
+    width: 80%;
+    height: 10%;
+    float: left;
+}
+
+table {
+    font-size: 15px;
+    border-spacing: 3px;
+}
+
+td,th {
+    width:auto;
+    text-align: left;
+    padding-left: 8px;
 }

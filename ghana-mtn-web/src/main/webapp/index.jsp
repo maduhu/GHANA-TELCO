@@ -36,6 +36,15 @@
     </fieldset>
 </div>
 
+<div class="refresh_audit_box">
+    <fieldset>
+        <legend>Message Audit</legend>
+        <form id="audit-form">
+            <input type="submit" onclick="return refreshAudit(); return false;" value="Refresh"/>
+        </form>
+        <div id="audit_table"></div>
+    </fieldset>
+</div>
 
 
 </body>

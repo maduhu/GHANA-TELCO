@@ -1,16 +1,3 @@
-function submitRequest() {
-
-    var subscriberNumber = document.getElementsByName('subscriberNumber')[0].value;
-    var queryParam = "subscriberNumber=" + subscriberNumber + "&inputMessage=" + document.getElementById('smsText').value;
-    var url = 'subscription/enroll?' + queryParam;
-    http(url, updatePage);
-    document.getElementById('smsText').value = "";
-    return false;
-}
-
-function submitEventRequest() {
-    return false;
-}
 
 function http(url, fn) {
     var xmlHttpReq = false;
@@ -34,6 +21,29 @@ function http(url, fn) {
     return false;
 }
 
-function updatePage(inputString) {
+
+function submitRequest() {
+    var subscriberNumber = document.getElementsByName('subscriberNumber')[0].value;
+    var queryParam = "subscriberNumber=" + subscriberNumber + "&inputMessage=" + document.getElementById('smsText').value;
+    var url = 'subscription/enroll?' + queryParam;
+    http(url, updateEnrollmentResponse);
+    document.getElementById('smsText').value = "";
+    return false;
+}
+
+function updateEnrollmentResponse(inputString) {
     document.getElementById('requestResponse').innerHTML = document.getElementById('requestResponse').innerHTML + "<br/>" + inputString;
+}
+
+function submitEventRequest() {
+    return false;
+}
+
+function refreshAudit(){
+    http('audits', updateAuditResponse);
+    return false;
+}
+
+function updateAuditResponse(response){
+    document.getElementById('audit_table').innerHTML = response;
 }
