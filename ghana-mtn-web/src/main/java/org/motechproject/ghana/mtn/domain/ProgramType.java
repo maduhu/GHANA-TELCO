@@ -8,13 +8,14 @@ import org.motechproject.model.MotechAuditableDataObject;
 import java.util.List;
 
 @TypeDiscriminator("doc.type === 'ProgramType'")
-public class ProgramType extends MotechAuditableDataObject {
+public class ProgramType extends MotechAuditableDataObject implements IProgramType{
     @JsonProperty("type")
     private String type = "ProgramType";
-    private String programName;
-    private List<String> shortCodes;
+    private Double fee;
     private Integer minWeek;
     private Integer maxWeek;
+    private String programName;
+    private List<String> shortCodes;
 
     public ProgramType() {
     }
@@ -53,7 +54,16 @@ public class ProgramType extends MotechAuditableDataObject {
         return maxWeek;
     }
 
+
     public void setMaxWeek(Integer maxWeek) {
         this.maxWeek = maxWeek;
+    }
+
+    public Double getFee() {
+        return fee;
+    }
+
+    public void setFee(Double fee) {
+        this.fee = fee;
     }
 }
