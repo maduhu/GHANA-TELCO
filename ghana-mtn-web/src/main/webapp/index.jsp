@@ -39,7 +39,7 @@
     </fieldset>
 </div>
 
-<div class="refresh_audit_box">
+<div class="audit_box">
     <fieldset>
         <legend>Message Audit</legend>
         <form id="audit-form">
