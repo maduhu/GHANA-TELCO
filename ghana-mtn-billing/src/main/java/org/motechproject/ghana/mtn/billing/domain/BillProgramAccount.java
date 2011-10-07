@@ -1,13 +1,15 @@
 package org.motechproject.ghana.mtn.billing.domain;
 
+import org.motechproject.ghana.mtn.dto.Money;
+
 public class BillProgramAccount {
     private String programName;
-    private Double fee;
+    private Money fee;
 
     public BillProgramAccount() {
     }
 
-    public BillProgramAccount(String programName, Double fee) {
+    public BillProgramAccount(String programName, Money fee) {
         this.programName = programName;
         this.fee = fee;
     }
@@ -20,11 +22,11 @@ public class BillProgramAccount {
         return programName;
     }
 
-    public void setFee(Double fee) {
+    public void setFee(Money fee) {
         this.fee = fee;
     }
 
-    public Double getFee() {
+    public Money getFee() {
         return fee;
     }
 }

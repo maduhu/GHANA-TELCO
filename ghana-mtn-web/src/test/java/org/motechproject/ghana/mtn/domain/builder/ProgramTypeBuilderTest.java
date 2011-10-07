@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.domain.builder;
 
 import org.junit.Test;
 import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.dto.Money;
 
 import static org.junit.Assert.assertThat;
 
@@ -14,7 +15,7 @@ public class ProgramTypeBuilderTest {
         Integer maxWeek = 10;
         String programName = "Pregnancy";
         String shortCode = "P";
-        Double fee = 0.75D;
+        Money fee = new Money(0.75D);
         ProgramType programType = new ProgramTypeBuilder()
                 .withProgramName(programName)
                 .withShortCode(shortCode)

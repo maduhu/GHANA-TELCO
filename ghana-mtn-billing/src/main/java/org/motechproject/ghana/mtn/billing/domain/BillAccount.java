@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.billing.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.ghana.mtn.dto.Money;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class BillAccount extends MotechAuditableDataObject {
         this.currentBalance = currentBalance;
     }
 
-    public void setProgramFee(String programName, Double fee) {
+    public void setProgramFee(String programName, Money fee) {
         if (null == programAccounts)
             programAccounts = new ArrayList<BillProgramAccount>();
 

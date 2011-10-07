@@ -1,5 +1,7 @@
 package org.motechproject.ghana.mtn.domain;
 
+import org.motechproject.ghana.mtn.dto.Money;
+
 import java.util.List;
 
 public interface IProgramType {
@@ -7,5 +9,5 @@ public interface IProgramType {
    List<String> getShortCodes();
    Integer getMinWeek();
    Integer getMaxWeek();
-   Double getFee();
+   Money getFee();
 }

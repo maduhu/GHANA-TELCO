@@ -8,6 +8,7 @@ import org.motechproject.ghana.mtn.billing.domain.BillAudit;
 import org.motechproject.ghana.mtn.billing.domain.BillStatus;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
+import org.motechproject.ghana.mtn.dto.Money;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.billing.matcher.BillAuditMatcher;
 import org.motechproject.ghana.mtn.billing.mock.MTNBillingSystemMock;
@@ -125,8 +126,8 @@ public class BillingServiceImplTest {
             }
 
             @Override
-            public Double getFee() {
-                return 0.6D;
+            public Money getFee() {
+                return new Money(0.6D);
             }
         };
     }

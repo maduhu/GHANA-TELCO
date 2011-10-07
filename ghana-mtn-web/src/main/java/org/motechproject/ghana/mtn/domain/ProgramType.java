@@ -3,15 +3,16 @@ package org.motechproject.ghana.mtn.domain;
 import org.apache.commons.lang.math.IntRange;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.ghana.mtn.dto.Money;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.List;
 
 @TypeDiscriminator("doc.type === 'ProgramType'")
-public class ProgramType extends MotechAuditableDataObject implements IProgramType{
+public class ProgramType extends MotechAuditableDataObject implements IProgramType {
     @JsonProperty("type")
     private String type = "ProgramType";
-    private Double fee;
+    private Money fee;
     private Integer minWeek;
     private Integer maxWeek;
     private String programName;
@@ -59,11 +60,11 @@ public class ProgramType extends MotechAuditableDataObject implements IProgramTy
         this.maxWeek = maxWeek;
     }
 
-    public Double getFee() {
+    public Money getFee() {
         return fee;
     }
 
-    public void setFee(Double fee) {
+    public void setFee(Money fee) {
         this.fee = fee;
     }
 }

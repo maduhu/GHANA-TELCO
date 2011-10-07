@@ -10,6 +10,7 @@ import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
+import org.motechproject.ghana.mtn.dto.Money;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
@@ -36,8 +37,8 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     @Autowired
     private AllProgramTypes allProgramTypes;
 
-    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(0.60D).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
-    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(0.60D).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
+    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
     @Before
     public void setUp() {

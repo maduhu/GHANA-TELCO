@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.billing.domain.BillProgramAccount;
 import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.dto.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
@@ -70,8 +71,8 @@ public class AllBillAccountsTest extends RepositoryTest {
             }
 
             @Override
-            public Double getFee() {
-                return 0.60D;
+            public Money getFee() {
+                return new Money(0.60D);
             }
         };
     }
@@ -99,8 +100,8 @@ public class AllBillAccountsTest extends RepositoryTest {
             }
 
             @Override
-            public Double getFee() {
-                return 0.60D;
+            public Money getFee() {
+                return new Money(0.60D);
             }
         };
     }

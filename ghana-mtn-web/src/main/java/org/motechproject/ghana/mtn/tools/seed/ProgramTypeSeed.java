@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.tools.seed;
 import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.dto.Money;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,13 +20,13 @@ public class ProgramTypeSeed extends Seed {
                 .withProgramName("Pregnancy")
                 .withShortCode("P")
                 .withShortCode("p")
-                .withMaxWeek(35).withMinWeek(5).withFee(0.60D).build();
+                .withMaxWeek(35).withMinWeek(5).withFee(new Money(0.60D)).build();
 
         ProgramType childCareProgramType = new ProgramTypeBuilder()
                 .withProgramName("Child Care")
                 .withShortCode("C")
                 .withShortCode("c")
-                .withMaxWeek(52).withMinWeek(1).withFee(0.60D).build();
+                .withMaxWeek(52).withMinWeek(1).withFee(new Money(0.60D)).build();
 
         allProgramTypes.add(pregnancyProgramType);
         allProgramTypes.add(childCareProgramType);

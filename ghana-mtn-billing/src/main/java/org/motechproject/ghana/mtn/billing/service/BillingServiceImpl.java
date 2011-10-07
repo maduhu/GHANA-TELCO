@@ -33,7 +33,7 @@ public class BillingServiceImpl implements BillingService {
     @Override
     public BillingServiceResponse chargeSubscriptionFee(BillingServiceRequest billingServiceRequest) {
         String mobileNumber = billingServiceRequest.getMobileNumber();
-        double fee = billingServiceRequest.getProgramType().getFee();
+        double fee = billingServiceRequest.getProgramType().getFee().getValue();
         Double availableBalance = null;
         try {
             availableBalance = mtnBillingSystemMock.getAvailableBalance(mobileNumber);
@@ -48,7 +48,7 @@ public class BillingServiceImpl implements BillingService {
     @Override
     public BillingServiceResponse hasAvailableFundForProgram(BillingServiceRequest billingServiceRequest) {
         String mobileNumber = billingServiceRequest.getMobileNumber();
-        double fee = billingServiceRequest.getProgramType().getFee();
+        double fee = billingServiceRequest.getProgramType().getFee().getValue();
         Double availableBalance = null;
         try {
             availableBalance = mtnBillingSystemMock.getAvailableBalance(mobileNumber);
@@ -68,7 +68,7 @@ public class BillingServiceImpl implements BillingService {
 
     private void updateUserAccountAndPersistAudit(BillingServiceRequest billingServiceRequest, BillStatus billStatus, String failureReason, Double availableBalance) {
         String mobileNumber = billingServiceRequest.getMobileNumber();
-        allBillAudits.add(new BillAudit(mobileNumber,billingServiceRequest.getProgramType().getFee(), billStatus, failureReason, DateUtil.today()));
+        allBillAudits.add(new BillAudit(mobileNumber,billingServiceRequest.getProgramType().getFee().getValue(), billStatus, failureReason, DateUtil.today()));
         if (billStatus.equals(BillStatus.SUCCESS))
             allBillAccounts.updateBillAccount(mobileNumber, availableBalance, billingServiceRequest.getProgramType());
     }
