@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class AllBillAudits extends MotechAuditableRepository<BillAudit> {
 
     @Autowired
-    protected AllBillAudits(@Qualifier("dbConnector") CouchDbConnector db) {
+    protected AllBillAudits(@Qualifier("billingDbConnector") CouchDbConnector db) {
         super(BillAudit.class, db);
     }
 }
