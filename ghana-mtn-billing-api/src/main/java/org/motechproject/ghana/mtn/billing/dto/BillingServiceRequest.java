@@ -19,4 +19,8 @@ public class BillingServiceRequest {
    public IProgramType getProgramType() {
        return programType;
    }
+
+    public String programName() {
+       return programType.getProgramName();
+   }
 }
