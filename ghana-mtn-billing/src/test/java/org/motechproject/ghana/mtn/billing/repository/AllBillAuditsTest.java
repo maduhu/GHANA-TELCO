@@ -23,7 +23,9 @@ public class AllBillAuditsTest extends RepositoryTest {
 
    @After
    public void destroy() {
-       allBillAudits.remove(billAudit);
+       for (BillAudit audit : allBillAudits.getAll()) {
+           allBillAudits.remove(audit);
+       }
    }
 
 }

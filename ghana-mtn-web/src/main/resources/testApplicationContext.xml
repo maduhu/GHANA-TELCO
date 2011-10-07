@@ -11,8 +11,8 @@
     <context:spring-configured/>
     <context:component-scan base-package="org.motechproject.ghana.mtn"/>
 
+    <import resource="classpath:applicationContext.xml"/>
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-    <import resource="classpath:applicationMessageCampaign.xml"/>
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
 

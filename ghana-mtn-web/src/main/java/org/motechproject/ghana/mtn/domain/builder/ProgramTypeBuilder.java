@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.domain.builder;
 
 import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.dto.Money;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
     private String programName;
     private Integer minWeek;
     private Integer maxWeek;
-    private Double fee;
+    private Money fee;
 
     public ProgramTypeBuilder() {
         super(new ProgramType());
@@ -37,7 +38,7 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
         return this;
     }
 
-    public ProgramTypeBuilder withFee(Double fee) {
+    public ProgramTypeBuilder withFee(Money fee) {
         this.fee = fee;
         return this;
     }
