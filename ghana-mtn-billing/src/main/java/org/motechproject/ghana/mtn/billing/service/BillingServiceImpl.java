@@ -2,32 +2,57 @@ package org.motechproject.ghana.mtn.billing.service;
 
 import org.apache.log4j.Logger;
 import org.drools.core.util.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.ghana.mtn.billing.domain.BillAudit;
 import org.motechproject.ghana.mtn.billing.domain.BillStatus;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
+import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
+import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.billing.mock.MTNBillingSystemMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAudits;
-import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.model.CronSchedulableJob;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+
+import static java.lang.String.format;
 
 @Service
 public class BillingServiceImpl implements BillingService {
     private MTNBillingSystemMock mtnBillingSystemMock;
     private AllBillAudits allBillAudits;
+    private MotechSchedulerService schedulerService;
+
     private AllBillAccounts allBillAccounts;
     private static final Logger log = Logger.getLogger(BillingServiceImpl.class);
+    public static final String BILLING_SCHEDULE_EVERY_MONTH = "org.motechproject.ghana.mtn.service.billingschedule";
+    
+    public static final String BILLING_SCHEDULE_CRON = "0 0 5 %s * ?";
 
     @Autowired
-    public BillingServiceImpl(MTNBillingSystemMock mtnBillingSystemMock, AllBillAudits allBillAudits, AllBillAccounts allBillAccounts) {
+    public BillingServiceImpl(MTNBillingSystemMock mtnBillingSystemMock, MotechSchedulerService schedulerService, AllBillAudits allBillAudits, AllBillAccounts allBillAccounts) {
         this.mtnBillingSystemMock = mtnBillingSystemMock;
+        this.schedulerService = schedulerService;
         this.allBillAudits = allBillAudits;
         this.allBillAccounts = allBillAccounts;
+    }
+
+    @Override
+    public BillingServiceResponse processRegistration(RegistrationBillingRequest request) {
+
+        BillingServiceResponse response = chargeSubscriptionFee(request);
+        if(response.isValid()) return createBillingSchedule(request); 
+        return response;
     }
 
     @Override
@@ -96,6 +121,30 @@ public class BillingServiceImpl implements BillingService {
             log.error(e);
         }
         return false;
+    }
+
+    private BillingServiceResponse createBillingSchedule(RegistrationBillingRequest request) {
+
+        MotechEvent motechEvent = new MotechEvent(BILLING_SCHEDULE_EVERY_MONTH, jobParams(request));
+        LocalDate cycleStartDate = request.getCycleStartDate();
+        String cronJobExpression = format(BILLING_SCHEDULE_CRON, cycleStartDate.getDayOfMonth());
+        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, nextBillingStartDate(cycleStartDate), null);
+        schedulerService.scheduleJob(schedulableJob);
+        return new BillingServiceResponse<String>("Billing success and schedule created");
+    }
+
+    private Date nextBillingStartDate(LocalDate cycleStartDate) {
+        return cycleStartDate.monthOfYear().addToCopy(1).toDate();
+    }
+
+
+    protected HashMap<String, Object> jobParams(RegistrationBillingRequest request) {
+        String jobId = format("%s.%s.%s", BILLING_SCHEDULE_EVERY_MONTH, request.programName(), request.getMobileNumber());
+        return new SchedulerParamsBuilder()
+                .withJobId(jobId)
+                .withExternalId(request.getMobileNumber())
+                .withProgram(request.programName())
+                .params();
     }
 }
 
