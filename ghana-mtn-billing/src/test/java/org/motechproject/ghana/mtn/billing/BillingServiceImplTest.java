@@ -73,7 +73,7 @@ public class BillingServiceImplTest {
         verify(mtnBillingSystemMock).isMtnCustomer(mobileNumber);
         verify(mtnBillingSystemMock, never()).chargeCustomer(mobileNumber, amountToCharge.getValue());
         verify(allBillAccounts, never()).updateBillAccount(mobileNumber, currentBalance, programType);
-        verify(allBillAudits).add(argThat(new BillAuditMatcher(new BillAudit(mobileNumber, amountToCharge.getValue(), BillStatus.FAILURE, ValidationError.NOT_A_VALID_CUSTOMER.name(), DateUtil.today()))));
+        verify(allBillAudits).add(argThat(new BillAuditMatcher(new BillAudit(mobileNumber, amountToCharge, BillStatus.FAILURE, ValidationError.NOT_A_VALID_CUSTOMER.name(), DateUtil.today()))));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class BillingServiceImplTest {
         verify(mtnBillingSystemMock).getAvailableBalance(mobileNumber);
         verify(mtnBillingSystemMock, never()).chargeCustomer(mobileNumber, amountToCharge.getValue());
         verify(allBillAccounts, never()).updateBillAccount(mobileNumber, currentBalance, getProgramType("Pregnancy"));
-        verify(allBillAudits).add(argThat(new BillAuditMatcher(new BillAudit(mobileNumber, amountToCharge.getValue(), BillStatus.FAILURE, ValidationError.INSUFFICIENT_FUND.name(), DateUtil.today()))));
+        verify(allBillAudits).add(argThat(new BillAuditMatcher(new BillAudit(mobileNumber, amountToCharge, BillStatus.FAILURE, ValidationError.INSUFFICIENT_FUND.name(), DateUtil.today()))));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class BillingServiceImplTest {
 
         verify(mtnBillingSystemMock).chargeCustomer(mobileNumber, amountToCharge.getValue());
         verify(allBillAccounts).updateBillAccount(mobileNumber, currentBalance, programType);
-        verify(allBillAudits).add(argThat(new BillAuditMatcher(new BillAudit(mobileNumber, amountToCharge.getValue(), BillStatus.SUCCESS, StringUtils.EMPTY, DateUtil.today()))));
+        verify(allBillAudits).add(argThat(new BillAuditMatcher(new BillAudit(mobileNumber, amountToCharge, BillStatus.SUCCESS, StringUtils.EMPTY, DateUtil.today()))));
     }
 
     @Test

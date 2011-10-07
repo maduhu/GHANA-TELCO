@@ -93,7 +93,7 @@ public class BillingServiceImpl implements BillingService {
 
     private void updateUserAccountAndPersistAudit(BillingServiceRequest billingServiceRequest, BillStatus billStatus, String failureReason, Double availableBalance) {
         String mobileNumber = billingServiceRequest.getMobileNumber();
-        allBillAudits.add(new BillAudit(mobileNumber,billingServiceRequest.getProgramType().getFee().getValue(), billStatus, failureReason, DateUtil.today()));
+        allBillAudits.add(new BillAudit(mobileNumber,billingServiceRequest.getProgramType().getFee(), billStatus, failureReason, DateUtil.today()));
         if (billStatus.equals(BillStatus.SUCCESS))
             allBillAccounts.updateBillAccount(mobileNumber, availableBalance, billingServiceRequest.getProgramType());
     }

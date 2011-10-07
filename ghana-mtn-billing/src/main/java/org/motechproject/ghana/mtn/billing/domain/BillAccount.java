@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.billing.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.ghana.mtn.dto.Money;
@@ -15,14 +16,14 @@ public class BillAccount extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "BillAccount";
     private String mobileNumber;
-    private Double currentBalance;
+    private Money currentBalance;
     private List<BillProgramAccount> programAccounts;
 
     public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
 
-    public void setCurrentBalance(Double currentBalance) {
+    public void setCurrentBalance(Money currentBalance) {
         this.currentBalance = currentBalance;
     }
 
@@ -44,7 +45,7 @@ public class BillAccount extends MotechAuditableDataObject {
         return mobileNumber;
     }
 
-    public Double getCurrentBalance() {
+    public Money getCurrentBalance() {
         return currentBalance;
     }
 

@@ -6,6 +6,7 @@ import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.dto.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class AllBillAccounts extends MotechAuditableRepository<BillAccount> {
            billAccount = new BillAccount();
 
        billAccount.setMobileNumber(mobileNumber);
-       billAccount.setCurrentBalance(currentBalance);
+       billAccount.setCurrentBalance(new Money(currentBalance));
        billAccount.setProgramFee(programType.getProgramName(), programType.getFee());
 
        if (null == billAccount.getId())

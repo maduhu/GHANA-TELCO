@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.billing.domain;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
+import org.motechproject.ghana.mtn.dto.Money;
 import org.motechproject.model.MotechAuditableDataObject;
 
 @TypeDiscriminator("doc.type === 'BillAudit'")
@@ -10,14 +11,14 @@ public class BillAudit extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "BillAudit";
     private String mobileNumber;
-    private double amountToCharge;
+    private Money amountToCharge;
     private BillStatus billStatus;
     private String failureReason;
 
     public BillAudit() {
     }
 
-    public BillAudit(String mobileNumber, double amountToCharge, BillStatus billStatus, String failureReason, LocalDate dateTime) {
+    public BillAudit(String mobileNumber, Money amountToCharge, BillStatus billStatus, String failureReason, LocalDate dateTime) {
         this.mobileNumber = mobileNumber;
         this.amountToCharge = amountToCharge;
         this.billStatus = billStatus;
@@ -28,7 +29,7 @@ public class BillAudit extends MotechAuditableDataObject {
         return mobileNumber;
     }
 
-    public Double getAmountToCharge() {
+    public Money getAmountToCharge() {
         return amountToCharge;
     }
 
@@ -44,7 +45,7 @@ public class BillAudit extends MotechAuditableDataObject {
         this.mobileNumber = mobileNumber;
     }
 
-    public void setAmountToCharge(double amountToCharge) {
+    public void setAmountToCharge(Money amountToCharge) {
         this.amountToCharge = amountToCharge;
     }
 

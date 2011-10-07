@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.billing.mock;
 
+import org.motechproject.ghana.mtn.dto.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
