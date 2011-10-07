@@ -19,13 +19,13 @@ public class ProgramTypeSeed extends Seed {
                 .withProgramName("Pregnancy")
                 .withShortCode("P")
                 .withShortCode("p")
-                .withMaxWeek(35).withMinWeek(5).build();
+                .withMaxWeek(35).withMinWeek(5).withFee(0.60D).build();
 
         ProgramType childCareProgramType = new ProgramTypeBuilder()
                 .withProgramName("Child Care")
                 .withShortCode("C")
                 .withShortCode("c")
-                .withMaxWeek(52).withMinWeek(1).build();
+                .withMaxWeek(52).withMinWeek(1).withFee(0.60D).build();
 
         allProgramTypes.add(pregnancyProgramType);
         allProgramTypes.add(childCareProgramType);

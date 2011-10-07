@@ -10,6 +10,7 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
     private String programName;
     private Integer minWeek;
     private Integer maxWeek;
+    private Double fee;
 
     public ProgramTypeBuilder() {
         super(new ProgramType());
@@ -33,6 +34,11 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
 
     public ProgramTypeBuilder withShortCode(String shortCode) {
         this.shortCodes.add(shortCode);
+        return this;
+    }
+
+    public ProgramTypeBuilder withFee(Double fee) {
+        this.fee = fee;
         return this;
     }
 }

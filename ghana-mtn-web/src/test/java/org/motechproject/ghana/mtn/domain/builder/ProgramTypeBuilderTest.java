@@ -14,13 +14,15 @@ public class ProgramTypeBuilderTest {
         Integer maxWeek = 10;
         String programName = "Pregnancy";
         String shortCode = "P";
+        Double fee = 0.75D;
         ProgramType programType = new ProgramTypeBuilder()
                 .withProgramName(programName)
                 .withShortCode(shortCode)
-                .withMinWeek(minWeek).withMaxWeek(maxWeek).build();
+                .withMinWeek(minWeek).withFee(fee).withMaxWeek(maxWeek).build();
 
         assertThat(programType.getMaxWeek(), is(maxWeek));
         assertThat(programType.getMinWeek(), is(minWeek));
+        assertThat(programType.getFee(), is(fee));
         assertThat(programType.getProgramName(), is(programName));
         assertThat(programType.getShortCodes().get(0), is(shortCode));
     }

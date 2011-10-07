@@ -8,7 +8,7 @@ import org.motechproject.ghana.mtn.billing.domain.BillAudit;
 import org.motechproject.ghana.mtn.billing.domain.BillStatus;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.ValidationError;
+import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.billing.matcher.BillAuditMatcher;
 import org.motechproject.ghana.mtn.billing.mock.MTNBillingSystemMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
@@ -50,7 +50,7 @@ public class BillingServiceImplTest {
 
         when(mtnBillingSystemMock.isMtnCustomer(mobileNumber)).thenReturn(false);
 
-        BillingServiceResponse billingServiceResponse = billingService.chargeSubscriptionFee(new BillingServiceRequest(mobileNumber, getProgramType()));
+        BillingServiceResponse billingServiceResponse = billingService.hasAvailableFundForProgram(new BillingServiceRequest(mobileNumber, getProgramType()));
 
         assertFalse(billingServiceResponse.isValid());
         assertEquals(billingServiceResponse.getValidationErrors(), Arrays.asList(ValidationError.NOT_A_VALID_CUSTOMER));
@@ -69,7 +69,7 @@ public class BillingServiceImplTest {
         when(mtnBillingSystemMock.isMtnCustomer(mobileNumber)).thenReturn(true);
         when(mtnBillingSystemMock.getAvailableBalance(mobileNumber)).thenReturn(0D);
 
-        BillingServiceResponse billingServiceResponse = billingService.chargeSubscriptionFee(new BillingServiceRequest(mobileNumber, getProgramType()));
+        BillingServiceResponse billingServiceResponse = billingService.hasAvailableFundForProgram(new BillingServiceRequest(mobileNumber, getProgramType()));
 
         assertFalse(billingServiceResponse.isValid());
         assertEquals(billingServiceResponse.getValidationErrors(), Arrays.asList(ValidationError.INSUFFICIENT_FUND));
@@ -82,7 +82,7 @@ public class BillingServiceImplTest {
     }
 
     @Test
-    public void ShouldChargeMrnCustomerAndGiveAValidResponseForCutomerWithValidFundsAndPersistSuccessBillAudit() {
+    public void ShouldChargeMtnCustomerAndGiveAValidResponseForCustomerWithValidFundsAndPersistSuccessBillAudit() {
         String mobileNumber = "1234567890";
         double amountToCharge = 0.60;
         Double currentBalance = 2D;
@@ -96,8 +96,6 @@ public class BillingServiceImplTest {
         assertTrue(billingServiceResponse.isValid());
         assertTrue(billingServiceResponse.getValidationErrors().isEmpty());
 
-        verify(mtnBillingSystemMock).isMtnCustomer(mobileNumber);
-        verify(mtnBillingSystemMock).getAvailableBalance(mobileNumber);
         verify(mtnBillingSystemMock).chargeCustomer(mobileNumber, amountToCharge);
         verify(allBillAccounts).updateBillAccount(mobileNumber, currentBalance, programType);
         verify(allBillAudits).add(argThat(new BillAuditMatcher(new BillAudit(mobileNumber, amountToCharge, BillStatus.SUCCESS, StringUtils.EMPTY, DateUtil.today()))));

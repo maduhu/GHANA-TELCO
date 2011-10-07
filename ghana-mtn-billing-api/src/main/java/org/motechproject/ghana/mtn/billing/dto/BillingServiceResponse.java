@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.billing.dto;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.motechproject.ghana.mtn.validation.ValidationError;
 
 import java.util.ArrayList;
 import java.util.List;

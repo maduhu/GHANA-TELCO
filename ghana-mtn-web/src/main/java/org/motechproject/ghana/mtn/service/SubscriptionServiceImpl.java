@@ -1,6 +1,10 @@
 package org.motechproject.ghana.mtn.service;
 
 import org.apache.log4j.Logger;
+import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
+import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
@@ -27,14 +31,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private AllSubscriptions allSubscriptions;
     private MessageCampaignService campaignService;
     private InputMessageParser inputMessageParser;
+    private BillingService billingService;
 
     @Autowired
     public SubscriptionServiceImpl(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions,
-                                   MessageCampaignService campaignService, InputMessageParser inputMessageParser) {
+                                   MessageCampaignService campaignService, InputMessageParser inputMessageParser, BillingService billingService) {
         this.allSubscribers = allSubscribers;
         this.allSubscriptions = allSubscriptions;
         this.campaignService = campaignService;
         this.inputMessageParser = inputMessageParser;
+        this.billingService = billingService;
     }
 
     @Override
@@ -44,18 +50,23 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
 
             if (subscription.isNotValid())
-                return MessageBundle.FAILURE_ENROLLMENT_MESSAGE;
+                return MessageBundle.getMessage(MessageBundle.FAILURE_ENROLLMENT_MESSAGE);
             if (hasActiveSubscription(subscriberNumber, subscription))
-                return format(MessageBundle.ACTIVE_SUBSCRIPTION_ALREADY_PRESENT, subscription);
+                return format(MessageBundle.getMessage(MessageBundle.ACTIVE_SUBSCRIPTION_ALREADY_PRESENT), subscription);
+
+            BillingServiceResponse serviceResponse = billingService.hasAvailableFundForProgram(new BillingServiceRequest(subscriberNumber, subscription.getProgramType()));
+            if (!serviceResponse.isValid()) {
+                return MessageBundle.getMessage(((ValidationError)serviceResponse.getValidationErrors().get(0)).name());
+            }
 
             persist(subscriberNumber, subscription);
             createCampaign(subscription);
-            return format(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, subscription);
+            return format(MessageBundle.getMessage(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), subscription);
 
         } catch (MessageParseFailException e) {
             log.error("Parsing failed.", e);
         }
-        return MessageBundle.FAILURE_ENROLLMENT_MESSAGE;
+        return MessageBundle.getMessage(MessageBundle.FAILURE_ENROLLMENT_MESSAGE);
     }
 
     @Override

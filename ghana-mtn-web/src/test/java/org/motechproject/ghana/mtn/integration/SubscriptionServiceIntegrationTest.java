@@ -36,8 +36,8 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     @Autowired
     private AllProgramTypes allProgramTypes;
 
-    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
-    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
+    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(0.60D).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(0.60D).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
     @Before
     public void setUp() {
@@ -51,7 +51,7 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
         SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "1234567890");
 
         String expectedResponse = SubscriptionController.JSON_PREFIX
-                + String.format(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT, "Pregnancy") + SubscriptionController.JSON_SUFFIX;
+                + String.format(MessageBundle.getMessage(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), "Pregnancy") + SubscriptionController.JSON_SUFFIX;
 
         subscriptionController.enroll(subscriptionRequest, response);
 
@@ -79,7 +79,7 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
 
         subscriptionController.enroll(subscriptionRequest, response);
 
-        assertThat(response.getContentAsString(), is(SubscriptionController.JSON_PREFIX + MessageBundle.FAILURE_ENROLLMENT_MESSAGE + SubscriptionController.JSON_SUFFIX));
+        assertThat(response.getContentAsString(), is(SubscriptionController.JSON_PREFIX + MessageBundle.getMessage(MessageBundle.FAILURE_ENROLLMENT_MESSAGE) + SubscriptionController.JSON_SUFFIX));
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
     }
 

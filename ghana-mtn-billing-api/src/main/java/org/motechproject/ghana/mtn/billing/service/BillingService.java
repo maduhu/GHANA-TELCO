@@ -5,4 +5,5 @@ import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 
 public interface BillingService {
     BillingServiceResponse chargeSubscriptionFee(BillingServiceRequest billingServiceRequest);
+    BillingServiceResponse hasAvailableFundForProgram(BillingServiceRequest billingServiceRequest);
 }

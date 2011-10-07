@@ -5,7 +5,7 @@ import org.motechproject.ghana.mtn.billing.domain.BillAudit;
 import org.motechproject.ghana.mtn.billing.domain.BillStatus;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.ValidationError;
+import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.billing.mock.MTNBillingSystemMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAudits;
@@ -31,6 +31,16 @@ public class BillingServiceImpl implements BillingService {
         String mobileNumber = billingServiceRequest.getMobileNumber();
         double fee = billingServiceRequest.getProgramType().getFee();
         Double availableBalance = mtnBillingSystemMock.getAvailableBalance(mobileNumber);
+        mtnBillingSystemMock.chargeCustomer(mobileNumber, fee);
+        updateUserAccountAndPersistAudit(billingServiceRequest, BillStatus.SUCCESS, StringUtils.EMPTY, availableBalance);
+        return new BillingServiceResponse();
+    }
+
+    @Override
+    public BillingServiceResponse hasAvailableFundForProgram(BillingServiceRequest billingServiceRequest) {
+        String mobileNumber = billingServiceRequest.getMobileNumber();
+        double fee = billingServiceRequest.getProgramType().getFee();
+        Double availableBalance = mtnBillingSystemMock.getAvailableBalance(mobileNumber);
         if (!isMTNCustomer(mobileNumber)) {
             updateUserAccountAndPersistAudit(billingServiceRequest, BillStatus.FAILURE, ValidationError.NOT_A_VALID_CUSTOMER.name(), availableBalance);
             return notAMtnCustomerResponse();
@@ -39,8 +49,6 @@ public class BillingServiceImpl implements BillingService {
             updateUserAccountAndPersistAudit(billingServiceRequest, BillStatus.FAILURE, ValidationError.INSUFFICIENT_FUND.name(), availableBalance);
             return noSufficientFundResponse();
         }
-        mtnBillingSystemMock.chargeCustomer(mobileNumber, fee);
-        updateUserAccountAndPersistAudit(billingServiceRequest, BillStatus.SUCCESS, StringUtils.EMPTY, availableBalance);
         return new BillingServiceResponse();
     }
 

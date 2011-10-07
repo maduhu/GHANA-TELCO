@@ -3,7 +3,11 @@ package org.motechproject.ghana.mtn.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
+import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscriber;
@@ -38,11 +42,13 @@ public class SubscriptionServiceImplTest {
     private MessageCampaignService campaignService;
     @Mock
     private InputMessageParser inputMessageParser;
+    @Mock
+    private BillingService billingService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        service = new SubscriptionServiceImpl(allSubscribers, allSubscriptions, campaignService, inputMessageParser);
+        service = new SubscriptionServiceImpl(allSubscribers, allSubscriptions, campaignService, inputMessageParser, billingService);
     }
 
     @Test
@@ -54,7 +60,7 @@ public class SubscriptionServiceImplTest {
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
 
         String actualResponse = service.enroll(subscriptionRequest);
-        assertEquals(MessageBundle.FAILURE_ENROLLMENT_MESSAGE, actualResponse);
+        assertEquals(MessageBundle.getMessage(MessageBundle.FAILURE_ENROLLMENT_MESSAGE), actualResponse);
 
         verify(allSubscriptions, never()).add(any(Subscription.class));
         verify(allSubscribers, never()).add(any(Subscriber.class));
@@ -80,7 +86,6 @@ public class SubscriptionServiceImplTest {
         verify(campaignService, never()).startFor(any(CampaignRequest.class));
     }
 
-
     @Test
     public void shouldPersistSubscriptionAndCampaignRequestForAValidSubscription() {
         SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
@@ -89,6 +94,7 @@ public class SubscriptionServiceImplTest {
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
+        when(billingService.hasAvailableFundForProgram(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
 
         String response = service.enroll(subscriptionRequest);
         assertEquals("Welcome to Mobile Midwife Pregnancy Program. You are now enrolled & will receive SMSs full of great info every Mon,Weds &Fri.To stop these messages send STOP", response);
