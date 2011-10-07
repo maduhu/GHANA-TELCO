@@ -16,7 +16,7 @@ import java.util.List;
 public class AllBillAccounts extends MotechAuditableRepository<BillAccount> {
 
    @Autowired
-   protected AllBillAccounts(@Qualifier("dbConnector") CouchDbConnector db) {
+   protected AllBillAccounts(@Qualifier("billingDbConnector") CouchDbConnector db) {
        super(BillAccount.class, db);
    }
 

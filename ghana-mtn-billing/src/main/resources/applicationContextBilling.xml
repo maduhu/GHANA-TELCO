@@ -20,7 +20,7 @@
         <constructor-arg ref="httpClient"/>
     </bean>
 
-    <bean id="dbConnector" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="billingDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="ghana-mtn-billing"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
