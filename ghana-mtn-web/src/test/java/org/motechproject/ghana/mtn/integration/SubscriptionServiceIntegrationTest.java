@@ -1,11 +1,14 @@
 package org.motechproject.ghana.mtn.integration;
 
+import ch.lambdaj.Lambda;
 import org.apache.log4j.Logger;
 import org.ektorp.DbPath;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.billing.domain.BillAccount;
+import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
@@ -36,6 +39,8 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     private AllSubscribers allSubscribers;
     @Autowired
     private AllProgramTypes allProgramTypes;
+    @Autowired
+    private AllBillAccounts allBillAccounts;
 
     public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
     public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
@@ -49,7 +54,7 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     @Test
     public void ShouldEnrollSubscriber() throws IOException {
         String shortCode = "P";
-        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "1234567890");
+        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "9500012345");
 
         String expectedResponse = SubscriptionController.JSON_PREFIX
                 + String.format(MessageBundle.getMessage(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), "Pregnancy") + SubscriptionController.JSON_SUFFIX;
@@ -96,6 +101,7 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
         super.after();
         remove(allSubscriptions.getAll());
         remove(allSubscribers.getAll());
+        for(BillAccount billAccount : allBillAccounts.getAll()) allBillAccounts.remove(billAccount);                
         removeAllQuartzJobs();
     }
 

@@ -13,6 +13,7 @@ import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 
 import java.util.Arrays;
 
+import static junit.framework.Assert.assertNull;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -76,7 +77,7 @@ public class InputMessageParserTest {
     @Test
     public void ShouldCreateSubscriptionWithActiveStatusForValidInputMessage() {
         Subscription subscription = messageParser.parse("P 10");
-        assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
+        assertNull(subscription.getStatus());
 
     }
 

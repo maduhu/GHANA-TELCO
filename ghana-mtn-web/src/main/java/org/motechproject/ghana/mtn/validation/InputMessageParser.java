@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.validation;
 import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -36,7 +35,6 @@ public class InputMessageParser {
         if (matcher.find()) {
             return new SubscriptionBuilder()
                     .withType(allProgramTypes.findByCampaignShortCode(matcher.group(1)))
-                    .withStatus(SubscriptionStatus.ACTIVE)
                     .withStartWeekAndDay(new WeekAndDay(new Week(Integer.parseInt(matcher.group(2))), new DateUtils().today()))
                     .withRegistrationDate(DateTime.now())
                     .build();

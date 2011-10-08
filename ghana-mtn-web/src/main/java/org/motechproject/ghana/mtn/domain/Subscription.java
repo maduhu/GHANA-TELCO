@@ -121,4 +121,16 @@ public class Subscription extends MotechAuditableDataObject {
     public boolean alreadySent(ProgramMessage subscriptionMessage) {
         return lastMsgSentWeekAndDay != null && subscriptionMessage.getWeekAndDay().isBefore(lastMsgSentWeekAndDay);
     }
+
+    public DateTime cycleStartDate() {
+       return new ProgramMessageCycle().nearestCycleDate(registrationDate);
+    }
+
+    public void updateStartCycleInfo() {
+         this.getStartWeekAndDay().setDay(dateUtils.day(cycleStartDate()));
+    }
+
+    public String subscriberNumber() {
+        return subscriber.getNumber();
+    }
 }

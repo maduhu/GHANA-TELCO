@@ -14,4 +14,8 @@ public class DateUtils {
         String day = now().dayOfWeek().getAsText();
         return Day.valueOf(day.toUpperCase());
     }
+
+    public Day day(DateTime date) {
+        return Day.valueOf(date.dayOfWeek().getAsText().toUpperCase());
+    }
 }

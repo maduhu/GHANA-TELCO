@@ -1,8 +1,6 @@
 package org.motechproject.ghana.mtn.domain;
 
 import org.joda.time.DateTime;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 

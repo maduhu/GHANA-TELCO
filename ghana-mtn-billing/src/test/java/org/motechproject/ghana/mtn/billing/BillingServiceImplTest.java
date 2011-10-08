@@ -123,7 +123,7 @@ public class BillingServiceImplTest {
         service = spy(service);
         String mobileNumber = "94033312234";
         IProgramType programType = getProgramType("Child Care");
-        LocalDate cycleStartDate = date(2011, 10, 7);
+        DateTime cycleStartDate = date(2011, 10, 7);
         RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(mobileNumber, programType, cycleStartDate);
 
         doReturn(new BillingServiceResponse<String>()).when(service).chargeSubscriptionFee(registrationBillingRequest);
@@ -154,7 +154,7 @@ public class BillingServiceImplTest {
         service = spy(service);
         String mobileNumber = "94033312234";
         IProgramType programType = getProgramType("Child Care");
-        LocalDate cycleStartDate = date(2011, 10, 7);
+        DateTime cycleStartDate = date(2011, 10, 7);
         RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(mobileNumber, programType, cycleStartDate);
 
         BillingServiceResponse<String> errorResponse = mock(BillingServiceResponse.class);
@@ -168,8 +168,8 @@ public class BillingServiceImplTest {
         verify(schedulerService, never()).scheduleJob(Matchers.<CronSchedulableJob>any());
     }
 
-    private LocalDate date(int year, int month , int day) {
-        return new DateTime(year, month, day, 0, 0).toLocalDate();
+    private DateTime date(int year, int month , int day) {
+        return new DateTime(year, month, day, 0, 0);
     }
 
     private IProgramType getProgramType(final String programName) {

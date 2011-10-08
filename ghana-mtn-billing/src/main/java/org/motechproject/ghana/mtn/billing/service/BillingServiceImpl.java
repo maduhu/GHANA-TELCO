@@ -126,14 +126,14 @@ public class BillingServiceImpl implements BillingService {
     private BillingServiceResponse createBillingSchedule(RegistrationBillingRequest request) {
 
         MotechEvent motechEvent = new MotechEvent(BILLING_SCHEDULE_EVERY_MONTH, jobParams(request));
-        LocalDate cycleStartDate = request.getCycleStartDate();
+        DateTime cycleStartDate = request.getCycleStartDate();
         String cronJobExpression = format(BILLING_SCHEDULE_CRON, cycleStartDate.getDayOfMonth());
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, nextBillingStartDate(cycleStartDate), null);
         schedulerService.scheduleJob(schedulableJob);
         return new BillingServiceResponse<String>("Billing success and schedule created");
     }
 
-    private Date nextBillingStartDate(LocalDate cycleStartDate) {
+    private Date nextBillingStartDate(DateTime cycleStartDate) {
         return cycleStartDate.monthOfYear().addToCopy(1).toDate();
     }
 

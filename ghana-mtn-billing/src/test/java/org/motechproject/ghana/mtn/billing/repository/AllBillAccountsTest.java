@@ -20,7 +20,7 @@ public class AllBillAccountsTest extends RepositoryTest {
 
     @Test
     public void ShouldUpdateBillAccount() {
-        String mobileNumber = "1234567890";
+        String mobileNumber = "9500012345";
         Double currentBalance = 2D;
         allBillingAccounts.updateBillAccount(mobileNumber, currentBalance, getPregnancyProgramType());
 

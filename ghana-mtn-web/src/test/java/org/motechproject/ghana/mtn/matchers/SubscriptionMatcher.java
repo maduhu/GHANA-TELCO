@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.matchers;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.mockito.ArgumentMatcher;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
@@ -23,9 +24,10 @@ public class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
     @Override
     public boolean matches(Object o) {
         Subscription toCompare = (Subscription) o;
-        return subscription.getSubscriber().getNumber().equals(toCompare.getSubscriber().getNumber())
-                && subscription.getProgramType().getProgramName().equals(toCompare.getProgramType().getProgramName())
-                && subscription.getStatus().equals(toCompare.getStatus())
+        return new EqualsBuilder()
+                .append(subscription.getSubscriber().getNumber(), toCompare.getSubscriber().getNumber())
+                .append(subscription.getProgramType().getProgramName(), toCompare.getProgramType().getProgramName())
+                .append(subscription.getStatus(), toCompare.getStatus()).isEquals()
                 && subscription.getStartWeekAndDay().isSameAs(toCompare.getStartWeekAndDay());
     }
 }

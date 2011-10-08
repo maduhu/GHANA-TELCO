@@ -36,7 +36,7 @@ public class AllBillAccounts extends MotechAuditableRepository<BillAccount> {
            update(billAccount);
    }
 
-   @View(name = "find_by_mobile_number", map = " function(doc) { emit(doc.mobileNumber, doc) }")
+   @View(name = "find_by_mobile_number", map = "function(doc) { if(doc.type === 'BillAccount') emit(doc.mobileNumber, doc) }")
    public BillAccount findByMobileNumber(String mobileNumber) {
        ViewQuery viewQuery = createQuery("find_by_mobile_number").key(mobileNumber);
        List<BillAccount> billAccounts = db.queryView(viewQuery, BillAccount.class);
