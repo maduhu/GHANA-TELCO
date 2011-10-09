@@ -8,10 +8,10 @@ public class RegistrationBillingRequest extends BillingServiceRequest {
 
     private DateTime cycleStartDate;
 
-   public RegistrationBillingRequest(String mobileNumber, IProgramType programType, DateTime cycleStartDate) {
-       super(mobileNumber,programType);
-       this.cycleStartDate = cycleStartDate;
-   }
+    public RegistrationBillingRequest(String mobileNumber, IProgramType programType, DateTime cycleStartDate) {
+        super(mobileNumber, programType);
+        this.cycleStartDate = cycleStartDate;
+    }
 
     public DateTime getCycleStartDate() {
         return cycleStartDate;

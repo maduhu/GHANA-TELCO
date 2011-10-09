@@ -1,14 +1,12 @@
 package org.motechproject.ghana.mtn.billing.service;
 
-import org.motechproject.ghana.mtn.billing.Constants;
 import org.motechproject.scheduler.MotechSchedulerService;
 
 import java.util.HashMap;
 
-import static org.motechproject.ghana.mtn.billing.Constants.BillingScheduler.EXTERNAL_ID_KEY;
-import static org.motechproject.ghana.mtn.billing.Constants.BillingScheduler.PROGRAM;
-
 public class SchedulerParamsBuilder {
+    public final static String PROGRAM = "Program";
+    public final static String EXTERNAL_ID_KEY = "ExternalID";
 
     private HashMap<String, Object> params = new HashMap<String, Object>();
 

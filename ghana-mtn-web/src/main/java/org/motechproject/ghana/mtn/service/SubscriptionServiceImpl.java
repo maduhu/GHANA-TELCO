@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.service;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
@@ -75,8 +74,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (hasActiveSubscription(subscriberNumber, subscription))
             throw new UserRegistrationFailureException(format(getMessage(ACTIVE_SUBSCRIPTION_ALREADY_PRESENT), subscription));
 
-        BillingServiceResponse serviceResponse = billingService.hasAvailableFundForProgram(new BillingServiceRequest(subscriberNumber, subscription.getProgramType()));
-        if (!serviceResponse.isValid())
+        BillingServiceResponse serviceResponse = billingService.hasFundsForProgram(new BillingServiceRequest(subscriberNumber, subscription.getProgramType()));
+        if (serviceResponse.hasErrors())
             throw new UserRegistrationFailureException(getUserSMSResponseMessage(serviceResponse));
     }
 
@@ -93,7 +92,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private void processBillingAndCreateSchedule(String subscriberNumber, Subscription subscription) {
         RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(subscriberNumber, subscription.getProgramType(), subscription.cycleStartDate());
         BillingServiceResponse response = billingService.processRegistration(registrationBillingRequest);
-        if(!response.isValid()) throw new UserRegistrationFailureException(getUserSMSResponseMessage(response));
+        if(response.hasErrors()) throw new UserRegistrationFailureException(getUserSMSResponseMessage(response));
 
         subscription.setStatus(SubscriptionStatus.ACTIVE);
         subscription.updateStartCycleInfo();

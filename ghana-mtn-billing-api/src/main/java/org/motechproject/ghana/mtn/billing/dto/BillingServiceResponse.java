@@ -24,15 +24,15 @@ public class BillingServiceResponse<T> {
        return value;
    }
 
-   public boolean isValid() {
-       return CollectionUtils.isEmpty(validationErrors);
+   public boolean hasErrors() {
+       return !CollectionUtils.isEmpty(validationErrors);
    }
 
    public List<ValidationError> getValidationErrors() {
        return validationErrors;
    }
 
-   public void addValidationError(ValidationError validationError) {
+   public void addError(ValidationError validationError) {
        validationErrors.add(validationError);
    }
 }

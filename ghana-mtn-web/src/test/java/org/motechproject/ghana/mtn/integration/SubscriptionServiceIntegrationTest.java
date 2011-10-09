@@ -1,7 +1,5 @@
 package org.motechproject.ghana.mtn.integration;
 
-import ch.lambdaj.Lambda;
-import org.apache.log4j.Logger;
 import org.ektorp.DbPath;
 import org.junit.After;
 import org.junit.Before;
@@ -14,10 +12,10 @@ import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.dto.Money;
-import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
-import org.motechproject.ghana.mtn.repository.AllSubscribers;
+import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
+import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,7 +27,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
-    private Logger log = Logger.getLogger(SubscriptionServiceIntegrationTest.class);
 
     @Autowired
     private SubscriptionController subscriptionController;
@@ -54,29 +51,30 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     @Test
     public void ShouldEnrollSubscriber() throws IOException {
         String shortCode = "P";
+        String program = "Pregnancy";
         SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "9500012345");
-
-        String expectedResponse = SubscriptionController.JSON_PREFIX
-                + String.format(MessageBundle.getMessage(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), "Pregnancy") + SubscriptionController.JSON_SUFFIX;
 
         subscriptionController.enroll(subscriptionRequest, response);
 
         List<Subscription> subscriptions = allSubscriptions.getAll();
-        Subscription subscription = subscriptions.get(0);
-
         List<Subscriber> subscribers = allSubscribers.getAll();
         ProgramType programType = allProgramTypes.findByCampaignShortCode(shortCode);
+        Subscription subscription = subscriptions.get(0);
 
         assertThat(response.getContentType(), is(SubscriptionController.CONTENT_TYPE_JSON));
-        assertThat(response.getContentAsString(), is(expectedResponse));
         assertThat(subscriptions.size(), is(1));
-
         assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
-
         assertThat(subscribers.size(), is(1));
         assertThat(subscription.getSubscriber(), new SubscriberMatcher(subscribers.get(0)));
+
+
+        String expectedResponse =
+                SubscriptionController.JSON_PREFIX
+                + String.format(MessageBundle.getMessage(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), program)
+                + SubscriptionController.JSON_SUFFIX;
+        assertThat(response.getContentAsString(), is(expectedResponse));
     }
 
     @Test

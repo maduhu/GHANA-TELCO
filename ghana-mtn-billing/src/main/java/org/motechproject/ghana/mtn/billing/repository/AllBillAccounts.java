@@ -21,7 +21,7 @@ public class AllBillAccounts extends MotechAuditableRepository<BillAccount> {
        super(BillAccount.class, db);
    }
 
-   public void updateBillAccount(String mobileNumber, Double currentBalance, IProgramType programType) {
+   public void updateFor(String mobileNumber, Double currentBalance, IProgramType programType) {
        BillAccount billAccount = findByMobileNumber(mobileNumber);
        if (billAccount == null)
            billAccount = new BillAccount();

@@ -22,11 +22,11 @@ public class AllBillAccountsTest extends RepositoryTest {
     public void ShouldUpdateBillAccount() {
         String mobileNumber = "9500012345";
         Double currentBalance = 2D;
-        allBillingAccounts.updateBillAccount(mobileNumber, currentBalance, getPregnancyProgramType());
+        allBillingAccounts.updateFor(mobileNumber, currentBalance, getPregnancyProgramType());
 
         assertBillAccount();
 
-        allBillingAccounts.updateBillAccount(mobileNumber, currentBalance, getPregnancyProgramType());
+        allBillingAccounts.updateFor(mobileNumber, currentBalance, getPregnancyProgramType());
         assertBillAccount();
     }
 
