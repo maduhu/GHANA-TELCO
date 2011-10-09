@@ -2,15 +2,23 @@ package org.motechproject.ghana.mtn.billing.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
+import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
 import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
-import org.motechproject.ghana.mtn.billing.service.BillingAuditor;
-import org.motechproject.ghana.mtn.billing.service.BillingScheduler;
-import org.motechproject.ghana.mtn.billing.service.BillingServiceImpl;
+import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.scheduler.MotechSchedulerService;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class BillingServiceImplTest {
@@ -33,8 +41,66 @@ public class BillingServiceImplTest {
     }
 
     @Test
-    public void shouldTest() {
-        assertTrue(true);
+    public void shouldReturnErrorResponseIfNotAValidMTNCustomer() {
+        BillingServiceRequest request = mock(BillingServiceRequest.class);
+        when(request.getMobileNumber()).thenReturn("123");
+        when(request.getFeeForProgram()).thenReturn(12d);
+        when(mtnMock.isMtnCustomer("123")).thenReturn(false);
+
+        BillingServiceResponse response = service.hasFundsForProgram(request);
+
+        verify(auditor).auditError(request, ValidationError.NOT_A_VALID_CUSTOMER);
+        assertEquals(ValidationError.NOT_A_VALID_CUSTOMER, response.getValidationErrors().get(0));
     }
+
+    @Test
+    public void shouldReturnErrorResponseIfCustomerHasNoFunds() {
+        BillingServiceRequest request = mock(BillingServiceRequest.class);
+        when(request.getMobileNumber()).thenReturn("123");
+        when(request.getFeeForProgram()).thenReturn(12d);
+        when(mtnMock.isMtnCustomer("123")).thenReturn(true);
+        when(mtnMock.getBalanceFor("123")).thenReturn(1d);
+
+        BillingServiceResponse response = service.hasFundsForProgram(request);
+
+        verify(auditor).auditError(request, ValidationError.INSUFFICIENT_FUND);
+        assertEquals(ValidationError.INSUFFICIENT_FUND, response.getValidationErrors().get(0));
+    }
+
+    @Test
+    public void shouldContactMTNAndUpdateAccountAndAudit() {
+        BillingServiceRequest request = mock(BillingServiceRequest.class);
+        IProgramType programType = mock(IProgramType.class);
+
+        when(request.getMobileNumber()).thenReturn("123");
+        when(request.getFeeForProgram()).thenReturn(12d);
+        when(request.getProgramType()).thenReturn(programType);
+        when(mtnMock.getBalanceFor("123")).thenReturn(1d);
+
+
+        BillingServiceResponse response = service.chargeProgramFee(request);
+
+        verify(mtnMock).chargeCustomer("123", 12d);
+        verify(auditor).audit(request);
+        verify(allBillAccounts).updateFor("123", 1d, programType);
+        assertFalse(response.hasErrors());
+    }
+
+    @Test
+    public void shouldRaiseAScheduleUsingPlatformSchedulerOnProcessRegistration() {
+        RegistrationBillingRequest request = mock(RegistrationBillingRequest.class);
+        IProgramType programType = mock(IProgramType.class);
+
+        when(request.getMobileNumber()).thenReturn("123");
+        when(request.getFeeForProgram()).thenReturn(12d);
+        when(request.getProgramType()).thenReturn(programType);
+        when(mtnMock.getBalanceFor("123")).thenReturn(1d);
+
+        BillingServiceResponse response = service.processRegistration(request);
+
+        verify(scheduler).createFor(request);
+        assertEquals(BillingServiceImpl.BILLING_SCHEDULE_CREATED, response.getValue());
+    }
+
 
 }

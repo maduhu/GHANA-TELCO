@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BillingServiceImpl implements BillingService {
-    private static final Logger log = Logger.getLogger(BillingServiceImpl.class);
-
     private MTNMock mtnMock;
     private AllBillAccounts allBillAccounts;
     private BillingScheduler scheduler;
     private BillingAuditor auditor;
+
+    public static final String BILLING_SCHEDULE_CREATED = "Billing success and schedule created";
 
     @Autowired
     public BillingServiceImpl(AllBillAccounts allBillAccounts, BillingScheduler scheduler, BillingAuditor auditor, MTNMock mtnMock) {
@@ -31,13 +31,14 @@ public class BillingServiceImpl implements BillingService {
     @Override
     public BillingServiceResponse hasFundsForProgram(BillingServiceRequest request) {
         String mobileNumber = request.getMobileNumber();
-        Double fee = request.getFeeForProgram();
-        Double balance = mtnMock.getBalanceFor(mobileNumber);
 
+        Double fee = request.getFeeForProgram();
         if (!mtnMock.isMtnCustomer(mobileNumber)) {
             auditor.auditError(request, ValidationError.NOT_A_VALID_CUSTOMER);
             return responseFor(ValidationError.NOT_A_VALID_CUSTOMER);
         }
+
+        Double balance = mtnMock.getBalanceFor(mobileNumber);
         if (balance <= fee) {
             auditor.auditError(request, ValidationError.INSUFFICIENT_FUND);
             return responseFor(ValidationError.INSUFFICIENT_FUND);
@@ -63,7 +64,7 @@ public class BillingServiceImpl implements BillingService {
         BillingServiceResponse response = chargeProgramFee(request);
         if (response.hasErrors()) return response;
         scheduler.createFor(request);
-        return new BillingServiceResponse<String>("Billing success and schedule created");
+        return new BillingServiceResponse<String>(BILLING_SCHEDULE_CREATED);
     }
 
     private BillingServiceResponse responseFor(ValidationError error) {

@@ -4,7 +4,6 @@ import org.motechproject.ghana.mtn.domain.IProgramType;
 
 public class BillingServiceRequest {
     private String mobileNumber;
-
     private IProgramType programType;
 
     public BillingServiceRequest(String mobileNumber, IProgramType programType) {

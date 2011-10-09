@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
-import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -16,8 +15,8 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class BillingSchedulerTest {
 
@@ -53,8 +52,8 @@ public class BillingSchedulerTest {
         assertEquals("jobKey",motechEvent.getSubject());
         assertEquals("jobKey.program.123",params.get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals("123",params.get(SchedulerParamsBuilder.EXTERNAL_ID_KEY));
-        assertEquals("program",params.get(SchedulerParamsBuilder.PROGRAM));
-        assertEquals(format("0 0 5 %s *",cycleStartDate.getDayOfMonth()), job.getCronExpression());
+        assertEquals("program", params.get(SchedulerParamsBuilder.PROGRAM));
+        assertEquals(format("0 0 5 %s *", cycleStartDate.getDayOfMonth()), job.getCronExpression());
         assertEquals(startDate, job.getStartTime());
 
     }
