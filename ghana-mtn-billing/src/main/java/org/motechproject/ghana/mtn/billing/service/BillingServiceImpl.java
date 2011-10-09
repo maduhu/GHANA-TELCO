@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.billing.service;
 
-import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
@@ -29,15 +28,13 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
-    public BillingServiceResponse hasFundsForProgram(BillingServiceRequest request) {
+    public BillingServiceResponse checkIfUserHasFunds(BillingServiceRequest request) {
         String mobileNumber = request.getMobileNumber();
-
         Double fee = request.getFeeForProgram();
         if (!mtnMock.isMtnCustomer(mobileNumber)) {
             auditor.auditError(request, ValidationError.NOT_A_VALID_CUSTOMER);
             return responseFor(ValidationError.NOT_A_VALID_CUSTOMER);
         }
-
         Double balance = mtnMock.getBalanceFor(mobileNumber);
         if (balance <= fee) {
             auditor.auditError(request, ValidationError.INSUFFICIENT_FUND);

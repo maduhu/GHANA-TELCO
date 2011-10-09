@@ -53,8 +53,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             String subscriberNumber = subscriptionRequest.getSubscriberNumber();
             Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
             
-            validateMessageAndSubscriber(subscriberNumber, subscription);
-            processBillingAndCreateSchedule(subscriberNumber, subscription);
+            validateSubscriber(subscriberNumber, subscription);
+            startBilling(subscriberNumber, subscription);
             persist(subscriberNumber, subscription);
             createCampaign(subscription);
             return format(getMessage(SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), subscription);
@@ -68,15 +68,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return getMessage(FAILURE_ENROLLMENT_MESSAGE);
     }
 
-    private void validateMessageAndSubscriber(String subscriberNumber, Subscription subscription) {
+    private void validateSubscriber(String subscriberNumber, Subscription subscription) {
         if (subscription.isNotValid())
             throw new UserRegistrationFailureException(getMessage(FAILURE_ENROLLMENT_MESSAGE));
         if (hasActiveSubscription(subscriberNumber, subscription))
             throw new UserRegistrationFailureException(format(getMessage(ACTIVE_SUBSCRIPTION_ALREADY_PRESENT), subscription));
 
-        BillingServiceResponse serviceResponse = billingService.hasFundsForProgram(new BillingServiceRequest(subscriberNumber, subscription.getProgramType()));
-        if (serviceResponse.hasErrors())
-            throw new UserRegistrationFailureException(getUserSMSResponseMessage(serviceResponse));
+        BillingServiceRequest request = new BillingServiceRequest(subscriberNumber, subscription.getProgramType());
+        BillingServiceResponse response = billingService.checkIfUserHasFunds(request);
+        if (response.hasErrors())
+            throw new UserRegistrationFailureException(getUserSMSResponseMessage(response));
     }
 
     @Override
@@ -89,11 +90,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return message != null ? message : getMessage(FAILURE_ENROLLMENT_MESSAGE);
     }
 
-    private void processBillingAndCreateSchedule(String subscriberNumber, Subscription subscription) {
+    private void startBilling(String subscriberNumber, Subscription subscription) {
         RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(subscriberNumber, subscription.getProgramType(), subscription.cycleStartDate());
         BillingServiceResponse response = billingService.processRegistration(registrationBillingRequest);
-        if(response.hasErrors()) throw new UserRegistrationFailureException(getUserSMSResponseMessage(response));
-
+        if(response.hasErrors())
+            throw new UserRegistrationFailureException(getUserSMSResponseMessage(response));
         subscription.setStatus(SubscriptionStatus.ACTIVE);
         subscription.updateStartCycleInfo();
     }

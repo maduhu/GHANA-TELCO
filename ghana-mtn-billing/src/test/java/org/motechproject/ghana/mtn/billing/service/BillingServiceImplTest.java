@@ -2,7 +2,6 @@ package org.motechproject.ghana.mtn.billing.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
@@ -47,7 +46,7 @@ public class BillingServiceImplTest {
         when(request.getFeeForProgram()).thenReturn(12d);
         when(mtnMock.isMtnCustomer("123")).thenReturn(false);
 
-        BillingServiceResponse response = service.hasFundsForProgram(request);
+        BillingServiceResponse response = service.checkIfUserHasFunds(request);
 
         verify(auditor).auditError(request, ValidationError.NOT_A_VALID_CUSTOMER);
         assertEquals(ValidationError.NOT_A_VALID_CUSTOMER, response.getValidationErrors().get(0));
@@ -61,7 +60,7 @@ public class BillingServiceImplTest {
         when(mtnMock.isMtnCustomer("123")).thenReturn(true);
         when(mtnMock.getBalanceFor("123")).thenReturn(1d);
 
-        BillingServiceResponse response = service.hasFundsForProgram(request);
+        BillingServiceResponse response = service.checkIfUserHasFunds(request);
 
         verify(auditor).auditError(request, ValidationError.INSUFFICIENT_FUND);
         assertEquals(ValidationError.INSUFFICIENT_FUND, response.getValidationErrors().get(0));

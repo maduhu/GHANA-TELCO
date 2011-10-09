@@ -98,7 +98,7 @@ public class SubscriptionServiceImplTest {
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
-        when(billingService.hasFundsForProgram(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
+        when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
         when(billingService.processRegistration(Matchers.<RegistrationBillingRequest>any())).thenReturn(new BillingServiceResponse());
 
         String response = service.enroll(subscriptionRequest);
@@ -119,7 +119,7 @@ public class SubscriptionServiceImplTest {
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567899")).thenReturn(Collections.EMPTY_LIST);
-        when(billingService.hasFundsForProgram(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
+        when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
         BillingServiceResponse billingServiceResponse = new BillingServiceResponse();
         billingServiceResponse.addError(ValidationError.INSUFFICIENT_FUND);
         when(billingService.processRegistration(Matchers.<RegistrationBillingRequest>any())).thenReturn(billingServiceResponse);
@@ -141,7 +141,7 @@ public class SubscriptionServiceImplTest {
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567899")).thenReturn(Collections.EMPTY_LIST);
-        when(billingService.hasFundsForProgram(Matchers.<BillingServiceRequest>any())).thenThrow(new UserRegistrationFailureException(""));
+        when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenThrow(new UserRegistrationFailureException(""));
 
         String response = service.enroll(TestSubscriptionRequest.with("1234567890", "P 25"));
         assertEquals("Sorry we are having trouble processing your request.", response);

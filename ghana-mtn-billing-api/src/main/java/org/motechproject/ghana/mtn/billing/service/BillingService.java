@@ -7,5 +7,5 @@ import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
 public interface BillingService {
     BillingServiceResponse processRegistration(RegistrationBillingRequest registrationBillingRequest);
     BillingServiceResponse chargeProgramFee(BillingServiceRequest billingServiceRequest);
-    BillingServiceResponse hasFundsForProgram(BillingServiceRequest billingServiceRequest);
+    BillingServiceResponse checkIfUserHasFunds(BillingServiceRequest billingServiceRequest);
 }

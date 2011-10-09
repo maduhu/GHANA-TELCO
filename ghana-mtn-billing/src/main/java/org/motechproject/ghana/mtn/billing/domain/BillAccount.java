@@ -27,6 +27,7 @@ public class BillAccount extends MotechAuditableDataObject {
         this.currentBalance = currentBalance;
     }
 
+    @JsonIgnore
     public void setProgramFee(String programName, Money fee) {
         if (null == programAccounts)
             programAccounts = new ArrayList<BillProgramAccount>();
