@@ -1,6 +1,6 @@
 package org.motechproject.ghana.mtn.billing.repository;
 
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.billing.domain.BillProgramAccount;
@@ -18,14 +18,18 @@ public class AllBillAccountsTest extends RepositoryTest {
     @Autowired
     private AllBillAccounts allBillingAccounts;
 
+    @Before
+    public void setUp(){
+       setRepository(allBillingAccounts);
+       removeAll();
+    }
+
     @Test
     public void ShouldUpdateBillAccount() {
         String mobileNumber = "9500012345";
         Double currentBalance = 2D;
         allBillingAccounts.updateFor(mobileNumber, currentBalance, getPregnancyProgramType());
-
         assertBillAccount();
-
         allBillingAccounts.updateFor(mobileNumber, currentBalance, getPregnancyProgramType());
         assertBillAccount();
     }
@@ -39,13 +43,6 @@ public class AllBillAccountsTest extends RepositoryTest {
         List<BillProgramAccount> programAccounts = billAccount.getProgramAccounts();
         assertThat(programAccounts.size(), is(1));
         assertThat(programAccounts.get(0).getProgramName(), is(getPregnancyProgramType().getProgramName()));
-    }
-
-    @After
-    public void destroy() {
-        for (BillAccount billAccount : allBillingAccounts.getAll()) {
-            allBillingAccounts.remove(billAccount);
-        }
     }
 
     public IProgramType getPregnancyProgramType() {

@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.billing.repository;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.billing.domain.BillAudit;
 import org.motechproject.ghana.mtn.billing.domain.BillStatus;
@@ -10,23 +11,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static junit.framework.Assert.assertEquals;
 
-public class AllBillAuditsTest extends RepositoryTest {
-   @Autowired
-   private AllBillAudits allBillAudits;
-   private BillAudit billAudit = new BillAudit("1234567890", new Money(2D), BillStatus.SUCCESS, null, DateUtil.today());
+public class AllBillAuditsTest extends RepositoryTest<BillAudit> {
+    @Autowired
+    private AllBillAudits allBillAudits;
 
-   @Test
-   public void ShouldAllBillAudit() {
-       allBillAudits.add(billAudit);
+    @Before
+    public void setUp() {
+        setRepository(allBillAudits);
+        removeAll();
+    }
 
-       assertEquals(allBillAudits.getAll().size(), 1);
-   }
-
-   @After
-   public void destroy() {
-       for (BillAudit audit : allBillAudits.getAll()) {
-           allBillAudits.remove(audit);
-       }
-   }
+    @Test
+    public void ShouldAllBillAudit() {
+        BillAudit billAudit = new BillAudit("1234567890", new Money(2D), BillStatus.SUCCESS, null, DateUtil.today());
+        allBillAudits.add(billAudit);
+        assertEquals(allBillAudits.getAll().size(), 1);
+    }
 
 }
