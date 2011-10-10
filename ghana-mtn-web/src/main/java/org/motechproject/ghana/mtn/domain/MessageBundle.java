@@ -15,6 +15,7 @@ public class MessageBundle {
     public static final String ENROLLMENT_SUCCESS = "enrollment.success";
     public static final String ENROLLMENT_FAILURE = "enrollment.failure";
     public static final String ACTIVE_SUBSCRIPTION_PRESENT = "enrollment.active.subscription.present";
+    public static final String BILLING_SUCCESS = "billing.success";
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {

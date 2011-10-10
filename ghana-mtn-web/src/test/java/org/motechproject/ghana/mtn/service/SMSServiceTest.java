@@ -1,0 +1,71 @@
+package org.motechproject.ghana.mtn.service;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.domain.dto.SMSServiceResponse;
+import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import static junit.framework.Assert.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+public class SMSServiceTest {
+
+    @Autowired
+    SMSService service;
+
+    @Mock
+    AllProgramMessageAudits allProgramMessageAudits;
+
+    @Mock
+    SMSProvider smsProvider;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        this.service = new SMSService(smsProvider,allProgramMessageAudits);
+    }
+
+
+    @Test
+    public void ShouldSendSMSAndAudit() {
+        String mobileNumber = "9876543210";
+        IProgramType programType = new ProgramTypeBuilder().withProgramName("Pregnancy").build();
+        String message = "Registration successful.";
+
+        SMSServiceResponse smsServiceResponse = service.send(new SMSServiceRequest(mobileNumber, message, programType));
+
+        assertTrue(smsServiceResponse.isSuccessful());
+
+        ArgumentCaptor<ProgramMessageAudit> captor = ArgumentCaptor.forClass(ProgramMessageAudit.class);
+        verify(smsProvider).send(mobileNumber, message);
+        verify(allProgramMessageAudits).add(captor.capture());
+        ProgramMessageAudit capturedProgramMessageAudit = captor.getValue();
+        assertEquals(programType.getProgramName(), capturedProgramMessageAudit.getProgramName());
+        assertEquals(mobileNumber, capturedProgramMessageAudit.getSubscriberNumber());
+    }
+
+    @Test
+    public void ShouldSendSMSAndAuditWithoutProgramType() {
+        String mobileNumber = "9876543210";
+        String message = "Registration successful.";
+
+        SMSServiceResponse smsServiceResponse = service.send(new SMSServiceRequest(mobileNumber, message, null));
+
+        assertTrue(smsServiceResponse.isSuccessful());
+
+        ArgumentCaptor<ProgramMessageAudit> captor = ArgumentCaptor.forClass(ProgramMessageAudit.class);
+        verify(smsProvider).send(mobileNumber, message);
+        verify(allProgramMessageAudits).add(captor.capture());
+        ProgramMessageAudit capturedProgramMessageAudit = captor.getValue();
+        assertNull(capturedProgramMessageAudit.getProgramName());
+        assertEquals(mobileNumber, capturedProgramMessageAudit.getSubscriberNumber());
+    }
+}

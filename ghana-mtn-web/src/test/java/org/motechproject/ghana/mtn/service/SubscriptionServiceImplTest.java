@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
@@ -10,6 +11,7 @@ import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
@@ -31,6 +33,8 @@ import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_SUCCESS;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.ENROLLMENT_SUCCESS;
 
 public class SubscriptionServiceImplTest {
     private SubscriptionServiceImpl service;
@@ -46,11 +50,13 @@ public class SubscriptionServiceImplTest {
     private BillingService billingService;
     @Mock
     private MessageBundle messageBundle;
+    @Mock
+    private SMSService smsService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        service = new SubscriptionServiceImpl(allSubscribers, allSubscriptions, campaignService, inputMessageParser, billingService, messageBundle);
+        service = new SubscriptionServiceImpl(allSubscribers, allSubscriptions, campaignService, inputMessageParser, billingService, messageBundle, smsService);
     }
 
     @Test
@@ -103,8 +109,8 @@ public class SubscriptionServiceImplTest {
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
         when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
-        when(billingService.startBillingCycle(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse());
-        when(messageBundle.get(MessageBundle.ENROLLMENT_SUCCESS)).thenReturn("success");
+        when(billingService.processRegistration(Matchers.<RegistrationBillingRequest>any())).thenReturn(new BillingServiceResponse());
+        when(messageBundle.get(ENROLLMENT_SUCCESS)).thenReturn("success");
 
         String response = service.enroll(subscriptionRequest);
         assertEquals("success",response);
@@ -112,6 +118,20 @@ public class SubscriptionServiceImplTest {
         verify(allSubscriptions).add(subscription);
         verify(allSubscribers).add(any(Subscriber.class));
         verify(campaignService).startFor(any(CampaignRequest.class));
+
+        ArgumentCaptor<SMSServiceRequest> captorForSmsService = ArgumentCaptor.forClass(SMSServiceRequest.class);
+        verify(smsService, times(2)).send(captorForSmsService.capture());
+
+        SMSServiceRequest smsRequestForSuccessfulBilling = captorForSmsService.getAllValues().get(0);
+        assertEquals(messageBundle.get(BILLING_SUCCESS), smsRequestForSuccessfulBilling.getMessage());
+        assertEquals(subscription.subscriberNumber() ,smsRequestForSuccessfulBilling.getMobileNumber());
+        assertEquals(subscription.getProgramType(),smsRequestForSuccessfulBilling.getProgramType());
+
+        SMSServiceRequest smsForRegistrationConfirmation = captorForSmsService.getAllValues().get(1);
+        assertEquals(messageBundle.get(ENROLLMENT_SUCCESS),smsForRegistrationConfirmation.getMessage());
+        assertEquals(subscription.subscriberNumber() ,smsForRegistrationConfirmation.getMobileNumber());
+        assertEquals(subscription.getProgramType(),smsForRegistrationConfirmation.getProgramType());
+
         assertEquals(SubscriptionStatus.ACTIVE, subscription.getStatus());
         assertEquals(Day.MONDAY, subscription.getStartWeekAndDay().getDay());
     }

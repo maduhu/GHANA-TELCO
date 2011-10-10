@@ -6,10 +6,8 @@ import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
-import org.motechproject.ghana.mtn.domain.MessageBundle;
-import org.motechproject.ghana.mtn.domain.Subscriber;
-import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.exception.UserRegistrationFailureException;
@@ -29,6 +27,7 @@ import java.util.List;
 import static ch.lambdaj.Lambda.*;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_SUCCESS;
 
 //TODO needs refactoring, has many responsibilities
 @Service
@@ -40,45 +39,55 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private InputMessageParser inputMessageParser;
     private BillingService billingService;
     private MessageBundle messageBundle;
+    private SMSService smsService;
 
     @Autowired
     public SubscriptionServiceImpl(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions,
                                    MessageCampaignService campaignService, InputMessageParser inputMessageParser,
-                                   BillingService billingService, MessageBundle messageBundle) {
+                                   BillingService billingService, MessageBundle messageBundle, SMSService smsService) {
         this.allSubscribers = allSubscribers;
         this.allSubscriptions = allSubscriptions;
         this.campaignService = campaignService;
         this.inputMessageParser = inputMessageParser;
         this.billingService = billingService;
         this.messageBundle = messageBundle;
+        this.smsService = smsService;
+    }
+
+    @Override
+    public Subscription findBy(String subscriberNumber, String programName) {
+        return allSubscriptions.findBy(subscriberNumber, programName);
     }
 
     @Override
     public String enroll(SubscriptionRequest subscriptionRequest) {
-        try {
-            String subscriberNumber = subscriptionRequest.getSubscriberNumber();
-            Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
 
+        String messageToSend;
+        String subscriberNumber = subscriptionRequest.getSubscriberNumber();
+        Subscription subscription = null;
+        try {
+            subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
             validateSubscriber(subscriberNumber, subscription);
             billingAndStartMonthlySchedule(subscriberNumber, subscription);
             persist(subscriberNumber, subscription);
             createCampaign(subscription);
-            return format(messageBundle.get(ENROLLMENT_SUCCESS), subscription);
+            messageToSend = format(message(ENROLLMENT_SUCCESS), subscription);
 
         } catch (MessageParseFailException e) {
             log.error("Parsing failed.", e);
+            messageToSend = message(ENROLLMENT_FAILURE);
         } catch (UserRegistrationFailureException e) {
             log.error("User registration failed.", e);
-            if (isNotEmpty(e.getMessage())) return e.getMessage();
+            messageToSend = isNotEmpty(e.getMessage()) ? e.getMessage() : message(ENROLLMENT_FAILURE);
         }
-        return messageBundle.get(ENROLLMENT_FAILURE);
+        return sendSms(subscriberNumber, subscription != null ? subscription.getProgramType() : null, messageToSend);
     }
 
     private void validateSubscriber(String subscriberNumber, Subscription subscription) {
         if (subscription.isNotValid())
-            throw new UserRegistrationFailureException(messageBundle.get(ENROLLMENT_FAILURE));
+            throw new UserRegistrationFailureException(message(ENROLLMENT_FAILURE));
         if (hasActiveSubscription(subscriberNumber, subscription))
-            throw new UserRegistrationFailureException(format(messageBundle.get(ACTIVE_SUBSCRIPTION_PRESENT), subscription));
+            throw new UserRegistrationFailureException(format(message(ACTIVE_SUBSCRIPTION_PRESENT), subscription));
 
         BillingServiceRequest request = new BillingServiceRequest(subscriberNumber, subscription.getProgramType());
         BillingServiceResponse response = billingService.checkIfUserHasFunds(request);
@@ -93,11 +102,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new UserRegistrationFailureException(getUserSMSResponse(response));
         subscription.setStatus(SubscriptionStatus.ACTIVE);
         subscription.updateStartCycleInfo();
+        sendSms(subscriberNumber, subscription.getProgramType(), message(BILLING_SUCCESS));
     }
 
-    @Override
-    public Subscription findBy(String subscriberNumber, String programName) {
-        return allSubscriptions.findBy(subscriberNumber, programName);
+    private String sendSms(String subscriberNumber, IProgramType programType, String message) {
+        smsService.send(new SMSServiceRequest(subscriberNumber, message, programType));
+        return message;
     }
 
     private String getUserSMSResponse(BillingServiceResponse serviceResponse) {
@@ -107,7 +117,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             builder.append(messageBundle.get(validationError) + " ");
         }
         String message = builder.toString();
-        return message != null ? StringUtils.trim(message) : messageBundle.get(ENROLLMENT_FAILURE);
+        return message != null ? StringUtils.trim(message) : message(ENROLLMENT_FAILURE);
     }
 
     private void createCampaign(Subscription subscription) {
@@ -131,5 +141,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         List<Subscription> subscriptions = select(activeSubscriptions, having(on(Subscription.class).getProgramType(),
                 new ProgramTypeMatcher(subscription.getProgramType())));
         return !CollectionUtils.isEmpty(subscriptions);
+    }
+
+    private String message(String key) {
+        return messageBundle.get(key);
     }
 }
