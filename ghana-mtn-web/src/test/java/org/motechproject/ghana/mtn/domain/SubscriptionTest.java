@@ -16,76 +16,73 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class SubscriptionTest {
-    DateUtils dateUtils = new DateUtils();
+    DateUtils dateUtils = spy(new DateUtils());
 
     @Before
     public void setUp() {
-        dateUtils = spy(dateUtils);
     }
 
     @Test
     public void shouldReturnCurrentRunningWeekForSubscriptionProgramBasedOnSundayAsStartOfWeek() {
 
+        DateTime monJan31 = date(2011, 1, 31);
         DateTime wedFeb2 = date(2011, 2, 2);
         DateTime satFeb5 = date(2011, 2, 5);
         DateTime sunFeb6 = date(2011, 2, 6);
         DateTime wedFeb24 = date(2011, 2, 24);
 
+        Subscription registeredOn_monJan31 = subscription("9999933333", monJan31, new Week(10), programType("Pregnancy"));
         Subscription registeredOn_wedFeb2 = subscription("9999933333", wedFeb2, new Week(6), programType("Pregnancy"));
         Subscription registeredOn_satFeb5 = subscription("9999933333", satFeb5, new Week(6), programType("Child"));
         Subscription registeredOn_sunFeb6 = subscription("9999933333", sunFeb6, new Week(8), programType("Child"));
         Subscription registeredOn_wedFeb24 = subscription("9999933333", wedFeb24, new Week(9), programType("Child"));
 
         mockCurrentDate(date(2011, 2, 5)); // sat
+        assertWeek(new Week(10), registeredOn_monJan31.currentWeek());
         assertWeek(new Week(6), registeredOn_wedFeb2.currentWeek());
         assertWeek(new Week(6), registeredOn_satFeb5.currentWeek());
 
         mockCurrentDate(date(2011, 2, 6)); // sun
+        assertWeek(new Week(11), registeredOn_monJan31.currentWeek());
         assertWeek(new Week(7), registeredOn_wedFeb2.currentWeek());
         assertWeek(new Week(7), registeredOn_satFeb5.currentWeek());
         assertWeek(new Week(8), registeredOn_sunFeb6.currentWeek());
 
         mockCurrentDate(date(2011, 2, 19)); // sat
+        assertWeek(new Week(12), registeredOn_monJan31.currentWeek());
         assertWeek(new Week(8), registeredOn_wedFeb2.currentWeek());
         assertWeek(new Week(8), registeredOn_satFeb5.currentWeek());
         assertWeek(new Week(9), registeredOn_sunFeb6.currentWeek());
 
         mockCurrentDate(date(2011, 2, 27)); // sun
+        assertWeek(new Week(14), registeredOn_monJan31.currentWeek());
         assertWeek(new Week(10), registeredOn_wedFeb2.currentWeek());
         assertWeek(new Week(10), registeredOn_satFeb5.currentWeek());
         assertWeek(new Week(11), registeredOn_sunFeb6.currentWeek());
         assertWeek(new Week(10), registeredOn_wedFeb24.currentWeek());
     }
 
+    @Test
+    public void shouldReturnStartBillingDateAsFirstOfNextMonthIfBillingCycleDateEndsOn29or30or31OfMonth() {
 
-//    @Test
-//    public void shouldReturnCurrentRunningWeekForSubscriptionProgramBasedOnSundayAsStartOfWeek2() {
-//
-//        DateTime monOct3 = date(2011, 10, 3);
-//        DateTime tueOct4 = date(2011, 10, 4);
-//        DateTime sunOct9 = date(2011, 10, 9);
-//        DateTime monOct10 = date(2011, 10, 10);
-//
-//        Subscription registeredOn_monOct3 = subscription("9999933333", monOct3, new Week(6), subscriptionType("Pregnancy"));
-//        Subscription registeredOn_tueOct4 = subscription("9999933333", tueOct4, new Week(6), subscriptionType("Child"));
-//        Subscription registeredOn_sunOct9 = subscription("9999933333", sunOct9, new Week(6), subscriptionType("Child"));
-//        Subscription registeredOn_monOct10 = subscription("9999933333", monOct10, new Week(6), subscriptionType("Child"));
-//
-//        mockCurrentDate(date(2011, 10, 4)); // tue
-//        assertWeek(new Week(6), registeredOn_monOct3.currentWeek());
-//        assertWeek(new Week(6), registeredOn_tueOct4.currentWeek());
-//
-//        mockCurrentDate(date(2011, 10, 9)); // sun
-//        assertWeek(new Week(7), registeredOn_monOct3.currentWeek());
-//        assertWeek(new Week(7), registeredOn_tueOct4.currentWeek());
-//        assertWeek(new Week(6), registeredOn_sunOct9.currentWeek());
-//
-//        mockCurrentDate(date(2011, 10, 17)); // mon
-//        assertWeek(new Week(9), registeredOn_monOct3.currentWeek());
-//        assertWeek(new Week(9), registeredOn_tueOct4.currentWeek());
-//        assertWeek(new Week(8), registeredOn_sunOct9.currentWeek());
-//        assertWeek(new Week(8), registeredOn_monOct10.currentWeek());
-//    }
+          DateTime feb28Mon = date(2011, 2, 28);
+          DateTime sep30Fri = date(2011, 9, 30);
+          DateTime oct1Sat_CycleDateWillBe_oct3Mon = date(2011, 10, 1);
+          DateTime oct31Mon = date(2011, 10, 31);
+          DateTime dec31Sat_CycleDateWillBe_jan2Mon = date(2011, 12, 31);
+
+          Subscription registeredOn_feb28Mon = subscription("9999933333", feb28Mon, new Week(10), programType("Pregnancy"));
+          Subscription registeredOn_sep30Fri = subscription("9999933333", sep30Fri, new Week(6), programType("Pregnancy"));
+          Subscription registeredOn_oct1Sat_CycleDateWillBe_oct3Mon = subscription("9999933333", oct1Sat_CycleDateWillBe_oct3Mon, new Week(6), programType("Child"));
+          Subscription registeredOn_oct31Mon = subscription("9999933333", oct31Mon, new Week(8), programType("Child"));
+          Subscription registeredOn_dec31Sat_CycleDateWillBe_jan2Mon = subscription("9999933333", dec31Sat_CycleDateWillBe_jan2Mon, new Week(9), programType("Child"));
+
+          assertEquals(date(2011, 2, 28), registeredOn_feb28Mon.billingStartDate());
+          assertEquals(date(2011, 10, 1), registeredOn_sep30Fri.billingStartDate());
+          assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.billingStartDate());
+          assertEquals(date(2011, 11, 1), registeredOn_oct31Mon.billingStartDate());
+          assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.billingStartDate());
+    }
     
     @Test
     public void shouldReturnCurrentDay() {

@@ -54,7 +54,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
             
             validateSubscriber(subscriberNumber, subscription);
-            startBilling(subscriberNumber, subscription);
+            billingAndStartMonthlySchedule(subscriberNumber, subscription);
             persist(subscriberNumber, subscription);
             createCampaign(subscription);
             return format(getMessage(SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), subscription);
@@ -90,8 +90,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return message != null ? message : getMessage(FAILURE_ENROLLMENT_MESSAGE);
     }
 
-    private void startBilling(String subscriberNumber, Subscription subscription) {
-        RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(subscriberNumber, subscription.getProgramType(), subscription.cycleStartDate());
+    private void billingAndStartMonthlySchedule(String subscriberNumber, Subscription subscription) {
+        RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(subscriberNumber, subscription.getProgramType(), subscription.billingStartDate());
         BillingServiceResponse response = billingService.processRegistration(registrationBillingRequest);
         if(response.hasErrors())
             throw new UserRegistrationFailureException(getUserSMSResponseMessage(response));

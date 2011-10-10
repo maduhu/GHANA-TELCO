@@ -1,5 +1,7 @@
 package org.motechproject.ghana.mtn.domain;
 
+import ch.lambdaj.Lambda;
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
@@ -11,6 +13,9 @@ import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
 import static org.joda.time.DateTimeConstants.SATURDAY;
 
 @TypeDiscriminator("doc.type === 'Subscription'")
@@ -122,8 +127,15 @@ public class Subscription extends MotechAuditableDataObject {
         return lastMsgSentWeekAndDay != null && subscriptionMessage.getWeekAndDay().isBefore(lastMsgSentWeekAndDay);
     }
 
-    public DateTime cycleStartDate() {
+    private DateTime cycleStartDate() {
        return new ProgramMessageCycle().nearestCycleDate(registrationDate);
+    }
+
+    public DateTime billingStartDate() {
+        List<Integer> forDaysToMoveToFirstOfMonth = asList(29, 30, 31);
+        DateTime billingStartDate = cycleStartDate();
+        if(forDaysToMoveToFirstOfMonth.contains(billingStartDate.getDayOfMonth())) return billingStartDate.dayOfMonth().addToCopy(1).withDayOfMonth(1);
+        return billingStartDate;
     }
 
     public void updateStartCycleInfo() {
