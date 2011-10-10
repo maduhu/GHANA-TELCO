@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -32,7 +32,7 @@ public class BillingSchedulerTest {
 
     @Test
     public void shouldRaiseACronJobWithPlatformSchedulerService() {
-        RegistrationBillingRequest request = mock(RegistrationBillingRequest.class);
+        BillingCycleRequest request = mock(BillingCycleRequest.class);
         DateTime cycleStartDate = DateTime.now();
         Date startDate = cycleStartDate.monthOfYear().addToCopy(1).toDate();
 
@@ -40,7 +40,7 @@ public class BillingSchedulerTest {
         when(request.programName()).thenReturn("program");
         when(request.getCycleStartDate()).thenReturn(cycleStartDate);
 
-        billingScheduler.createFor(request);
+        billingScheduler.startFor(request);
 
         ArgumentCaptor<CronSchedulableJob> captor = ArgumentCaptor.forClass(CronSchedulableJob.class);
         verify(schedulerService).scheduleJob(captor.capture());
@@ -55,6 +55,13 @@ public class BillingSchedulerTest {
         assertEquals("program", params.get(SchedulerParamsBuilder.PROGRAM));
         assertEquals(format("0 0 5 %s *", cycleStartDate.getDayOfMonth()), job.getCronExpression());
         assertEquals(startDate, job.getStartTime());
+    }
 
+
+    @Test
+    public void shouldStopTheScheduledJobs(){
+        BillingCycleRequest request = mock(BillingCycleRequest.class);
+
+        billingScheduler.stopFor(request);
     }
 }

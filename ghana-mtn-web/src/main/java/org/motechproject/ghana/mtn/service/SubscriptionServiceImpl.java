@@ -2,9 +2,9 @@ package org.motechproject.ghana.mtn.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscriber;
@@ -87,8 +87,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private void billingAndStartMonthlySchedule(String subscriberNumber, Subscription subscription) {
-        RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(subscriberNumber, subscription.getProgramType(), subscription.billingStartDate());
-        BillingServiceResponse response = billingService.processRegistration(registrationBillingRequest);
+        BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, subscription.getProgramType(), subscription.billingStartDate());
+        BillingServiceResponse response = billingService.processRegistration(billingCycleRequest);
         if (response.hasErrors())
             throw new UserRegistrationFailureException(getUserSMSResponse(response));
         subscription.setStatus(SubscriptionStatus.ACTIVE);

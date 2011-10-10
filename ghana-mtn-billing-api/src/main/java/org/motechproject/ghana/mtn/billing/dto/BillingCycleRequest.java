@@ -4,11 +4,11 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 
-public class RegistrationBillingRequest extends BillingServiceRequest {
+public class BillingCycleRequest extends BillingServiceRequest {
 
     private DateTime cycleStartDate;
 
-    public RegistrationBillingRequest(String mobileNumber, IProgramType programType, DateTime cycleStartDate) {
+    public BillingCycleRequest(String mobileNumber, IProgramType programType, DateTime cycleStartDate) {
         super(mobileNumber, programType);
         this.cycleStartDate = cycleStartDate;
     }

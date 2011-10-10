@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -87,7 +87,7 @@ public class BillingServiceImplTest {
 
     @Test
     public void shouldRaiseAScheduleUsingPlatformSchedulerOnProcessRegistration() {
-        RegistrationBillingRequest request = mock(RegistrationBillingRequest.class);
+        BillingCycleRequest request = mock(BillingCycleRequest.class);
         IProgramType programType = mock(IProgramType.class);
 
         when(request.getMobileNumber()).thenReturn("123");
@@ -97,7 +97,7 @@ public class BillingServiceImplTest {
 
         BillingServiceResponse response = service.processRegistration(request);
 
-        verify(scheduler).createFor(request);
+        verify(scheduler).startFor(request);
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_CREATED, response.getValue());
     }
 

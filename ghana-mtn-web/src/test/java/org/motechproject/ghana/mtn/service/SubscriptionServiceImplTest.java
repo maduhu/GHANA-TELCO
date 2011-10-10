@@ -7,7 +7,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
@@ -68,7 +68,7 @@ public class SubscriptionServiceImplTest {
         verify(allSubscriptions, never()).add(any(Subscription.class));
         verify(allSubscribers, never()).add(any(Subscriber.class));
         verify(campaignService, never()).startFor(any(CampaignRequest.class));
-        verify(billingService, never()).processRegistration(Matchers.<RegistrationBillingRequest>any());
+        verify(billingService, never()).processRegistration(Matchers.<BillingCycleRequest>any());
         assertEquals(null, subscription.getStatus());
     }
 
@@ -90,7 +90,7 @@ public class SubscriptionServiceImplTest {
         verify(allSubscriptions, never()).add(any(Subscription.class));
         verify(allSubscribers, never()).add(any(Subscriber.class));
         verify(campaignService, never()).startFor(any(CampaignRequest.class));
-        verify(billingService, never()).processRegistration(Matchers.<RegistrationBillingRequest>any());
+        verify(billingService, never()).processRegistration(Matchers.<BillingCycleRequest>any());
         assertEquals(null, subscription.getStatus());
     }
 
@@ -103,7 +103,7 @@ public class SubscriptionServiceImplTest {
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
         when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
-        when(billingService.processRegistration(Matchers.<RegistrationBillingRequest>any())).thenReturn(new BillingServiceResponse());
+        when(billingService.processRegistration(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse());
         when(messageBundle.get(MessageBundle.ENROLLMENT_SUCCESS)).thenReturn("success");
 
         String response = service.enroll(subscriptionRequest);
@@ -129,7 +129,7 @@ public class SubscriptionServiceImplTest {
 
         BillingServiceResponse billingServiceResponse = new BillingServiceResponse();
         billingServiceResponse.addError(ValidationError.INSUFFICIENT_FUNDS);
-        when(billingService.processRegistration(Matchers.<RegistrationBillingRequest>any())).thenReturn(billingServiceResponse);
+        when(billingService.processRegistration(Matchers.<BillingCycleRequest>any())).thenReturn(billingServiceResponse);
 
         String response = service.enroll(subscriptionRequest);
         assertEquals("no money", response);

@@ -2,7 +2,7 @@ package org.motechproject.ghana.mtn.billing.service;
 
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -36,7 +36,7 @@ public class BillingServiceImpl implements BillingService {
             return responseFor(ValidationError.INVALID_CUSTOMER);
         }
         Double balance = mtnMock.getBalanceFor(mobileNumber);
-        if (balance <= fee) {
+        if (balance < fee) {
             auditor.auditError(request, ValidationError.INSUFFICIENT_FUNDS);
             return responseFor(ValidationError.INSUFFICIENT_FUNDS);
         }
@@ -57,10 +57,10 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
-    public BillingServiceResponse processRegistration(RegistrationBillingRequest request) {
-        BillingServiceResponse response = chargeProgramFee(request);
+    public BillingServiceResponse processRegistration(BillingCycleRequest billingCycleRequest) {
+        BillingServiceResponse response = chargeProgramFee(billingCycleRequest);
         if (response.hasErrors()) return response;
-        scheduler.createFor(request);
+        scheduler.startFor(billingCycleRequest);
         return new BillingServiceResponse<String>(BILLING_SCHEDULE_CREATED);
     }
 

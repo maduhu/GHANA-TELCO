@@ -2,7 +2,7 @@ package org.motechproject.ghana.mtn.billing.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -30,7 +30,7 @@ public class BillingScheduler {
         this.cron = cron;
     }
 
-    public void createFor(RegistrationBillingRequest request) {
+    public void startFor(BillingCycleRequest request) {
         String mobileNumber = request.getMobileNumber();
         String programName = request.programName();
         DateTime cycleStartDate = request.getCycleStartDate();
