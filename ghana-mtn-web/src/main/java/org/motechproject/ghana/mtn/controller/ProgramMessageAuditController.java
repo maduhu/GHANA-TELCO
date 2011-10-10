@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.controller;
 
 import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
 import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ public class ProgramMessageAuditController {
         List<ProgramMessageAudit> messageAudits = allProgramMessageAudits.getAll();
 
         StringBuilder builder = new StringBuilder();
+        builder.append("<div id='server_time'>" + DateUtil.now() + "</div>");
         builder.append("<table>");
         builder.append("<tr><th>Subscriber</th><th>Program</th><th>Sent On</th><th>Content</th></tr>");
         for (ProgramMessageAudit messageAudit : messageAudits)

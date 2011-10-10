@@ -69,10 +69,16 @@ td, th {
     padding-left: 8px;
 }
 
-#audit_table{
-    height:300px;;
+#audit_table {
+    height: 300px;;
     width: 95%;
     overflow-y: scroll;
     background-color: white;
     border: 1px solid black;
+}
+
+#server_time {
+    color: red;
+    float: right;
+    margin: 5px;
 }
