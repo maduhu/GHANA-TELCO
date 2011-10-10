@@ -86,7 +86,6 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public Week currentWeek() {
-
         DateTime registeredDateStartDayTime = registrationDate.hourOfDay().roundFloorCopy();
         DateTime currentDateStartDayTime = dateUtils.now().hourOfDay().roundFloorCopy();
         int daysDiff = new Period(registeredDateStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();

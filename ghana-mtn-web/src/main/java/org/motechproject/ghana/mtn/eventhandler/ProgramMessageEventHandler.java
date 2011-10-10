@@ -1,7 +1,6 @@
 package org.motechproject.ghana.mtn.eventhandler;
 
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
-import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
@@ -41,17 +40,18 @@ public class ProgramMessageEventHandler {
 
         if (message == null) return;
         if (subscription.alreadySent(message)) return;
-        sms(subscription.getProgramType(), subscriberNumber, message);
+        sms(subscriberNumber, subscription, message);
         update(subscription);
-    }
-
-    private void sms(ProgramType programType, String subscriberNumber, ProgramMessage message) {
-        smsService.send(new SMSServiceRequest(subscriberNumber, message.getContent(), programType));
     }
 
     private void update(Subscription subscription) {
         subscription.updateLastMessageSent();
         allSubscriptions.update(subscription);
+    }
+
+    private void sms(String subscriberNumber, Subscription subscription, ProgramMessage message) {
+        SMSServiceRequest request = new SMSServiceRequest(subscriberNumber, message.getContent(), subscription.getProgramType());
+        smsService.send(request);
     }
 
 }
