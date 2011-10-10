@@ -109,7 +109,7 @@ public class SubscriptionServiceImplTest {
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
         when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
-        when(billingService.processRegistration(Matchers.<RegistrationBillingRequest>any())).thenReturn(new BillingServiceResponse());
+        when(billingService.startBillingCycle(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse());
         when(messageBundle.get(ENROLLMENT_SUCCESS)).thenReturn("success");
 
         String response = service.enroll(subscriptionRequest);
