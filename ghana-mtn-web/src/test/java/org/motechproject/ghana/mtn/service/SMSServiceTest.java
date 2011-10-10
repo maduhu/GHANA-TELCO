@@ -9,7 +9,7 @@ import org.motechproject.ghana.mtn.domain.SMSAudit;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceResponse;
-import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
+import org.motechproject.ghana.mtn.repository.AllSMSAudits;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static junit.framework.Assert.*;
@@ -22,7 +22,7 @@ public class SMSServiceTest {
     SMSService service;
 
     @Mock
-    AllProgramMessageAudits allProgramMessageAudits;
+    AllSMSAudits allProgramMessageAudits;
 
     @Mock
     SMSProvider smsProvider;

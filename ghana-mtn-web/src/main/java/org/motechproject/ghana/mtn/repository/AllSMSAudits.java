@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AllProgramMessageAudits extends MotechAuditableRepository<SMSAudit> {
+public class AllSMSAudits extends MotechAuditableRepository<SMSAudit> {
 
     @Autowired
-    protected AllProgramMessageAudits(@Qualifier("dbConnector") CouchDbConnector db) {
+    protected AllSMSAudits(@Qualifier("dbConnector") CouchDbConnector db) {
         super(SMSAudit.class, db);
     }
 

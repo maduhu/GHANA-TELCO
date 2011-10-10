@@ -59,7 +59,7 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
-    public BillingServiceResponse<CustomerBill> startBillingCycle(BillingCycleRequest request) {
+    public BillingServiceResponse<CustomerBill> startBilling(BillingCycleRequest request) {
         BillingServiceResponse<CustomerBill> response = chargeProgramFee(request);
         if (response.hasErrors()) return response;
         scheduler.startFor(request);
@@ -67,7 +67,7 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
-    public BillingServiceResponse stopBillingCycle(BillingCycleRequest request) {
+    public BillingServiceResponse stopBilling(BillingCycleRequest request) {
         scheduler.stopFor(request);
         return new BillingServiceResponse<String>(BILLING_SCHEDULE_STOPPED);
     }

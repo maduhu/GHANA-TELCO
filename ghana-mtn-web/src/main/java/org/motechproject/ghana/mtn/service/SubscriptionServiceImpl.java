@@ -61,7 +61,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public String enroll(SubscriptionRequest subscriptionRequest) {
-
         String messageToSend;
         String subscriberNumber = subscriptionRequest.getSubscriberNumber();
         Subscription subscription = null;
@@ -77,7 +76,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             log.error("Parsing failed.", e);
             messageToSend = message(ENROLLMENT_FAILURE);
         } catch (UserRegistrationFailureException e) {
-            log.error("User registration failed.", e);
+            log.error("User registration failed for " + e.getMessage());
             messageToSend = isNotEmpty(e.getMessage()) ? e.getMessage() : message(ENROLLMENT_FAILURE);
         }
         return sendSms(subscriberNumber, subscription != null ? subscription.getProgramType() : null, messageToSend);
@@ -97,7 +96,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void billingAndStartMonthlySchedule(String subscriberNumber, Subscription subscription) {
         BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, subscription.getProgramType(), subscription.billingStartDate());
-        BillingServiceResponse<CustomerBill> response = billingService.startBillingCycle(billingCycleRequest);
+        BillingServiceResponse<CustomerBill> response = billingService.startBilling(billingCycleRequest);
         if (response.hasErrors())
             throw new UserRegistrationFailureException(getUserSMSResponse(response));
         subscription.setStatus(SubscriptionStatus.ACTIVE);

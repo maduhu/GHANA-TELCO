@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Ignore
 public class AllProgramMessageAuditsTest extends BaseIntegrationTest {
     @Autowired
-    private AllProgramMessageAudits allProgramMessageAudits;
+    private AllSMSAudits allProgramMessageAudits;
 
 //    @Test
 //    public void shouldGetAuditSortedByDate() {

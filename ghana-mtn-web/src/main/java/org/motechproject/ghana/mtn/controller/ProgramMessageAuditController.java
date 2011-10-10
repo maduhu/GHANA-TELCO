@@ -1,7 +1,7 @@
 package org.motechproject.ghana.mtn.controller;
 
 import org.motechproject.ghana.mtn.domain.SMSAudit;
-import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
+import org.motechproject.ghana.mtn.repository.AllSMSAudits;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +14,7 @@ import java.util.List;
 @Controller
 public class ProgramMessageAuditController {
     @Autowired
-    private AllProgramMessageAudits allProgramMessageAudits;
+    private AllSMSAudits allProgramMessageAudits;
 
     @RequestMapping("/audits")
     public void showAll(HttpServletResponse response) throws IOException {

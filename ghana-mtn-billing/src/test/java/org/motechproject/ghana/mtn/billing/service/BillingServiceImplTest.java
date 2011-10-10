@@ -94,7 +94,7 @@ public class BillingServiceImplTest {
         when(request.getProgramType()).thenReturn(programType);
         when(mtnMock.getBalanceFor("123")).thenReturn(1d);
 
-        BillingServiceResponse<CustomerBill> response = service.startBillingCycle(request);
+        BillingServiceResponse<CustomerBill> response = service.startBilling(request);
 
         verify(scheduler).startFor(request);
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STARTED, response.getValue().getMessage());
@@ -105,7 +105,7 @@ public class BillingServiceImplTest {
     public void shouldStopBillingCycleByCallingScheduler(){
         BillingCycleRequest request = mock(BillingCycleRequest.class);
 
-        BillingServiceResponse response = service.stopBillingCycle(request);
+        BillingServiceResponse response = service.stopBilling(request);
 
         verify(scheduler).stopFor(request);
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STOPPED, response.getValue());
