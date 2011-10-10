@@ -119,8 +119,8 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                     <execution>
-                        <id>drop ghana-integration-mtn DB => rules</id>
+                    <execution>
+                        <id>drop ghana-integration-mtn DB</id>
                         <phase>pre-integration-test</phase>
                         <configuration>
                             <target>
@@ -169,6 +169,24 @@
                                     </classpath>
                                 </java>
                                 <echo message="Seed data loading: END"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>drop ghana-mtn-billing</id>
+                        <phase>post-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${couchdb.server}:${couchdb.port}/ghana-mtn-billing"/>
+                                </exec>
                             </target>
                         </configuration>
                         <goals>

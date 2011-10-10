@@ -19,14 +19,6 @@ public class BillAccount extends MotechAuditableDataObject {
     private Money currentBalance;
     private List<BillProgramAccount> programAccounts;
 
-    public void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
-    }
-
-    public void setCurrentBalance(Money currentBalance) {
-        this.currentBalance = currentBalance;
-    }
-
     @JsonIgnore
     public void setProgramFee(String programName, Money fee) {
         if (null == programAccounts)
@@ -42,8 +34,16 @@ public class BillAccount extends MotechAuditableDataObject {
         programAccount.setFee(fee);
     }
 
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
     public String getMobileNumber() {
         return mobileNumber;
+    }
+
+    public void setCurrentBalance(Money currentBalance) {
+        this.currentBalance = currentBalance;
     }
 
     public Money getCurrentBalance() {
