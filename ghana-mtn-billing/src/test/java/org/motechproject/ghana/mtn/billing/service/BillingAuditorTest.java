@@ -10,7 +10,7 @@ import org.motechproject.ghana.mtn.billing.domain.BillStatus;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAudits;
 import org.motechproject.ghana.mtn.domain.IProgramType;
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 
 import static org.junit.Assert.assertEquals;
@@ -58,7 +58,7 @@ public class BillingAuditorTest {
 
         when(programType.getFee()).thenReturn(fee);
 
-        auditor.auditError(request, ValidationError.INSUFFICIENT_FUND);
+        auditor.auditError(request, ValidationError.INSUFFICIENT_FUNDS);
 
         ArgumentCaptor<BillAudit> captor = ArgumentCaptor.forClass(BillAudit.class);
         verify(allBillingAudits).add(captor.capture());
@@ -67,7 +67,7 @@ public class BillingAuditorTest {
         assertEquals("123", captured.getMobileNumber());
         assertEquals(fee, captured.getAmountToCharge());
         assertEquals(BillStatus.FAILURE, captured.getBillStatus());
-        assertEquals(ValidationError.INSUFFICIENT_FUND.name(), captured.getFailureReason());
+        assertEquals(ValidationError.INSUFFICIENT_FUNDS.name(), captured.getFailureReason());
 
     }
 

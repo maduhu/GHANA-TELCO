@@ -3,7 +3,7 @@ package org.motechproject.ghana.mtn.billing.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.ArrayList;

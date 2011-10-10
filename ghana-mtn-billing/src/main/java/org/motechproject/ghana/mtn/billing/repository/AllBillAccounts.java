@@ -6,7 +6,7 @@ import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.domain.IProgramType;
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

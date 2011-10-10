@@ -48,8 +48,8 @@ public class BillingServiceImplTest {
 
         BillingServiceResponse response = service.checkIfUserHasFunds(request);
 
-        verify(auditor).auditError(request, ValidationError.NOT_A_VALID_CUSTOMER);
-        assertEquals(ValidationError.NOT_A_VALID_CUSTOMER, response.getValidationErrors().get(0));
+        verify(auditor).auditError(request, ValidationError.INVALID_CUSTOMER);
+        assertEquals(ValidationError.INVALID_CUSTOMER, response.getValidationErrors().get(0));
     }
 
     @Test
@@ -62,8 +62,8 @@ public class BillingServiceImplTest {
 
         BillingServiceResponse response = service.checkIfUserHasFunds(request);
 
-        verify(auditor).auditError(request, ValidationError.INSUFFICIENT_FUND);
-        assertEquals(ValidationError.INSUFFICIENT_FUND, response.getValidationErrors().get(0));
+        verify(auditor).auditError(request, ValidationError.INSUFFICIENT_FUNDS);
+        assertEquals(ValidationError.INSUFFICIENT_FUNDS, response.getValidationErrors().get(0));
     }
 
     @Test

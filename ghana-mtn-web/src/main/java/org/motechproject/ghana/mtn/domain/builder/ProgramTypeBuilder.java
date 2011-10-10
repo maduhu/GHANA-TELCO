@@ -1,7 +1,7 @@
 package org.motechproject.ghana.mtn.domain.builder;
 
 import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 
 import java.util.ArrayList;
 import java.util.List;

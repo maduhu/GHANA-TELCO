@@ -1,10 +1,12 @@
 package org.motechproject.ghana.mtn.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.RegistrationBillingRequest;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
+import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
@@ -28,6 +30,7 @@ import static ch.lambdaj.Lambda.*;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
 
+//TODO needs refactoring, has many responsibilities
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
     private final static Logger log = Logger.getLogger(SubscriptionServiceImpl.class);
@@ -36,15 +39,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private MessageCampaignService campaignService;
     private InputMessageParser inputMessageParser;
     private BillingService billingService;
+    private MessageBundle messageBundle;
 
     @Autowired
     public SubscriptionServiceImpl(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions,
-                                   MessageCampaignService campaignService, InputMessageParser inputMessageParser, BillingService billingService) {
+                                   MessageCampaignService campaignService, InputMessageParser inputMessageParser,
+                                   BillingService billingService, MessageBundle messageBundle) {
         this.allSubscribers = allSubscribers;
         this.allSubscriptions = allSubscriptions;
         this.campaignService = campaignService;
         this.inputMessageParser = inputMessageParser;
         this.billingService = billingService;
+        this.messageBundle = messageBundle;
     }
 
     @Override
@@ -52,32 +58,41 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         try {
             String subscriberNumber = subscriptionRequest.getSubscriberNumber();
             Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
-            
+
             validateSubscriber(subscriberNumber, subscription);
             billingAndStartMonthlySchedule(subscriberNumber, subscription);
             persist(subscriberNumber, subscription);
             createCampaign(subscription);
-            return format(getMessage(SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), subscription);
+            return format(messageBundle.get(ENROLLMENT_SUCCESS), subscription);
 
         } catch (MessageParseFailException e) {
             log.error("Parsing failed.", e);
         } catch (UserRegistrationFailureException e) {
             log.error("User registration failed.", e);
-            if(isNotEmpty(e.getMessage())) return e.getMessage();
+            if (isNotEmpty(e.getMessage())) return e.getMessage();
         }
-        return getMessage(FAILURE_ENROLLMENT_MESSAGE);
+        return messageBundle.get(ENROLLMENT_FAILURE);
     }
 
     private void validateSubscriber(String subscriberNumber, Subscription subscription) {
         if (subscription.isNotValid())
-            throw new UserRegistrationFailureException(getMessage(FAILURE_ENROLLMENT_MESSAGE));
+            throw new UserRegistrationFailureException(messageBundle.get(ENROLLMENT_FAILURE));
         if (hasActiveSubscription(subscriberNumber, subscription))
-            throw new UserRegistrationFailureException(format(getMessage(ACTIVE_SUBSCRIPTION_ALREADY_PRESENT), subscription));
+            throw new UserRegistrationFailureException(format(messageBundle.get(ACTIVE_SUBSCRIPTION_PRESENT), subscription));
 
         BillingServiceRequest request = new BillingServiceRequest(subscriberNumber, subscription.getProgramType());
         BillingServiceResponse response = billingService.checkIfUserHasFunds(request);
         if (response.hasErrors())
-            throw new UserRegistrationFailureException(getUserSMSResponseMessage(response));
+            throw new UserRegistrationFailureException(getUserSMSResponse(response));
+    }
+
+    private void billingAndStartMonthlySchedule(String subscriberNumber, Subscription subscription) {
+        RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(subscriberNumber, subscription.getProgramType(), subscription.billingStartDate());
+        BillingServiceResponse response = billingService.processRegistration(registrationBillingRequest);
+        if (response.hasErrors())
+            throw new UserRegistrationFailureException(getUserSMSResponse(response));
+        subscription.setStatus(SubscriptionStatus.ACTIVE);
+        subscription.updateStartCycleInfo();
     }
 
     @Override
@@ -85,18 +100,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return allSubscriptions.findBy(subscriberNumber, programName);
     }
 
-    private String getUserSMSResponseMessage(BillingServiceResponse serviceResponse) {
-        String message = getMessage(((ValidationError) serviceResponse.getValidationErrors().get(0)).name());
-        return message != null ? message : getMessage(FAILURE_ENROLLMENT_MESSAGE);
-    }
-
-    private void billingAndStartMonthlySchedule(String subscriberNumber, Subscription subscription) {
-        RegistrationBillingRequest registrationBillingRequest = new RegistrationBillingRequest(subscriberNumber, subscription.getProgramType(), subscription.billingStartDate());
-        BillingServiceResponse response = billingService.processRegistration(registrationBillingRequest);
-        if(response.hasErrors())
-            throw new UserRegistrationFailureException(getUserSMSResponseMessage(response));
-        subscription.setStatus(SubscriptionStatus.ACTIVE);
-        subscription.updateStartCycleInfo();
+    private String getUserSMSResponse(BillingServiceResponse serviceResponse) {
+        List<ValidationError> validationErrors = serviceResponse.getValidationErrors();
+        StringBuilder builder = new StringBuilder();
+        for (ValidationError validationError : validationErrors) {
+            builder.append(messageBundle.get(validationError) + " ");
+        }
+        String message = builder.toString();
+        return message != null ? StringUtils.trim(message) : messageBundle.get(ENROLLMENT_FAILURE);
     }
 
     private void createCampaign(Subscription subscription) {

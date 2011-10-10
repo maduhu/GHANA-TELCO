@@ -42,14 +42,14 @@ public class SubscriptionControllerTest {
         subscriptionRequest.setSubscriberNumber("1234567890");
         subscriptionRequest.setInputMessage("C 25");
 
-        when(subscriptionService.enroll(any(SubscriptionRequest.class))).thenReturn(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT);
+        when(subscriptionService.enroll(any(SubscriptionRequest.class))).thenReturn(MessageBundle.ENROLLMENT_SUCCESS);
         when(httpResponse.getWriter()).thenReturn(writer);
 
         controller.enroll(subscriptionRequest, httpResponse);
 
         verify(subscriptionService).enroll(argThat(new SubscriptionRequestMatcher("1234567890", "C 25")));
         verify(httpResponse).setContentType("application/json");
-        verify(writer).write(SubscriptionController.JSON_PREFIX + MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT + SubscriptionController.JSON_SUFFIX);
+        verify(writer).write(SubscriptionController.JSON_PREFIX + MessageBundle.ENROLLMENT_SUCCESS + SubscriptionController.JSON_SUFFIX);
     }
 
 }

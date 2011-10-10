@@ -44,11 +44,13 @@ public class SubscriptionServiceImplTest {
     private InputMessageParser inputMessageParser;
     @Mock
     private BillingService billingService;
+    @Mock
+    private MessageBundle messageBundle;
 
     @Before
     public void setUp() {
         initMocks(this);
-        service = new SubscriptionServiceImpl(allSubscribers, allSubscriptions, campaignService, inputMessageParser, billingService);
+        service = new SubscriptionServiceImpl(allSubscribers, allSubscriptions, campaignService, inputMessageParser, billingService, messageBundle);
     }
 
     @Test
@@ -58,9 +60,10 @@ public class SubscriptionServiceImplTest {
         Subscription subscription = TestSubscription.with(null, programType, DateTime.now(), new WeekAndDay(new Week(92), Day.MONDAY));
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
+        when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn("error");
 
         String actualResponse = service.enroll(subscriptionRequest);
-        assertEquals(MessageBundle.getMessage(MessageBundle.FAILURE_ENROLLMENT_MESSAGE), actualResponse);
+        assertEquals("error", actualResponse);
 
         verify(allSubscriptions, never()).add(any(Subscription.class));
         verify(allSubscribers, never()).add(any(Subscriber.class));
@@ -79,9 +82,10 @@ public class SubscriptionServiceImplTest {
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Arrays.asList(existingActiveSubscription));
+        when(messageBundle.get(MessageBundle.ACTIVE_SUBSCRIPTION_PRESENT)).thenReturn("error");
 
         String response = service.enroll(subscriptionRequest);
-        assertEquals("You already have an active Pregnancy Program Subscription. Please wait for the program to complete, or stop it to start a new one", response);
+        assertEquals("error", response);
 
         verify(allSubscriptions, never()).add(any(Subscription.class));
         verify(allSubscribers, never()).add(any(Subscriber.class));
@@ -100,9 +104,10 @@ public class SubscriptionServiceImplTest {
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
         when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
         when(billingService.processRegistration(Matchers.<RegistrationBillingRequest>any())).thenReturn(new BillingServiceResponse());
+        when(messageBundle.get(MessageBundle.ENROLLMENT_SUCCESS)).thenReturn("success");
 
         String response = service.enroll(subscriptionRequest);
-        assertEquals("Welcome to Mobile Midwife Pregnancy Program. You are now enrolled & will receive SMSs full of great info every Mon,Weds &Fri.To stop these messages send STOP", response);
+        assertEquals("success",response);
 
         verify(allSubscriptions).add(subscription);
         verify(allSubscribers).add(any(Subscriber.class));
@@ -120,12 +125,14 @@ public class SubscriptionServiceImplTest {
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567899")).thenReturn(Collections.EMPTY_LIST);
         when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
+        when(messageBundle.get(ValidationError.INSUFFICIENT_FUNDS)).thenReturn("no money");
+
         BillingServiceResponse billingServiceResponse = new BillingServiceResponse();
-        billingServiceResponse.addError(ValidationError.INSUFFICIENT_FUND);
+        billingServiceResponse.addError(ValidationError.INSUFFICIENT_FUNDS);
         when(billingService.processRegistration(Matchers.<RegistrationBillingRequest>any())).thenReturn(billingServiceResponse);
 
         String response = service.enroll(subscriptionRequest);
-        assertEquals("There aren’t sufficient funds to proceed with the registration.", response);
+        assertEquals("no money", response);
 
         verify(allSubscriptions, never()).add(subscription);
         verify(allSubscribers, never()).add(any(Subscriber.class));
@@ -142,8 +149,9 @@ public class SubscriptionServiceImplTest {
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567899")).thenReturn(Collections.EMPTY_LIST);
         when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenThrow(new UserRegistrationFailureException(""));
+        when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn("error");
 
         String response = service.enroll(TestSubscriptionRequest.with("1234567890", "P 25"));
-        assertEquals("Sorry we are having trouble processing your request.", response);
+        assertEquals("error", response);
     }
 }

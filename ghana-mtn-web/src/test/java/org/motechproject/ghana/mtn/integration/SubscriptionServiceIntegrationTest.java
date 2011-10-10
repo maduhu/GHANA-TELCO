@@ -12,7 +12,7 @@ import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
@@ -75,7 +75,7 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
 
         String expectedResponse =
                 SubscriptionController.JSON_PREFIX
-                + String.format(MessageBundle.getMessage(MessageBundle.SUCCESSFUL_ENROLLMENT_MESSAGE_FORMAT), program)
+                + String.format("Welcome to Mobile Midwife %s Program. You are now enrolled & will receive SMSs full of great info every Mon,Weds &Fri. To stop these messages send STOP", program)
                 + SubscriptionController.JSON_SUFFIX;
         assertThat(response.getContentAsString(), is(expectedResponse));
     }
@@ -86,7 +86,9 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
 
         subscriptionController.enroll(subscriptionRequest, response);
 
-        assertThat(response.getContentAsString(), is(SubscriptionController.JSON_PREFIX + MessageBundle.getMessage(MessageBundle.FAILURE_ENROLLMENT_MESSAGE) + SubscriptionController.JSON_SUFFIX));
+        assertThat(response.getContentAsString(), is(SubscriptionController.JSON_PREFIX
+                + "Sorry we are having trouble processing your request."
+                + SubscriptionController.JSON_SUFFIX));
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
     }
 

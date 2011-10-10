@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.dto;
+package org.motechproject.ghana.mtn.vo;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 

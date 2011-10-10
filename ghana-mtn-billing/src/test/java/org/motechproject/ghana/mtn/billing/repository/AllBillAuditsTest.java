@@ -1,11 +1,10 @@
 package org.motechproject.ghana.mtn.billing.repository;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.billing.domain.BillAudit;
 import org.motechproject.ghana.mtn.billing.domain.BillStatus;
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 

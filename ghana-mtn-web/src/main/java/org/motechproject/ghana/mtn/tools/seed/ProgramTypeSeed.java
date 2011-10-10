@@ -3,7 +3,7 @@ package org.motechproject.ghana.mtn.tools.seed;
 import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

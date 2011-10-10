@@ -1,6 +1,6 @@
 package org.motechproject.ghana.mtn.billing.domain;
 
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 
 public class BillProgramAccount {
     private String programName;

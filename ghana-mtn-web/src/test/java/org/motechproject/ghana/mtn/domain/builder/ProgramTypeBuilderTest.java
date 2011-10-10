@@ -2,7 +2,7 @@ package org.motechproject.ghana.mtn.domain.builder;
 
 import org.junit.Test;
 import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 
 import static org.junit.Assert.assertThat;
 

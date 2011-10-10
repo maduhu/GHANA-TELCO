@@ -32,13 +32,13 @@ public class BillingServiceImpl implements BillingService {
         String mobileNumber = request.getMobileNumber();
         Double fee = request.getFeeForProgram();
         if (!mtnMock.isMtnCustomer(mobileNumber)) {
-            auditor.auditError(request, ValidationError.NOT_A_VALID_CUSTOMER);
-            return responseFor(ValidationError.NOT_A_VALID_CUSTOMER);
+            auditor.auditError(request, ValidationError.INVALID_CUSTOMER);
+            return responseFor(ValidationError.INVALID_CUSTOMER);
         }
         Double balance = mtnMock.getBalanceFor(mobileNumber);
         if (balance <= fee) {
-            auditor.auditError(request, ValidationError.INSUFFICIENT_FUND);
-            return responseFor(ValidationError.INSUFFICIENT_FUND);
+            auditor.auditError(request, ValidationError.INSUFFICIENT_FUNDS);
+            return responseFor(ValidationError.INSUFFICIENT_FUNDS);
         }
         return new BillingServiceResponse();
     }
