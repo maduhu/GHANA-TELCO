@@ -5,19 +5,19 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechAuditableDataObject;
 
-@TypeDiscriminator("doc.type === 'ProgramMessageAudit'")
-public class ProgramMessageAudit extends MotechAuditableDataObject {
+@TypeDiscriminator("doc.type === 'SMSAudit'")
+public class SMSAudit extends MotechAuditableDataObject {
     @JsonProperty("type")
-    private String type = "ProgramMessageAudit";
+    private String type = "SMSAudit";
     private String subscriberNumber;
     private String programName;
     private DateTime sentTime;
     private String content;
 
-    public ProgramMessageAudit() {
+    public SMSAudit() {
     }
 
-    public ProgramMessageAudit(String subscriberNumber, String programName, DateTime sentTime, String content) {
+    public SMSAudit(String subscriberNumber, String programName, DateTime sentTime, String content) {
         this.subscriberNumber = subscriberNumber;
         this.programName = programName;
         this.sentTime = sentTime;

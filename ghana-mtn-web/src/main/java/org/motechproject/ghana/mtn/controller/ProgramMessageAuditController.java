@@ -1,6 +1,6 @@
 package org.motechproject.ghana.mtn.controller;
 
-import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
+import org.motechproject.ghana.mtn.domain.SMSAudit;
 import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,13 @@ public class ProgramMessageAuditController {
 
     @RequestMapping("/audits")
     public void showAll(HttpServletResponse response) throws IOException {
-        List<ProgramMessageAudit> messageAudits = allProgramMessageAudits.getAll();
+        List<SMSAudit> messageAudits = allProgramMessageAudits.getAll();
 
         StringBuilder builder = new StringBuilder();
         builder.append("<div id='server_time'>" + DateUtil.now() + "</div>");
         builder.append("<table>");
         builder.append("<tr><th>Subscriber</th><th>Program</th><th>Sent On</th><th>Content</th></tr>");
-        for (ProgramMessageAudit messageAudit : messageAudits)
+        for (SMSAudit messageAudit : messageAudits)
             builder.append(
                     "<tr><td>" + messageAudit.getSubscriberNumber()
                             + "</td><td>" + messageAudit.getProgramName()

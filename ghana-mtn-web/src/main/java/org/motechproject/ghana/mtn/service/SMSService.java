@@ -1,7 +1,7 @@
 package org.motechproject.ghana.mtn.service;
 
 import org.apache.log4j.Logger;
-import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
+import org.motechproject.ghana.mtn.domain.SMSAudit;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceResponse;
 import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
@@ -32,7 +32,7 @@ public class SMSService {
 
         log.info("Subscriber: " + subscriberNumber + ":" + message + " : @" + now());
 
-        ProgramMessageAudit audit = new ProgramMessageAudit(subscriberNumber, smsServiceRequest.programName(), DateUtil.now(), message);
+        SMSAudit audit = new SMSAudit(subscriberNumber, smsServiceRequest.programName(), DateUtil.now(), message);
         this.allProgramMessageAudits.add(audit);
         return new SMSServiceResponse();
     }

@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.IProgramType;
-import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
+import org.motechproject.ghana.mtn.domain.SMSAudit;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceResponse;
@@ -44,12 +44,12 @@ public class SMSServiceTest {
 
         assertTrue(smsServiceResponse.isSuccessful());
 
-        ArgumentCaptor<ProgramMessageAudit> captor = ArgumentCaptor.forClass(ProgramMessageAudit.class);
+        ArgumentCaptor<SMSAudit> captor = ArgumentCaptor.forClass(SMSAudit.class);
         verify(smsProvider).send(mobileNumber, message);
         verify(allProgramMessageAudits).add(captor.capture());
-        ProgramMessageAudit capturedProgramMessageAudit = captor.getValue();
-        assertEquals(programType.getProgramName(), capturedProgramMessageAudit.getProgramName());
-        assertEquals(mobileNumber, capturedProgramMessageAudit.getSubscriberNumber());
+        SMSAudit capturedSMSAudit = captor.getValue();
+        assertEquals(programType.getProgramName(), capturedSMSAudit.getProgramName());
+        assertEquals(mobileNumber, capturedSMSAudit.getSubscriberNumber());
     }
 
     @Test
@@ -61,11 +61,11 @@ public class SMSServiceTest {
 
         assertTrue(smsServiceResponse.isSuccessful());
 
-        ArgumentCaptor<ProgramMessageAudit> captor = ArgumentCaptor.forClass(ProgramMessageAudit.class);
+        ArgumentCaptor<SMSAudit> captor = ArgumentCaptor.forClass(SMSAudit.class);
         verify(smsProvider).send(mobileNumber, message);
         verify(allProgramMessageAudits).add(captor.capture());
-        ProgramMessageAudit capturedProgramMessageAudit = captor.getValue();
-        assertNull(capturedProgramMessageAudit.getProgramName());
-        assertEquals(mobileNumber, capturedProgramMessageAudit.getSubscriberNumber());
+        SMSAudit capturedSMSAudit = captor.getValue();
+        assertNull(capturedSMSAudit.getProgramName());
+        assertEquals(mobileNumber, capturedSMSAudit.getSubscriberNumber());
     }
 }

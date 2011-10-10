@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
+import org.motechproject.ghana.mtn.domain.SMSAudit;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
@@ -70,9 +70,9 @@ public class ProgramMessageEventHandlerTest {
         verify(subscription).updateLastMessageSent();
         verify(allSubscriptions).update(subscription);
 
-        ArgumentCaptor<ProgramMessageAudit> auditCapture = ArgumentCaptor.forClass(ProgramMessageAudit.class);
+        ArgumentCaptor<SMSAudit> auditCapture = ArgumentCaptor.forClass(SMSAudit.class);
         verify(allMessageAudits).add(auditCapture.capture());
-        ProgramMessageAudit capturedAudit = auditCapture.getValue();
+        SMSAudit capturedAudit = auditCapture.getValue();
         assertEquals(programName, capturedAudit.getProgramName());
         assertEquals(messageContent, capturedAudit.getContent());
     }

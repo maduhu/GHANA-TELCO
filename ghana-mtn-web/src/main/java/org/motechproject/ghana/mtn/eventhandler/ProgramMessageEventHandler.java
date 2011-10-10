@@ -1,7 +1,7 @@
 package org.motechproject.ghana.mtn.eventhandler;
 
 import org.apache.log4j.Logger;
-import org.motechproject.ghana.mtn.domain.ProgramMessageAudit;
+import org.motechproject.ghana.mtn.domain.SMSAudit;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
@@ -50,7 +50,7 @@ public class ProgramMessageEventHandler {
 
     private void audit(String programName, String subscriberNumber, ProgramMessage message) {
         log.info("Subscriber: " + subscriberNumber + ":" + message + " : @" + now());
-        ProgramMessageAudit audit = new ProgramMessageAudit(subscriberNumber, programName, DateUtil.now(), message.getContent());
+        SMSAudit audit = new SMSAudit(subscriberNumber, programName, DateUtil.now(), message.getContent());
         allMessageAudits.add(audit);
     }
 
