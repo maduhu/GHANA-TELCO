@@ -58,10 +58,4 @@ public class BillingSchedulerTest {
     }
 
 
-    @Test
-    public void shouldStopTheScheduledJobs(){
-        BillingCycleRequest request = mock(BillingCycleRequest.class);
-
-        billingScheduler.stopFor(request);
-    }
 }
