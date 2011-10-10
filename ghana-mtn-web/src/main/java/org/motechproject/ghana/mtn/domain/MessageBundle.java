@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,8 @@ public class MessageBundle {
     public static final String ENROLLMENT_FAILURE = "enrollment.failure";
     public static final String ACTIVE_SUBSCRIPTION_PRESENT = "enrollment.active.subscription.present";
 
-    public MessageBundle(@Qualifier("ivrProperties") Properties values) {
+    @Autowired
+    public MessageBundle(@Qualifier("bundleProperties") Properties values) {
         this.values = values;
     }
 
