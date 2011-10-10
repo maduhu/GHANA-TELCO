@@ -1,36 +1,33 @@
 package org.motechproject.ghana.mtn.eventhandler;
 
-import org.apache.log4j.Logger;
-import org.motechproject.ghana.mtn.domain.SMSAudit;
-import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
-import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
-import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
-import static org.motechproject.util.DateUtil.now;
 
 @Service
 public class ProgramMessageEventHandler {
-    private final static Logger log = Logger.getLogger(ProgramMessageEventHandler.class);
     private AllSubscriptions allSubscriptions;
     private AllProgramMessages allProgramMessages;
-    private AllProgramMessageAudits allMessageAudits;
+    private SMSService smsService;
 
     @Autowired
-    public ProgramMessageEventHandler(AllSubscriptions allSubscriptions, AllProgramMessages allProgramMessages, AllProgramMessageAudits allMessageAudits) {
+    public ProgramMessageEventHandler(AllSubscriptions allSubscriptions, AllProgramMessages allProgramMessages, SMSService smsService) {
         this.allSubscriptions = allSubscriptions;
         this.allProgramMessages = allProgramMessages;
-        this.allMessageAudits = allMessageAudits;
+        this.smsService = smsService;
     }
 
     @MotechListener(subjects = {MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT})
@@ -44,14 +41,12 @@ public class ProgramMessageEventHandler {
 
         if (message == null) return;
         if (subscription.alreadySent(message)) return;
-        audit(programName, subscriberNumber, message);
+        sms(subscription.getProgramType(), subscriberNumber, message);
         update(subscription);
     }
 
-    private void audit(String programName, String subscriberNumber, ProgramMessage message) {
-        log.info("Subscriber: " + subscriberNumber + ":" + message + " : @" + now());
-        SMSAudit audit = new SMSAudit(subscriberNumber, programName, DateUtil.now(), message.getContent());
-        allMessageAudits.add(audit);
+    private void sms(ProgramType programType, String subscriberNumber, ProgramMessage message) {
+        smsService.send(new SMSServiceRequest(subscriberNumber, message.getContent(), programType));
     }
 
     private void update(Subscription subscription) {

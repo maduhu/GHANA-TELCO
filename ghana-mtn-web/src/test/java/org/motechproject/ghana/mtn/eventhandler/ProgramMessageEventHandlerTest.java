@@ -4,15 +4,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.SMSAudit;
+import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.ProgramMessage;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
-import org.motechproject.ghana.mtn.repository.AllProgramMessageAudits;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.messagecampaign.EventKeys;
 
@@ -31,16 +32,16 @@ public class ProgramMessageEventHandlerTest {
     @Mock
     private AllProgramMessages allSubscriptionMessages;
     @Mock
-    private AllProgramMessageAudits allMessageAudits;
+    private SMSService smsService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        programMessageEventHandler = new ProgramMessageEventHandler(allSubscriptions, allSubscriptionMessages, allMessageAudits);
+        programMessageEventHandler = new ProgramMessageEventHandler(allSubscriptions, allSubscriptionMessages, smsService);
     }
 
     @Test
-    public void shouldSendPickRightReminderAndSendIfNotAlreadySent() {
+    public void shouldDecideRightReminderMessageAndSendSMSIfNotAlreadySent() {
         String subscriberNumber = "externalId";
         String programName = "pregnancy";
         String messageContent = "sample message content";
@@ -52,7 +53,7 @@ public class ProgramMessageEventHandlerTest {
 
         Week week = new Week(21);
         Day day = Day.FRIDAY;
-        ProgramType programType = new ProgramType();
+        ProgramType programType = new ProgramTypeBuilder().withProgramName(programName).build();
         Subscription subscription = mock(Subscription.class);
         ProgramMessage programMessage = mock(ProgramMessage.class);
 
@@ -70,10 +71,11 @@ public class ProgramMessageEventHandlerTest {
         verify(subscription).updateLastMessageSent();
         verify(allSubscriptions).update(subscription);
 
-        ArgumentCaptor<SMSAudit> auditCapture = ArgumentCaptor.forClass(SMSAudit.class);
-        verify(allMessageAudits).add(auditCapture.capture());
-        SMSAudit capturedAudit = auditCapture.getValue();
-        assertEquals(programName, capturedAudit.getProgramName());
-        assertEquals(messageContent, capturedAudit.getContent());
+        ArgumentCaptor<SMSServiceRequest> smsServiceRequestCaptor = ArgumentCaptor.forClass(SMSServiceRequest.class);
+        verify(smsService).send(smsServiceRequestCaptor.capture());
+        SMSServiceRequest capturedSMSRequest = smsServiceRequestCaptor.getValue();
+        assertEquals(programName, capturedSMSRequest.programName());
+        assertEquals(messageContent, capturedSMSRequest.getMessage());
+        assertEquals(subscriberNumber, capturedSMSRequest.getMobileNumber());
     }
 }
