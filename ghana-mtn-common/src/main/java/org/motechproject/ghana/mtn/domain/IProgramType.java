@@ -1,6 +1,6 @@
 package org.motechproject.ghana.mtn.domain;
 
-import org.motechproject.ghana.mtn.dto.Money;
+import org.motechproject.ghana.mtn.vo.Money;
 
 import java.util.List;
 
