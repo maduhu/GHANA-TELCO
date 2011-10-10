@@ -1,4 +1,4 @@
-package org.motechproject.ghana.sms.dto;
+package org.motechproject.ghana.mtn.domain.dto;
 
 public class SMSServiceRequest {
     String mobileNumber;
