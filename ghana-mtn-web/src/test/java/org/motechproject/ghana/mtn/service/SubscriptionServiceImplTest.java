@@ -6,10 +6,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
+import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
+import org.motechproject.ghana.mtn.billing.service.BillingServiceImpl;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
@@ -19,9 +21,9 @@ import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.exception.UserRegistrationFailureException;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.ghana.mtn.testbuilders.TestProgramType;
 import org.motechproject.ghana.mtn.testbuilders.TestSubscription;
 import org.motechproject.ghana.mtn.testbuilders.TestSubscriptionRequest;
-import org.motechproject.ghana.mtn.testbuilders.TestProgramType;
 import org.motechproject.ghana.mtn.validation.InputMessageParser;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
@@ -105,12 +107,15 @@ public class SubscriptionServiceImplTest {
         SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
         ProgramType programType = TestProgramType.with("Pregnancy", 3, 12, Arrays.asList("P"));
         Subscription subscription = TestSubscription.with(null, programType, new DateTime(2011, 10, 8, 10, 10), new WeekAndDay(new Week(12), Day.MONDAY));
+        String billSuccessMsg = "Your account has been charged with %s amount for the Mobile Mid Wife Service. Thank You for continuing to use the service.";
+        CustomerBill customerBill = new CustomerBill(BillingServiceImpl.BILLING_SCHEDULE_STARTED, new Double(14d));
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
         when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
-        when(billingService.startBillingCycle(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse());
+        when(billingService.startBillingCycle(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<CustomerBill>(customerBill));
         when(messageBundle.get(ENROLLMENT_SUCCESS)).thenReturn("success");
+        when(messageBundle.get(BILLING_SUCCESS)).thenReturn(billSuccessMsg);
 
         String response = service.enroll(subscriptionRequest);
         assertEquals("success",response);
@@ -123,7 +128,7 @@ public class SubscriptionServiceImplTest {
         verify(smsService, times(2)).send(captorForSmsService.capture());
 
         SMSServiceRequest smsRequestForSuccessfulBilling = captorForSmsService.getAllValues().get(0);
-        assertEquals(messageBundle.get(BILLING_SUCCESS), smsRequestForSuccessfulBilling.getMessage());
+        assertEquals("Your account has been charged with 14.0 amount for the Mobile Mid Wife Service. Thank You for continuing to use the service.", smsRequestForSuccessfulBilling.getMessage());
         assertEquals(subscription.subscriberNumber() ,smsRequestForSuccessfulBilling.getMobileNumber());
         assertEquals(subscription.getProgramType(),smsRequestForSuccessfulBilling.getProgramType());
 

@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.billing.service;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
+import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -45,7 +46,7 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
-    public BillingServiceResponse chargeProgramFee(BillingServiceRequest request) {
+    public BillingServiceResponse<CustomerBill> chargeProgramFee(BillingServiceRequest request) {
         String mobileNumber = request.getMobileNumber();
         Double fee = request.getFeeForProgram();
         Double balance = mtnMock.getBalanceFor(mobileNumber);
@@ -54,15 +55,15 @@ public class BillingServiceImpl implements BillingService {
         mtnMock.chargeCustomer(mobileNumber, fee);
         auditor.audit(request);
         allBillAccounts.updateFor(mobileNumber, balance, programType);
-        return new BillingServiceResponse();
+        return new BillingServiceResponse<CustomerBill>(new CustomerBill("", fee));
     }
 
     @Override
-    public BillingServiceResponse startBillingCycle(BillingCycleRequest request) {
-        BillingServiceResponse response = chargeProgramFee(request);
+    public BillingServiceResponse<CustomerBill> startBillingCycle(BillingCycleRequest request) {
+        BillingServiceResponse<CustomerBill> response = chargeProgramFee(request);
         if (response.hasErrors()) return response;
         scheduler.startFor(request);
-        return new BillingServiceResponse<String>(BILLING_SCHEDULE_STARTED);
+        return new BillingServiceResponse<CustomerBill>(new CustomerBill(BILLING_SCHEDULE_STARTED, response.getValue().getAmountCharged()));
     }
 
     @Override

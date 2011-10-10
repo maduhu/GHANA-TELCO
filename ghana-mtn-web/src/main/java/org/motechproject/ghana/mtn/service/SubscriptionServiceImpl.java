@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
+import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
@@ -27,7 +28,6 @@ import java.util.List;
 import static ch.lambdaj.Lambda.*;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
-import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_SUCCESS;
 
 //TODO needs refactoring, has many responsibilities
 @Service
@@ -97,12 +97,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void billingAndStartMonthlySchedule(String subscriberNumber, Subscription subscription) {
         BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, subscription.getProgramType(), subscription.billingStartDate());
-        BillingServiceResponse response = billingService.startBillingCycle(billingCycleRequest);
+        BillingServiceResponse<CustomerBill> response = billingService.startBillingCycle(billingCycleRequest);
         if (response.hasErrors())
             throw new UserRegistrationFailureException(getUserSMSResponse(response));
         subscription.setStatus(SubscriptionStatus.ACTIVE);
         subscription.updateStartCycleInfo();
-        sendSms(subscriberNumber, subscription.getProgramType(), message(BILLING_SUCCESS));
+        sendSms(subscriberNumber, subscription.getProgramType(), String.format(message(BILLING_SUCCESS), response.getValue().getAmountCharged()));
     }
 
     private String sendSms(String subscriberNumber, IProgramType programType, String message) {
