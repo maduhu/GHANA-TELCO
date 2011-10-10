@@ -17,7 +17,8 @@ public class BillingServiceImpl implements BillingService {
     private BillingScheduler scheduler;
     private BillingAuditor auditor;
 
-    public static final String BILLING_SCHEDULE_CREATED = "Billing success and schedule created";
+    public static final String BILLING_SCHEDULE_STARTED = "Billing schedule started";
+    public static final String BILLING_SCHEDULE_STOPPED = "Billing schedule stopped";
 
     @Autowired
     public BillingServiceImpl(AllBillAccounts allBillAccounts, BillingScheduler scheduler, BillingAuditor auditor, MTNMock mtnMock) {
@@ -57,11 +58,17 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
-    public BillingServiceResponse processRegistration(BillingCycleRequest billingCycleRequest) {
-        BillingServiceResponse response = chargeProgramFee(billingCycleRequest);
+    public BillingServiceResponse startBillingCycle(BillingCycleRequest request) {
+        BillingServiceResponse response = chargeProgramFee(request);
         if (response.hasErrors()) return response;
-        scheduler.startFor(billingCycleRequest);
-        return new BillingServiceResponse<String>(BILLING_SCHEDULE_CREATED);
+        scheduler.startFor(request);
+        return new BillingServiceResponse<String>(BILLING_SCHEDULE_STARTED);
+    }
+
+    @Override
+    public BillingServiceResponse stopBillingCycle(BillingCycleRequest request) {
+        scheduler.stopFor(request);
+        return new BillingServiceResponse<String>(BILLING_SCHEDULE_STOPPED);
     }
 
     private BillingServiceResponse responseFor(ValidationError error) {

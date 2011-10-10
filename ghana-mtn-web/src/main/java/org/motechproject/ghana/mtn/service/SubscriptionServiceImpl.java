@@ -88,7 +88,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void billingAndStartMonthlySchedule(String subscriberNumber, Subscription subscription) {
         BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, subscription.getProgramType(), subscription.billingStartDate());
-        BillingServiceResponse response = billingService.processRegistration(billingCycleRequest);
+        BillingServiceResponse response = billingService.startBillingCycle(billingCycleRequest);
         if (response.hasErrors())
             throw new UserRegistrationFailureException(getUserSMSResponse(response));
         subscription.setStatus(SubscriptionStatus.ACTIVE);

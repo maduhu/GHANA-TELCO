@@ -68,7 +68,7 @@ public class SubscriptionServiceImplTest {
         verify(allSubscriptions, never()).add(any(Subscription.class));
         verify(allSubscribers, never()).add(any(Subscriber.class));
         verify(campaignService, never()).startFor(any(CampaignRequest.class));
-        verify(billingService, never()).processRegistration(Matchers.<BillingCycleRequest>any());
+        verify(billingService, never()).startBillingCycle(Matchers.<BillingCycleRequest>any());
         assertEquals(null, subscription.getStatus());
     }
 
@@ -90,7 +90,7 @@ public class SubscriptionServiceImplTest {
         verify(allSubscriptions, never()).add(any(Subscription.class));
         verify(allSubscribers, never()).add(any(Subscriber.class));
         verify(campaignService, never()).startFor(any(CampaignRequest.class));
-        verify(billingService, never()).processRegistration(Matchers.<BillingCycleRequest>any());
+        verify(billingService, never()).startBillingCycle(Matchers.<BillingCycleRequest>any());
         assertEquals(null, subscription.getStatus());
     }
 
@@ -103,7 +103,7 @@ public class SubscriptionServiceImplTest {
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
         when(billingService.checkIfUserHasFunds(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
-        when(billingService.processRegistration(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse());
+        when(billingService.startBillingCycle(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse());
         when(messageBundle.get(MessageBundle.ENROLLMENT_SUCCESS)).thenReturn("success");
 
         String response = service.enroll(subscriptionRequest);
@@ -129,7 +129,7 @@ public class SubscriptionServiceImplTest {
 
         BillingServiceResponse billingServiceResponse = new BillingServiceResponse();
         billingServiceResponse.addError(ValidationError.INSUFFICIENT_FUNDS);
-        when(billingService.processRegistration(Matchers.<BillingCycleRequest>any())).thenReturn(billingServiceResponse);
+        when(billingService.startBillingCycle(Matchers.<BillingCycleRequest>any())).thenReturn(billingServiceResponse);
 
         String response = service.enroll(subscriptionRequest);
         assertEquals("no money", response);

@@ -49,5 +49,12 @@ public class BillingScheduler {
         log.info("Billing job scheduled for " + mobileNumber + "|" + programName);
     }
 
+    public void stopFor(BillingCycleRequest request) {
+        String mobileNumber = request.getMobileNumber();
+        String programName = request.programName();
+        String jobId = format("%s.%s.%s", jobKey, programName, mobileNumber);
 
+        schedulerService.unscheduleJob(jobId);
+        log.info("Billing job unscheduled for " + mobileNumber + "|" + programName);
+    }
 }

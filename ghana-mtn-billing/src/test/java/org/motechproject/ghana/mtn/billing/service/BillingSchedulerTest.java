@@ -49,12 +49,23 @@ public class BillingSchedulerTest {
         MotechEvent motechEvent = job.getMotechEvent();
         Map<String, Object> params = motechEvent.getParameters();
 
-        assertEquals("jobKey",motechEvent.getSubject());
-        assertEquals("jobKey.program.123",params.get(MotechSchedulerService.JOB_ID_KEY));
-        assertEquals("123",params.get(SchedulerParamsBuilder.EXTERNAL_ID_KEY));
+        assertEquals("jobKey", motechEvent.getSubject());
+        assertEquals("jobKey.program.123", params.get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals("123", params.get(SchedulerParamsBuilder.EXTERNAL_ID_KEY));
         assertEquals("program", params.get(SchedulerParamsBuilder.PROGRAM));
         assertEquals(format("0 0 5 %s *", cycleStartDate.getDayOfMonth()), job.getCronExpression());
         assertEquals(startDate, job.getStartTime());
+    }
+
+    @Test
+    public void shouldStopScheduledJobs() {
+        BillingCycleRequest request = mock(BillingCycleRequest.class);
+        when(request.getMobileNumber()).thenReturn("123");
+        when(request.programName()).thenReturn("program");
+
+        billingScheduler.stopFor(request);
+
+        verify(schedulerService).unscheduleJob("jobKey.program.123");
     }
 
 
