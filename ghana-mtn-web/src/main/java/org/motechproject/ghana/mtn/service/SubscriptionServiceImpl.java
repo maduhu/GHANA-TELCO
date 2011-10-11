@@ -16,10 +16,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private SubscriptionBilling billing;
     private SubscriptionPersistence persistence;
     private SubscriptionCampaign campaign;
-    private InputMessageParser inputMessageParser;
+    private SubscriptionParser parser;
 
     @Autowired
-    public SubscriptionServiceImpl(InputMessageParser parser,
+    public SubscriptionServiceImpl(SubscriptionParser parser,
                                    SubscriptionValidation validation,
                                    SubscriptionBilling billing,
                                    SubscriptionPersistence persistence,
@@ -28,13 +28,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.billing = billing;
         this.persistence = persistence;
         this.campaign = campaign;
-        this.inputMessageParser = parser;
+        this.parser = parser;
     }
 
     @Override
     public void startFor(SubscriptionServiceRequest subscriptionRequest) {
-        Subscriber subscriber = new Subscriber(subscriptionRequest.getSubscriberNumber());
-        Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
+        String subscriberNumber = subscriptionRequest.getSubscriberNumber();
+        String inputMessage = subscriptionRequest.getInputMessage();
+        Subscription subscription = parser.parseForEnrollment(subscriberNumber, inputMessage);
+        if (subscription == null) return;
+
+        Subscriber subscriber = new Subscriber(subscriberNumber);
         subscription.setSubscriber(subscriber);
 
         List<BaseSubscriptionProcess> processes = Arrays.asList(validation, billing, persistence, campaign);
@@ -46,9 +50,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void endFor(SubscriptionServiceRequest subscriptionRequest) {
-        Subscriber subscriber = new Subscriber(subscriptionRequest.getSubscriberNumber());
-        Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
-        subscription.setSubscriber(subscriber);
+        String subscriberNumber = subscriptionRequest.getSubscriberNumber();
+        String inputMessage = subscriptionRequest.getInputMessage();
+        Subscription subscription = parser.parseForWithDraw(subscriberNumber, inputMessage);
+        if (subscription == null) return;
 
         List<BaseSubscriptionProcess> processes = Arrays.asList(billing, persistence, campaign);
         for (BaseSubscriptionProcess process : processes) {

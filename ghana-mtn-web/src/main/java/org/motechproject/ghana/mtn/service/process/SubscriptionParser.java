@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.service.process;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.service.InputMessageParser;
 import org.motechproject.ghana.mtn.service.sms.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,10 @@ public class SubscriptionParser {
     private MessageBundle messageBundle;
 
     @Autowired
-    public SubscriptionParser(InputMessageParser inputMessageParser, SMSService smsService) {
+    public SubscriptionParser(InputMessageParser inputMessageParser, SMSService smsService, MessageBundle messageBundle) {
         this.inputMessageParser = inputMessageParser;
         this.smsService = smsService;
+        this.messageBundle = messageBundle;
     }
 
     public Subscription parseForEnrollment(String mobileNumber, String input) {
