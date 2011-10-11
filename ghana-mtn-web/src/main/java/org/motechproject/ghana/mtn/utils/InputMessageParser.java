@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service;
+package org.motechproject.ghana.mtn.utils;
 
 import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.ProgramType;

@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service.process;
+package org.motechproject.ghana.mtn.process;
 
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
@@ -7,7 +7,7 @@ import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.service.sms.SMSService;
+import org.motechproject.ghana.mtn.service.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service.process;
+package org.motechproject.ghana.mtn.process;
 
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 

@@ -3,7 +3,7 @@ package org.motechproject.ghana.mtn.controller;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
-import org.motechproject.ghana.mtn.service.process.SubscriptionParser;
+import org.motechproject.ghana.mtn.process.SubscriptionParser;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

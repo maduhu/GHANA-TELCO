@@ -1,7 +1,7 @@
 package org.motechproject.ghana.mtn.service;
 
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.service.process.*;
+import org.motechproject.ghana.mtn.process.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

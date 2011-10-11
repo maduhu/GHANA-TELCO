@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service.sms;
+package org.motechproject.ghana.mtn.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -6,6 +6,7 @@ import org.motechproject.ghana.mtn.domain.SMSAudit;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceResponse;
 import org.motechproject.ghana.mtn.repository.AllSMSAudits;
+import org.motechproject.ghana.mtn.sms.SMSProvider;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
