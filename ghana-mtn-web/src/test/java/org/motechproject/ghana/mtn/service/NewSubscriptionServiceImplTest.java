@@ -20,7 +20,7 @@ public class NewSubscriptionServiceImplTest {
 
     private SubscriptionServiceImpl service;
     @Mock
-    private SubscriptionParser parser;
+    private InputMessageParser parser;
     @Mock
     private SubscriptionValidation validation;
     @Mock

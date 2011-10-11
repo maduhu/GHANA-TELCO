@@ -9,7 +9,6 @@ import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
-import org.motechproject.ghana.mtn.service.SubscriptionParser;
 
 import java.util.Arrays;
 
@@ -19,15 +18,15 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class SubscriptionParserTest {
-    SubscriptionParser messageParser;
+public class InputMessageParserTest {
+    InputMessageParser messageParser;
     @Mock
-    private AllProgramTypes mockAllSubcriptionTypes;
+    private AllProgramTypes allProgramTypes;
 
     @Before
     public void setUp() {
         initMocks(this);
-        messageParser = new SubscriptionParser(mockAllSubcriptionTypes);
+        messageParser = new InputMessageParser(allProgramTypes);
     }
 
     @Test
@@ -36,7 +35,7 @@ public class SubscriptionParserTest {
         String inputText = "P " + startFrom;
         ProgramType programType = new ProgramTypeBuilder().withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode("P")).thenReturn(programType);
+        when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(programType);
 
         Subscription subscription = messageParser.parse(inputText);
 
@@ -49,7 +48,7 @@ public class SubscriptionParserTest {
         String inputText = "C 25";
         ProgramType programType = new ProgramTypeBuilder().withShortCode("C").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode("C")).thenReturn(programType);
+        when(allProgramTypes.findByCampaignShortCode("C")).thenReturn(programType);
         Subscription subscription = messageParser.parse(inputText);
 
         assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
@@ -61,7 +60,7 @@ public class SubscriptionParserTest {
         String inputText = "c 25";
         ProgramType programType = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode("C")).thenReturn(programType);
+        when(allProgramTypes.findByCampaignShortCode("C")).thenReturn(programType);
 
         Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getProgramType(), is(programType));
@@ -92,8 +91,8 @@ public class SubscriptionParserTest {
         String shortCode = "CHI";
         ProgramType childCareProgramType = new ProgramTypeBuilder().withShortCode(shortCode).withShortCode("C").withProgramName("ChildCare").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode(shortCode)).thenReturn(childCareProgramType);
-        when(mockAllSubcriptionTypes.getAll()).thenReturn(Arrays.asList(childCareProgramType));
+        when(allProgramTypes.findByCampaignShortCode(shortCode)).thenReturn(childCareProgramType);
+        when(allProgramTypes.getAll()).thenReturn(Arrays.asList(childCareProgramType));
 
         messageParser.recompilePattern();
         Subscription actualSubscription = messageParser.parse(shortCode + " 5");

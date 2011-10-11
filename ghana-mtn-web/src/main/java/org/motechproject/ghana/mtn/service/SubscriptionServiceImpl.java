@@ -16,10 +16,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private SubscriptionBilling billing;
     private SubscriptionPersistence persistence;
     private SubscriptionCampaign campaign;
-    private SubscriptionParser inputMessageParser;
+    private InputMessageParser inputMessageParser;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionParser parser,
+    public SubscriptionServiceImpl(InputMessageParser parser,
                                    SubscriptionValidation validation,
                                    SubscriptionBilling billing,
                                    SubscriptionPersistence persistence,

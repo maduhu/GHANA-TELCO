@@ -36,14 +36,14 @@ public class OldSubscriptionServiceImpl {
     private AllSubscribers allSubscribers;
     private AllSubscriptions allSubscriptions;
     private MessageCampaignService campaignService;
-    private SubscriptionParser inputMessageParser;
+    private InputMessageParser inputMessageParser;
     private BillingService billingService;
     private MessageBundle messageBundle;
     private SMSService smsService;
 
     @Autowired
     public OldSubscriptionServiceImpl(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions,
-                                      MessageCampaignService campaignService, SubscriptionParser inputMessageParser,
+                                      MessageCampaignService campaignService, InputMessageParser inputMessageParser,
                                       BillingService billingService, MessageBundle messageBundle, SMSService smsService) {
         this.allSubscribers = allSubscribers;
         this.allSubscriptions = allSubscriptions;

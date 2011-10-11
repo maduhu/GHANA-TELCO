@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import static ch.lambdaj.Lambda.*;
 
 @Component
-public class SubscriptionParser {
+public class InputMessageParser {
     public static final String START_OF_PATTERN = "^(";
     private static String programCodes = "P|p|C|c";
     public static final String END_OF_PATTERN = ")\\s([\\d]{1,2})$";
@@ -26,7 +26,7 @@ public class SubscriptionParser {
     private AllProgramTypes allProgramTypes;
 
     @Autowired
-    public SubscriptionParser(AllProgramTypes allProgramTypes) {
+    public InputMessageParser(AllProgramTypes allProgramTypes) {
         this.allProgramTypes = allProgramTypes;
     }
 

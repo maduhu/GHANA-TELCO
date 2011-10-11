@@ -50,7 +50,7 @@ public class SubscriptionServiceImplTest {
     @Mock
     private MessageCampaignService campaignService;
     @Mock
-    private SubscriptionParser inputMessageParser;
+    private InputMessageParser inputMessageParser;
     @Mock
     private BillingService billingService;
     @Mock
