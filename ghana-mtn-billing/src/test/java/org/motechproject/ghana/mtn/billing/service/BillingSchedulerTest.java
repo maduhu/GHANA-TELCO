@@ -9,7 +9,10 @@ import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.quartz.CronExpression;
 
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -69,5 +72,23 @@ public class BillingSchedulerTest {
         verify(schedulerService).unscheduleJob(MONTHLY_BILLING_SCHEDULE_SUBJECT + ".program.123");
     }
 
+    @Test
+    public void shouldCheckIfTheCronWorksWithTheBillingDate() throws ParseException {
+        final String expression = "0 0 5 %s * ?";
+        String every7th = format(expression, 7);
+        final CronExpression cronExpression = new CronExpression(every7th);
 
+        assertEquals(date(2011, 7, 7, 5, 0), cronExpression.getNextValidTimeAfter(date(2011, 7, 6, 0, 0)));
+        assertEquals(date(2011, 8, 7, 5, 0), cronExpression.getNextValidTimeAfter(date(2011, 7, 7, 5, 0)));
+        assertEquals(date(2011, 8, 7, 5, 0), cronExpression.getNextValidTimeAfter(date(2011, 7, 7, 10, 0)));
+        assertEquals(date(2011, 10, 7, 5, 0), cronExpression.getNextValidTimeAfter(date(2011, 9, 9, 10, 0)));
+
+    }
+
+    private Date date(int year, int month, int day, int hour, int min) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(year, month, day, hour, min, 0);
+        return calendar.getTime();
+    }
 }
