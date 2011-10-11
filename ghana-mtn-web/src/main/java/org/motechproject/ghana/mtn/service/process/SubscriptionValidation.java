@@ -24,16 +24,14 @@ import static org.motechproject.ghana.mtn.domain.MessageBundle.ENROLLMENT_FAILUR
 
 @Component
 public class SubscriptionValidation extends BaseSubscriptionProcess {
-    private AllSubscribers allSubscribers;
     private AllSubscriptions allSubscriptions;
     private BillingService billingService;
 
     @Autowired
     protected SubscriptionValidation(SMSService smsService, MessageBundle messageBundle,
-                                     AllSubscribers allSubscribers, AllSubscriptions allSubscriptions,
+                                     AllSubscriptions allSubscriptions,
                                      BillingService billingService) {
         super(smsService, messageBundle);
-        this.allSubscribers = allSubscribers;
         this.allSubscriptions = allSubscriptions;
         this.billingService = billingService;
     }
@@ -41,11 +39,14 @@ public class SubscriptionValidation extends BaseSubscriptionProcess {
     @Override
     public Boolean startFor(Subscription subscription) {
         String subscriberNumber = subscription.subscriberNumber();
-        if (subscription.isNotValid())
+        if (subscription.isNotValid()) {
             sendMessage(subscription, messageFor(MessageBundle.ENROLLMENT_FAILURE));
-        if (hasActiveSubscription(subscriberNumber, subscription))
+            return false;
+        }
+        if (hasActiveSubscription(subscriberNumber, subscription)) {
             sendMessage(subscription, messageFor(MessageBundle.ACTIVE_SUBSCRIPTION_PRESENT));
-
+            return false;
+        }
         BillingServiceRequest request = new BillingServiceRequest(subscriberNumber, subscription.getProgramType());
         BillingServiceResponse response = billingService.checkIfUserHasFunds(request);
         if (response.hasErrors()) {
