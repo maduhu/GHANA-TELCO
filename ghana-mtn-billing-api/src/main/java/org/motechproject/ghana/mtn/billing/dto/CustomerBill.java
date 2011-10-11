@@ -23,7 +23,7 @@ public class CustomerBill {
         return amountCharged.getValue();
     }
 
-    public String amountChargedDisplay() {
+    public String amountChargedWithCurrency() {
         return amountCharged.toString();
     }
 

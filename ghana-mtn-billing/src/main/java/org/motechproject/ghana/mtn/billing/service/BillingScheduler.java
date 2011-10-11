@@ -17,16 +17,17 @@ import static java.lang.String.format;
 @Component
 public class BillingScheduler {
     private static final Logger log = Logger.getLogger(BillingScheduler.class);
+    public static final String MONTHLY_BILLING_SCHEDULE_SUBJECT = "org.motechproject.ghana.mtn.service.billingschedule";
+    public final static String PROGRAM = "Program";
+    public final static String EXTERNAL_ID_KEY = "ExternalID";
+
     private MotechSchedulerService schedulerService;
-    private String jobKey;
     private String cron;
 
     @Autowired
     public BillingScheduler(MotechSchedulerService schedulerService,
-                            @Value(value = "#{billingProperties['job.key']}") String jobKey,
                             @Value(value = "#{billingProperties['job.cron']}") String cron) {
         this.schedulerService = schedulerService;
-        this.jobKey = jobKey;
         this.cron = cron;
     }
 
@@ -37,8 +38,8 @@ public class BillingScheduler {
         Date startTime = cycleStartDate.monthOfYear().addToCopy(1).toDate();
         String cronJobExpression = format(cron, cycleStartDate.getDayOfMonth());
 
-        String jobId = format("%s.%s.%s", jobKey, programName, mobileNumber);
-        MotechEvent motechEvent = new MotechEvent(jobKey, new SchedulerParamsBuilder()
+        String jobId = jobId(mobileNumber, programName);
+        MotechEvent motechEvent = new MotechEvent(MONTHLY_BILLING_SCHEDULE_SUBJECT, new SchedulerParamsBuilder()
                 .withJobId(jobId)
                 .withExternalId(mobileNumber)
                 .withProgram(programName)
@@ -52,9 +53,13 @@ public class BillingScheduler {
     public void stopFor(BillingCycleRequest request) {
         String mobileNumber = request.getMobileNumber();
         String programName = request.programName();
-        String jobId = format("%s.%s.%s", jobKey, programName, mobileNumber);
+        String jobId = jobId(mobileNumber, programName);
 
         schedulerService.unscheduleJob(jobId);
         log.info("Billing job unscheduled for " + mobileNumber + "|" + programName);
+    }
+
+    private String jobId(String mobileNumber, String programName) {
+        return format("%s.%s.%s", MONTHLY_BILLING_SCHEDULE_SUBJECT, programName, mobileNumber);
     }
 }

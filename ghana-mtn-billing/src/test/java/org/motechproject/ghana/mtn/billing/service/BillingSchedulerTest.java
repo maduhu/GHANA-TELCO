@@ -17,6 +17,7 @@ import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT;
 
 public class BillingSchedulerTest {
 
@@ -27,7 +28,7 @@ public class BillingSchedulerTest {
     @Before
     public void setUp() {
         initMocks(this);
-        billingScheduler = new BillingScheduler(schedulerService, "jobKey", "0 0 5 %s *");
+        billingScheduler = new BillingScheduler(schedulerService, "0 0 5 %s *");
     }
 
     @Test
@@ -49,10 +50,10 @@ public class BillingSchedulerTest {
         MotechEvent motechEvent = job.getMotechEvent();
         Map<String, Object> params = motechEvent.getParameters();
 
-        assertEquals("jobKey", motechEvent.getSubject());
-        assertEquals("jobKey.program.123", params.get(MotechSchedulerService.JOB_ID_KEY));
-        assertEquals("123", params.get(SchedulerParamsBuilder.EXTERNAL_ID_KEY));
-        assertEquals("program", params.get(SchedulerParamsBuilder.PROGRAM));
+        assertEquals(MONTHLY_BILLING_SCHEDULE_SUBJECT, motechEvent.getSubject());
+        assertEquals(MONTHLY_BILLING_SCHEDULE_SUBJECT + ".program.123", params.get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals("123", params.get(BillingScheduler.EXTERNAL_ID_KEY));
+        assertEquals("program", params.get(BillingScheduler.PROGRAM));
         assertEquals(format("0 0 5 %s *", cycleStartDate.getDayOfMonth()), job.getCronExpression());
         assertEquals(startDate, job.getStartTime());
     }
@@ -65,7 +66,7 @@ public class BillingSchedulerTest {
 
         billingScheduler.stopFor(request);
 
-        verify(schedulerService).unscheduleJob("jobKey.program.123");
+        verify(schedulerService).unscheduleJob(MONTHLY_BILLING_SCHEDULE_SUBJECT + ".program.123");
     }
 
 
