@@ -24,7 +24,7 @@ public class SubscriptionController {
         this.subscriptionService = subscriptionService;
     }
 
-    @RequestMapping("/enroll")
+    @RequestMapping("enroll")
     public void enroll(@ModelAttribute SubscriptionServiceRequest subscriptionRequest) {
         subscriptionService.startFor(subscriptionRequest);
     }
