@@ -11,12 +11,14 @@ import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.scheduler.MotechSchedulerService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.billing.service.BillingServiceImpl.BILLING_SUCCESSFUL;
 
 public class BillingServiceImplTest {
     private BillingServiceImpl service;
@@ -41,7 +43,7 @@ public class BillingServiceImplTest {
     public void shouldReturnErrorResponseIfNotAValidMTNCustomer() {
         BillingServiceRequest request = mock(BillingServiceRequest.class);
         when(request.getMobileNumber()).thenReturn("123");
-        when(request.getFeeForProgram()).thenReturn(12d);
+        when(request.getProgramFeeValue()).thenReturn(12d);
         when(mtnMock.isMtnCustomer("123")).thenReturn(false);
 
         BillingServiceResponse response = service.checkIfUserHasFunds(request);
@@ -54,7 +56,7 @@ public class BillingServiceImplTest {
     public void shouldReturnErrorResponseIfCustomerHasNoFunds() {
         BillingServiceRequest request = mock(BillingServiceRequest.class);
         when(request.getMobileNumber()).thenReturn("123");
-        when(request.getFeeForProgram()).thenReturn(12d);
+        when(request.getProgramFeeValue()).thenReturn(12d);
         when(mtnMock.isMtnCustomer("123")).thenReturn(true);
         when(mtnMock.getBalanceFor("123")).thenReturn(1d);
 
@@ -69,10 +71,13 @@ public class BillingServiceImplTest {
         BillingServiceRequest request = mock(BillingServiceRequest.class);
         IProgramType programType = mock(IProgramType.class);
 
-        when(request.getMobileNumber()).thenReturn("123");
-        when(request.getFeeForProgram()).thenReturn(12d);
+        String mobileNumber = "123";
+        Money charge = new Money(12d);
+        when(request.getMobileNumber()).thenReturn(mobileNumber);
+        when(request.getProgramFeeValue()).thenReturn(charge.getValue());
         when(request.getProgramType()).thenReturn(programType);
-        when(mtnMock.getBalanceFor("123")).thenReturn(1d);
+        when(mtnMock.getBalanceFor(mobileNumber)).thenReturn(1d);
+        when(mtnMock.chargeCustomer(mobileNumber, charge.getValue())).thenReturn(charge);
 
         BillingServiceResponse<CustomerBill> response = service.chargeProgramFee(request);
 
@@ -80,8 +85,8 @@ public class BillingServiceImplTest {
         verify(auditor).audit(request);
         verify(allBillAccounts).updateFor("123", 1d, programType);
         assertFalse(response.hasErrors());
-        assertEquals(new Double(12d), response.getValue().getAmountCharged());
-        assertEquals("", response.getValue().getMessage());
+        assertEquals(charge.getValue(), response.getValue().amountCharged());
+        assertEquals(BILLING_SUCCESSFUL, response.getValue().getMessage());
     }
 
     @Test
@@ -89,16 +94,19 @@ public class BillingServiceImplTest {
         BillingCycleRequest request = mock(BillingCycleRequest.class);
         IProgramType programType = mock(IProgramType.class);
 
-        when(request.getMobileNumber()).thenReturn("123");
-        when(request.getFeeForProgram()).thenReturn(12d);
+        String mobileNumber = "123";
+        Money charge = new Money(12d);
+        when(request.getMobileNumber()).thenReturn(mobileNumber);
+        when(request.getProgramFeeValue()).thenReturn(charge.getValue());
         when(request.getProgramType()).thenReturn(programType);
-        when(mtnMock.getBalanceFor("123")).thenReturn(1d);
+        when(mtnMock.getBalanceFor(mobileNumber)).thenReturn(1d);
+        when(mtnMock.chargeCustomer(mobileNumber, charge.getValue())).thenReturn(charge);
 
         BillingServiceResponse<CustomerBill> response = service.startBilling(request);
 
         verify(scheduler).startFor(request);
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STARTED, response.getValue().getMessage());
-        assertEquals(new Double(12d), response.getValue().getAmountCharged());
+        assertEquals(charge.getValue(), response.getValue().amountCharged());
     }
 
     @Test

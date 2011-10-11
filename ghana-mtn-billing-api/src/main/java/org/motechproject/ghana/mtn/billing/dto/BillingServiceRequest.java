@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.billing.dto;
 
 import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.vo.Money;
 
 public class BillingServiceRequest {
     private String mobileNumber;
@@ -23,7 +24,11 @@ public class BillingServiceRequest {
         return programType.getProgramName();
     }
 
-    public Double getFeeForProgram() {
+    public Money getProgramFee() {
+        return programType.getFee();
+    }
+
+    public Double getProgramFeeValue() {
         return programType.getFee().getValue();
     }
 }

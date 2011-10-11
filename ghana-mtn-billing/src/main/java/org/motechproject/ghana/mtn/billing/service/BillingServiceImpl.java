@@ -8,6 +8,7 @@ import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class BillingServiceImpl implements BillingService {
     private BillingAuditor auditor;
 
     public static final String BILLING_SCHEDULE_STARTED = "Billing schedule started";
+    public static final String BILLING_SUCCESSFUL = "Billing Successful";
     public static final String BILLING_SCHEDULE_STOPPED = "Billing schedule stopped";
 
     @Autowired
@@ -32,7 +34,7 @@ public class BillingServiceImpl implements BillingService {
     @Override
     public BillingServiceResponse checkIfUserHasFunds(BillingServiceRequest request) {
         String mobileNumber = request.getMobileNumber();
-        Double fee = request.getFeeForProgram();
+        Double fee = request.getProgramFeeValue();
         if (!mtnMock.isMtnCustomer(mobileNumber)) {
             auditor.auditError(request, ValidationError.INVALID_CUSTOMER);
             return responseFor(ValidationError.INVALID_CUSTOMER);
@@ -48,14 +50,14 @@ public class BillingServiceImpl implements BillingService {
     @Override
     public BillingServiceResponse<CustomerBill> chargeProgramFee(BillingServiceRequest request) {
         String mobileNumber = request.getMobileNumber();
-        Double fee = request.getFeeForProgram();
+        Double fee = request.getProgramFeeValue();
         Double balance = mtnMock.getBalanceFor(mobileNumber);
         IProgramType programType = request.getProgramType();
 
-        mtnMock.chargeCustomer(mobileNumber, fee);
+        Money chargedAmount = mtnMock.chargeCustomer(mobileNumber, fee);
         auditor.audit(request);
         allBillAccounts.updateFor(mobileNumber, balance, programType);
-        return new BillingServiceResponse<CustomerBill>(new CustomerBill("", fee));
+        return new BillingServiceResponse<CustomerBill>(new CustomerBill(BILLING_SUCCESSFUL, chargedAmount));
     }
 
     @Override

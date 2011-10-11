@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.billing.mock;
 
 import org.apache.log4j.Logger;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,6 +58,7 @@ public class MTNMock {
         return false;
     }
 
-    public void chargeCustomer(String mobileNumber, double amountToCharge) {
+    public Money chargeCustomer(String mobileNumber, double amountToCharge) {
+        return new Money(amountToCharge);
     }
 }

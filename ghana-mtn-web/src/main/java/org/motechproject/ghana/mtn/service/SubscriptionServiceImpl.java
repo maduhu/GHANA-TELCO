@@ -101,7 +101,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new UserRegistrationFailureException(getUserSMSResponse(response));
         subscription.setStatus(SubscriptionStatus.ACTIVE);
         subscription.updateStartCycleInfo();
-        sendSms(subscriberNumber, subscription.getProgramType(), String.format(message(BILLING_SUCCESS), response.getValue().getAmountCharged()));
+        sendSms(subscriberNumber, subscription.getProgramType(), String.format(message(BILLING_SUCCESS), response.getValue().amountChargedDisplay()));
     }
 
     private String sendSms(String subscriberNumber, IProgramType programType, String message) {

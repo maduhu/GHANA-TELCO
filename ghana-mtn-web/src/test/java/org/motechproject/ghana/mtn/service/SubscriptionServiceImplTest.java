@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.service;
 
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,11 +27,14 @@ import org.motechproject.ghana.mtn.testbuilders.TestSubscription;
 import org.motechproject.ghana.mtn.testbuilders.TestSubscriptionRequest;
 import org.motechproject.ghana.mtn.validation.InputMessageParser;
 import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Currency;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -108,7 +112,7 @@ public class SubscriptionServiceImplTest {
         ProgramType programType = TestProgramType.with("Pregnancy", 3, 12, Arrays.asList("P"));
         Subscription subscription = TestSubscription.with(null, programType, new DateTime(2011, 10, 8, 10, 10), new WeekAndDay(new Week(12), Day.MONDAY));
         String billSuccessMsg = "Your account has been charged with %s amount for the Mobile Mid Wife Service. Thank You for continuing to use the service.";
-        CustomerBill customerBill = new CustomerBill(BillingServiceImpl.BILLING_SCHEDULE_STARTED, new Double(14d));
+        CustomerBill customerBill = new CustomerBill(BillingServiceImpl.BILLING_SCHEDULE_STARTED, new Money(14d));
 
         when(inputMessageParser.parse("P 25")).thenReturn(subscription);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber("1234567890")).thenReturn(Collections.EMPTY_LIST);
@@ -128,7 +132,8 @@ public class SubscriptionServiceImplTest {
         verify(smsService, times(2)).send(captorForSmsService.capture());
 
         SMSServiceRequest smsRequestForSuccessfulBilling = captorForSmsService.getAllValues().get(0);
-        assertEquals("Your account has been charged with 14.0 amount for the Mobile Mid Wife Service. Thank You for continuing to use the service.", smsRequestForSuccessfulBilling.getMessage());
+        assertEquals("Your account has been charged with 14.0 " + Currency.getInstance(Locale.getDefault()).getCurrencyCode()
+                +" amount for the Mobile Mid Wife Service. Thank You for continuing to use the service.", smsRequestForSuccessfulBilling.getMessage());
         assertEquals(subscription.subscriberNumber() ,smsRequestForSuccessfulBilling.getMobileNumber());
         assertEquals(subscription.getProgramType(),smsRequestForSuccessfulBilling.getProgramType());
 

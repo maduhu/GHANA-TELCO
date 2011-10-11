@@ -1,20 +1,30 @@
 package org.motechproject.ghana.mtn.billing.dto;
 
+import org.motechproject.ghana.mtn.vo.Money;
+
 public class CustomerBill {
 
-   private Double amountCharged;
-   private String message;
+    private Money amountCharged;
+    private String message;
 
-   public CustomerBill(String value, Double amountCharged) {
-       this.message = value;
-       this.amountCharged = amountCharged;
-   }
+    public CustomerBill(String value, Money amountCharged) {
+        this.message = value;
+        this.amountCharged = amountCharged;
+    }
 
-   public CustomerBill() {
-   }
+    public CustomerBill() {
+    }
 
-    public Double getAmountCharged() {
+    public Money getAmountCharged() {
         return amountCharged;
+    }
+
+    public Double amountCharged() {
+        return amountCharged.getValue();
+    }
+
+    public String amountChargedDisplay() {
+        return amountCharged.toString();
     }
 
     public String getMessage() {
