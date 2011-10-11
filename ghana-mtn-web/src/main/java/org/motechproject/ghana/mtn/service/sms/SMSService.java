@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service;
+package org.motechproject.ghana.mtn.service.sms;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;

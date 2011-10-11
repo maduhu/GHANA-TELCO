@@ -15,6 +15,7 @@ import org.motechproject.ghana.mtn.exception.UserRegistrationFailureException;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.ghana.mtn.service.sms.SMSService;
 import org.motechproject.ghana.mtn.validation.InputMessageParser;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;

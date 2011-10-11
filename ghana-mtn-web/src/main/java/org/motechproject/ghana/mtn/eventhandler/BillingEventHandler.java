@@ -9,7 +9,7 @@ import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
-import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.ghana.mtn.service.sms.SMSService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;

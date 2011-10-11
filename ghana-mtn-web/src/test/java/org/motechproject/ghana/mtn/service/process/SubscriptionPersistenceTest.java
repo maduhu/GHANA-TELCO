@@ -9,7 +9,7 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
-import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.ghana.mtn.service.sms.SMSService;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.Mockito.*;

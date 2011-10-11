@@ -15,7 +15,7 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
-import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.ghana.mtn.service.sms.SMSService;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechEvent;
 

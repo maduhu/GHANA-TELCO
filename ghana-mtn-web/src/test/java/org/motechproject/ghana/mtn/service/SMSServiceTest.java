@@ -10,6 +10,8 @@ import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceResponse;
 import org.motechproject.ghana.mtn.repository.AllSMSAudits;
+import org.motechproject.ghana.mtn.service.sms.SMSProvider;
+import org.motechproject.ghana.mtn.service.sms.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static junit.framework.Assert.*;
