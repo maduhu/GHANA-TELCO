@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionPersistence extends BaseSubscriptionProcess {
+public class SubscriptionPersistence extends BaseSubscriptionProcess implements ISubscriptionProcessFlow {
     private AllSubscribers allSubscribers;
     private AllSubscriptions allSubscriptions;
 
@@ -31,7 +31,7 @@ public class SubscriptionPersistence extends BaseSubscriptionProcess {
     }
 
     @Override
-    public Boolean endFor(Subscription subscription) {
+    public Boolean stopFor(Subscription subscription) {
         subscription.setStatus(SubscriptionStatus.EXPIRED);
         allSubscriptions.update(subscription);
         return true;

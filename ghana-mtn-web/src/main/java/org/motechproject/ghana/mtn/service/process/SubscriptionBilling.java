@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionBilling extends BaseSubscriptionProcess {
+public class SubscriptionBilling extends BaseSubscriptionProcess implements ISubscriptionProcessFlow {
     private BillingService billingService;
 
     @Autowired
@@ -35,7 +35,7 @@ public class SubscriptionBilling extends BaseSubscriptionProcess {
     }
 
     @Override
-    public Boolean endFor(Subscription subscription) {
+    public Boolean stopFor(Subscription subscription) {
         BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), subscription.billingStartDate());
         BillingServiceResponse<CustomerBill> response = billingService.stopBilling(request);
         if (response.hasErrors()) {

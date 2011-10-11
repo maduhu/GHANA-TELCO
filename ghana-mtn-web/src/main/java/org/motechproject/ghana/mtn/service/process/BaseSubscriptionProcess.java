@@ -8,7 +8,7 @@ import org.motechproject.ghana.mtn.validation.ValidationError;
 
 import java.util.List;
 
-public abstract class BaseSubscriptionProcess implements ISubscriptionProcess {
+public abstract class BaseSubscriptionProcess {
     private SMSService smsService;
     private MessageBundle messageBundle;
 

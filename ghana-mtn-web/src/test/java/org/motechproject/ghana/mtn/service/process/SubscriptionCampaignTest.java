@@ -45,7 +45,7 @@ public class SubscriptionCampaignTest {
         CampaignRequest campaignRequest = new CampaignRequest();
         when(subscription.createCampaignRequest()).thenReturn(campaignRequest);
 
-        Boolean reply = campaign.endFor(subscription);
+        Boolean reply = campaign.stopFor(subscription);
         assertTrue(reply);
         verify(campaignService).stopFor(campaignRequest);
     }

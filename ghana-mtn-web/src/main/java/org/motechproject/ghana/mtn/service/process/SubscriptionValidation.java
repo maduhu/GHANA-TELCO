@@ -19,7 +19,7 @@ import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.select;
 
 @Component
-public class SubscriptionValidation extends BaseSubscriptionProcess {
+public class SubscriptionValidation extends BaseSubscriptionProcess implements ISubscriptionProcessFlow {
     private AllSubscriptions allSubscriptions;
     private BillingService billingService;
 
@@ -60,7 +60,7 @@ public class SubscriptionValidation extends BaseSubscriptionProcess {
     }
 
     @Override
-    public Boolean endFor(Subscription subscription) {
+    public Boolean stopFor(Subscription subscription) {
         return true;
     }
 }

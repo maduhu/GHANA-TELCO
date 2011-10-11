@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
-import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.motechproject.ghana.mtn.service.process.SubscriptionParser;
+import org.motechproject.ghana.mtn.service.SubscriptionService;
 
 import java.io.IOException;
 

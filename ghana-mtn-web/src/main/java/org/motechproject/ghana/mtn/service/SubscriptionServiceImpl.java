@@ -5,7 +5,7 @@ import org.motechproject.ghana.mtn.service.process.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,8 +28,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void start(Subscription subscription) {
-        List<BaseSubscriptionProcess> processes = Arrays.asList(validation, billing, persistence, campaign);
-        for (BaseSubscriptionProcess process : processes) {
+        for (ISubscriptionProcessFlow process : processes(validation, billing, persistence, campaign)) {
             if (process.startFor(subscription)) continue;
             break;
         }
@@ -37,11 +36,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void stop(Subscription subscription) {
-        List<BaseSubscriptionProcess> processes = Arrays.asList(billing, campaign, persistence);
-        for (BaseSubscriptionProcess process : processes) {
-            if (process.endFor(subscription)) continue;
+        for (ISubscriptionProcessFlow process : processes(billing, campaign, persistence)) {
+            if (process.stopFor(subscription)) continue;
             break;
         }
+    }
+
+    private List<ISubscriptionProcessFlow> processes(ISubscriptionProcessFlow... processes) {
+        List<ISubscriptionProcessFlow> list = new ArrayList<ISubscriptionProcessFlow>();
+        for (ISubscriptionProcessFlow process : processes) list.add(process);
+        return list;
     }
 
 }

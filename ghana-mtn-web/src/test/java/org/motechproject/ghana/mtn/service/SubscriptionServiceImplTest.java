@@ -2,11 +2,8 @@ package org.motechproject.ghana.mtn.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.service.process.*;
 
 import static junit.framework.Assert.assertEquals;
@@ -52,15 +49,15 @@ public class SubscriptionServiceImplTest {
     public void shouldCallAllProcessInvolvedOnNoErrorsDuringStopSubscription() {
         Subscription subscription = mock(Subscription.class);
 
-        when(billing.endFor(subscription)).thenReturn(true);
-        when(campaign.endFor(subscription)).thenReturn(true);
-        when(persistence.endFor(subscription)).thenReturn(true);
+        when(billing.stopFor(subscription)).thenReturn(true);
+        when(campaign.stopFor(subscription)).thenReturn(true);
+        when(persistence.stopFor(subscription)).thenReturn(true);
 
         service.stop(subscription);
 
-        verify(billing).endFor(subscription);
-        verify(campaign).endFor(subscription);
-        verify(persistence).endFor(subscription);
+        verify(billing).stopFor(subscription);
+        verify(campaign).stopFor(subscription);
+        verify(persistence).stopFor(subscription);
     }
 
 }

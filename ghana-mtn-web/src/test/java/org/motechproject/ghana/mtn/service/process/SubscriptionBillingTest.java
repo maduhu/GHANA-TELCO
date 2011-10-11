@@ -108,7 +108,7 @@ public class SubscriptionBillingTest {
         when(messageBundle.get(errors)).thenReturn("errors message");
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(response);
 
-        Boolean reply = billing.endFor(subscription);
+        Boolean reply = billing.stopFor(subscription);
 
         assertFalse(reply);
         assertSMSRequest(mobileNumber, "errors message", program);
@@ -134,7 +134,7 @@ public class SubscriptionBillingTest {
         when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(response);
 
-        Boolean reply = billing.endFor(subscription);
+        Boolean reply = billing.stopFor(subscription);
 
         assertTrue(reply);
         assertSMSRequest(mobileNumber, "billing stopped", program);

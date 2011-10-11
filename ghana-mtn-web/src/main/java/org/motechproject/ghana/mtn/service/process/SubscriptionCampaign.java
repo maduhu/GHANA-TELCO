@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionCampaign extends BaseSubscriptionProcess {
+public class SubscriptionCampaign extends BaseSubscriptionProcess  implements ISubscriptionProcessFlow {
     private MessageCampaignService campaignService;
 
     @Autowired
@@ -26,7 +26,7 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess {
     }
 
     @Override
-    public Boolean endFor(Subscription subscription) {
+    public Boolean stopFor(Subscription subscription) {
         CampaignRequest campaignRequest = subscription.createCampaignRequest();
         campaignService.stopFor(campaignRequest);
         return true;
