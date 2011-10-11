@@ -15,7 +15,7 @@ import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.billing.service.BillingServiceImpl;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
+import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -67,7 +67,7 @@ public class SubscriptionServiceImplTest {
 
     @Test
     public void shouldNotEnrollIfSubscriptionIsNotValid() {
-        SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
+        SubscriptionServiceRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
         ProgramType programType = TestProgramType.with("Pregnancy", 3, 12, Arrays.asList("P"));
         Subscription subscription = TestSubscription.with(null, programType, DateTime.now(), new WeekAndDay(new Week(92), Day.MONDAY));
 
@@ -87,7 +87,7 @@ public class SubscriptionServiceImplTest {
 
     @Test
     public void shouldNotEnrollIfSubscriberAlreadyHasAnActiveSubscriptionOfSameType() {
-        SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
+        SubscriptionServiceRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
         ProgramType programType = TestProgramType.with("Pregnancy", 3, 12, Arrays.asList("P"));
         Subscription subscription = TestSubscription.with(null, programType, DateTime.now(), new WeekAndDay(new Week(12), Day.MONDAY));
         Subscription existingActiveSubscription = TestSubscription.with(null, programType, DateTime.now(), new WeekAndDay(new Week(31), Day.MONDAY));
@@ -108,7 +108,7 @@ public class SubscriptionServiceImplTest {
 
     @Test
     public void shouldPersistSubscriptionAndCampaignRequestForAValidSubscription() {
-        SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
+        SubscriptionServiceRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
         ProgramType programType = TestProgramType.with("Pregnancy", 3, 12, Arrays.asList("P"));
         Subscription subscription = TestSubscription.with(null, programType, new DateTime(2011, 10, 8, 10, 10), new WeekAndDay(new Week(12), Day.MONDAY));
         String billSuccessMsg = "Your account has been charged with %s amount for the Mobile Mid Wife Service. Thank You for continuing to use the service.";
@@ -148,7 +148,7 @@ public class SubscriptionServiceImplTest {
 
     @Test
     public void shouldNotPersistSubscriptionAndCreateCampaignRequest_IfBillingServiceRegistrationFails() {
-        SubscriptionRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
+        SubscriptionServiceRequest subscriptionRequest = TestSubscriptionRequest.with("1234567890", "P 25");
         ProgramType programType = TestProgramType.with("Pregnancy", 3, 13, Arrays.asList("P"));
         Subscription subscription = TestSubscription.with(null, programType, new DateTime(2011, 10, 8, 10, 10), new WeekAndDay(new Week(12), Day.MONDAY));
 

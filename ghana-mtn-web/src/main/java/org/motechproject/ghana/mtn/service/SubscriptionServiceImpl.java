@@ -9,7 +9,7 @@ import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
+import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.exception.UserRegistrationFailureException;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
@@ -29,7 +29,7 @@ import static ch.lambdaj.Lambda.*;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
 
-//TODO needs refactoring, has many responsibilities
+//TODO needs refactoring, has many responsibilities, either into process stages/or components like validators -vijay
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
     private final static Logger log = Logger.getLogger(SubscriptionServiceImpl.class);
@@ -60,7 +60,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public String enroll(SubscriptionRequest subscriptionRequest) {
+    public String enroll(SubscriptionServiceRequest subscriptionRequest) {
         String messageToSend;
         String subscriberNumber = subscriptionRequest.getSubscriberNumber();
         Subscription subscription = null;

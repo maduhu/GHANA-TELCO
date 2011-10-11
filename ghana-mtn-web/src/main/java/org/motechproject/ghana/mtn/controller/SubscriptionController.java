@@ -1,6 +1,6 @@
 package org.motechproject.ghana.mtn.controller;
 
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
+import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +26,7 @@ public class SubscriptionController {
     }
 
     @RequestMapping("/enroll")
-    public void enroll(@ModelAttribute SubscriptionRequest subscriptionRequest, HttpServletResponse response) throws IOException {
+    public void enroll(@ModelAttribute SubscriptionServiceRequest subscriptionRequest, HttpServletResponse response) throws IOException {
         String status = subscriptionService.enroll(subscriptionRequest);
         response.setContentType(CONTENT_TYPE_JSON);
         response.getWriter().write(JSON_PREFIX + status + JSON_SUFFIX);

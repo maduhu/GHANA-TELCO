@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
+import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
 import org.motechproject.ghana.mtn.matchers.SubscriptionRequestMatcher;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 
@@ -38,11 +38,11 @@ public class SubscriptionControllerTest {
 
     @Test
     public void ShouldParseAndValidateInputMessage() throws IOException {
-        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+        SubscriptionServiceRequest subscriptionRequest = new SubscriptionServiceRequest();
         subscriptionRequest.setSubscriberNumber("1234567890");
         subscriptionRequest.setInputMessage("C 25");
 
-        when(subscriptionService.enroll(any(SubscriptionRequest.class))).thenReturn(MessageBundle.ENROLLMENT_SUCCESS);
+        when(subscriptionService.enroll(any(SubscriptionServiceRequest.class))).thenReturn(MessageBundle.ENROLLMENT_SUCCESS);
         when(httpResponse.getWriter()).thenReturn(writer);
 
         controller.enroll(subscriptionRequest, httpResponse);
