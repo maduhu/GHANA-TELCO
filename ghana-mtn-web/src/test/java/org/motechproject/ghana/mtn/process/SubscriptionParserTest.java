@@ -39,7 +39,7 @@ public class SubscriptionParserTest {
         when(inputParser.parse(input)).thenThrow(new MessageParseFailException(""));
         when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn(errorMsg);
 
-        parser.parse(mobileNumber, input);
+        parser.process(mobileNumber, input);
 
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());

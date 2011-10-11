@@ -24,7 +24,7 @@ public class SubscriptionController {
 
     @RequestMapping("handle")
     public void handle(@ModelAttribute SubscriptionRequest request) {
-        Subscription subscription = parser.parse(request.getSubscriberNumber(), request.getInputMessage());
+        Subscription subscription = parser.process(request.getSubscriberNumber(), request.getInputMessage());
         if (subscription == null) return;
 
         Subscriber subscriber = new Subscriber(request.getSubscriberNumber());

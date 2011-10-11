@@ -37,8 +37,8 @@ public class BillingEventHandler {
     }
 
     @MotechListener(subjects = {BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT})
-    public void chargeCustomer(MotechEvent motechEvent) {
-        Map params = motechEvent.getParameters();
+    public void chargeCustomer(MotechEvent event) {
+        Map params = event.getParameters();
         String programName = (String) params.get(PROGRAM);
         String subscriberNumber = (String) params.get(EXTERNAL_ID_KEY);
 

@@ -39,7 +39,7 @@ public class SubscriptionControllerTest {
         subscriptionRequest.setInputMessage(inputMessage);
 
         Subscription subscription = mock(Subscription.class);
-        when(parser.parse(subscriberNumber, inputMessage)).thenReturn(subscription);
+        when(parser.process(subscriberNumber, inputMessage)).thenReturn(subscription);
 
         controller.handle(subscriptionRequest);
 

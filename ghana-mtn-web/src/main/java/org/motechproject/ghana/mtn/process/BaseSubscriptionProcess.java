@@ -30,5 +30,9 @@ public abstract class BaseSubscriptionProcess {
         smsService.send(smsServiceRequest);
     }
 
+    protected void sendMessage(String mobileNumber, String content) {
+        SMSServiceRequest smsServiceRequest = new SMSServiceRequest(mobileNumber, content);
+        smsService.send(smsServiceRequest);
+    }
 
 }
