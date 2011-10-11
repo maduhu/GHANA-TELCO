@@ -31,6 +31,7 @@ public class Subscription extends MotechAuditableDataObject {
     private WeekAndDay lastMsgSentWeekAndDay;
 
     private DateTime registrationDate;
+    private DateTime billingStartDate;
     private DateUtils dateUtils = new DateUtils();
 
     public Subscription() {
@@ -86,8 +87,8 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public Week currentWeek() {
-        DateTime registeredDateStartDayTime = registrationDate.hourOfDay().roundFloorCopy();
-        DateTime currentDateStartDayTime = dateUtils.now().hourOfDay().roundFloorCopy();
+        DateTime registeredDateStartDayTime = dateUtils.startOfDay(registrationDate);
+        DateTime currentDateStartDayTime = dateUtils.startOfDay(dateUtils.now());
         int daysDiff = new Period(registeredDateStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();
 
         if(daysDiff > 0) {
@@ -127,21 +128,31 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     private DateTime cycleStartDate() {
-       return new ProgramMessageCycle().nearestCycleDate(registrationDate);
+       return dateUtils.startOfDay(new ProgramMessageCycle().nearestCycleDate(registrationDate));
     }
 
     public DateTime billingStartDate() {
         List<Integer> forDaysToMoveToFirstOfMonth = asList(29, 30, 31);
         DateTime billingStartDate = cycleStartDate();
-        if(forDaysToMoveToFirstOfMonth.contains(billingStartDate.getDayOfMonth())) return billingStartDate.dayOfMonth().addToCopy(1).withDayOfMonth(1);
+        if(forDaysToMoveToFirstOfMonth.contains(billingStartDate.getDayOfMonth()))
+            return billingStartDate.dayOfMonth().addToCopy(1).withDayOfMonth(1);
         return billingStartDate;
     }
 
     public void updateStartCycleInfo() {
-         this.getStartWeekAndDay().setDay(dateUtils.day(cycleStartDate()));
+        this.getStartWeekAndDay().setDay(dateUtils.day(cycleStartDate()));
+        this.billingStartDate = billingStartDate();
     }
 
     public String subscriberNumber() {
         return subscriber.getNumber();
+    }
+
+    public DateTime getBillingStartDate() {
+        return billingStartDate;
+    }
+
+    public void setBillingStartDate(DateTime billingStartDate) {
+        this.billingStartDate = billingStartDate;
     }
 }

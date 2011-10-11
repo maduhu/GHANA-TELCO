@@ -1,7 +1,6 @@
 package org.motechproject.ghana.mtn.service;
 
 import org.joda.time.DateTime;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -143,6 +142,7 @@ public class SubscriptionServiceImplTest {
         assertEquals(subscription.getProgramType(),smsForRegistrationConfirmation.getProgramType());
 
         assertEquals(SubscriptionStatus.ACTIVE, subscription.getStatus());
+        assertEquals(new DateTime(2011, 10, 10, 0, 0), subscription.getBillingStartDate());
         assertEquals(Day.MONDAY, subscription.getStartWeekAndDay().getDay());
     }
 

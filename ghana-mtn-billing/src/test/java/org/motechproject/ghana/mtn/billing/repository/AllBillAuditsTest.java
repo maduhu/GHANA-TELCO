@@ -22,7 +22,7 @@ public class AllBillAuditsTest extends RepositoryTest<BillAudit> {
 
     @Test
     public void ShouldAllBillAudit() {
-        BillAudit billAudit = new BillAudit("1234567890", new Money(2D), BillStatus.SUCCESS, null, DateUtil.today());
+        BillAudit billAudit = new BillAudit("1234567890", new Money(2D), BillStatus.SUCCESS, null);
         allBillAudits.add(billAudit);
         assertEquals(allBillAudits.getAll().size(), 1);
     }

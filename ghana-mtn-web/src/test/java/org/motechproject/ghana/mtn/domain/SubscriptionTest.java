@@ -120,6 +120,6 @@ public class SubscriptionTest {
      }
 
     private DateTime date(int year, int month, int date) {
-        return new DateTime(year, month, date, 10, 10);
+        return new DateTime(year, month, date, 0, 0);
     }
 }

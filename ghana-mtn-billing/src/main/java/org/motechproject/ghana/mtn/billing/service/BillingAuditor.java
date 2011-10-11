@@ -24,8 +24,7 @@ public class BillingAuditor {
                 billingServiceRequest.getMobileNumber(),
                 billingServiceRequest.getProgramType().getFee(),
                 BillStatus.FAILURE,
-                error.name(),
-                DateUtil.today()));
+                error.name()));
     }
 
     public void audit(BillingServiceRequest billingServiceRequest) {
@@ -33,8 +32,8 @@ public class BillingAuditor {
                 billingServiceRequest.getMobileNumber(),
                 billingServiceRequest.getProgramType().getFee(),
                 BillStatus.SUCCESS,
-                StringUtils.EMPTY,
-                DateUtil.today()));
+                StringUtils.EMPTY
+                ));
     }
 
 

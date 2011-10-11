@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.billing.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechAuditableDataObject;
@@ -14,15 +15,16 @@ public class BillAudit extends MotechAuditableDataObject {
     private Money amountToCharge;
     private BillStatus billStatus;
     private String failureReason;
-
+    private DateTime date;
     public BillAudit() {
     }
 
-    public BillAudit(String mobileNumber, Money amountToCharge, BillStatus billStatus, String failureReason, LocalDate dateTime) {
+    public BillAudit(String mobileNumber, Money amountToCharge, BillStatus billStatus, String failureReason) {
         this.mobileNumber = mobileNumber;
         this.amountToCharge = amountToCharge;
         this.billStatus = billStatus;
         this.failureReason = failureReason;
+        this.date = DateTime.now();
     }
 
     public String getMobileNumber() {
@@ -55,5 +57,13 @@ public class BillAudit extends MotechAuditableDataObject {
 
     public void setFailureReason(String failureReason) {
         this.failureReason = failureReason;
+    }
+
+    public DateTime getDate() {
+        return date;
+    }
+
+    public void setDate(DateTime date) {
+        this.date = date;
     }
 }
