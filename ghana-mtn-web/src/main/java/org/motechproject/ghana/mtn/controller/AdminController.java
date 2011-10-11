@@ -1,6 +1,6 @@
 package org.motechproject.ghana.mtn.controller;
 
-import org.motechproject.ghana.mtn.validation.InputMessageParser;
+import org.motechproject.ghana.mtn.service.SubscriptionParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +13,7 @@ import java.io.IOException;
 public class AdminController {
 
     @Autowired
-    private InputMessageParser inputMessageParser;
+    private SubscriptionParser inputMessageParser;
 
     @RequestMapping("/recompile")
     public void console(HttpServletResponse httpServletResponse) throws IOException {

@@ -4,6 +4,6 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
 
 public interface SubscriptionService {
-    String enroll(SubscriptionServiceRequest subscriptionRequest);
-    Subscription findBy(String subscriberNumber, String programName);
+    void startFor(SubscriptionServiceRequest subscriptionRequest);
+    void endFor(SubscriptionServiceRequest subscriptionRequest);
 }

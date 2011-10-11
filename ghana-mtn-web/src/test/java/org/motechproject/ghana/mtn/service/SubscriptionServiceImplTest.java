@@ -25,7 +25,6 @@ import org.motechproject.ghana.mtn.service.sms.SMSService;
 import org.motechproject.ghana.mtn.testbuilders.TestProgramType;
 import org.motechproject.ghana.mtn.testbuilders.TestSubscription;
 import org.motechproject.ghana.mtn.testbuilders.TestSubscriptionRequest;
-import org.motechproject.ghana.mtn.validation.InputMessageParser;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
@@ -43,7 +42,7 @@ import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_SUCCESS;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.ENROLLMENT_SUCCESS;
 
 public class SubscriptionServiceImplTest {
-    private SubscriptionServiceImpl service;
+    private OldSubscriptionServiceImpl service;
     @Mock
     private AllSubscribers allSubscribers;
     @Mock
@@ -51,7 +50,7 @@ public class SubscriptionServiceImplTest {
     @Mock
     private MessageCampaignService campaignService;
     @Mock
-    private InputMessageParser inputMessageParser;
+    private SubscriptionParser inputMessageParser;
     @Mock
     private BillingService billingService;
     @Mock
@@ -62,7 +61,7 @@ public class SubscriptionServiceImplTest {
     @Before
     public void setUp() {
         initMocks(this);
-        service = new SubscriptionServiceImpl(allSubscribers, allSubscriptions, campaignService, inputMessageParser, billingService, messageBundle, smsService);
+        service = new OldSubscriptionServiceImpl(allSubscribers, allSubscriptions, campaignService, inputMessageParser, billingService, messageBundle, smsService);
     }
 
     @Test

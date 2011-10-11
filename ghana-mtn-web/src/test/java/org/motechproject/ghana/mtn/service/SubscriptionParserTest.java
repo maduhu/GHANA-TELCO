@@ -1,15 +1,15 @@
-package org.motechproject.ghana.mtn.validation;
+package org.motechproject.ghana.mtn.service;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
+import org.motechproject.ghana.mtn.service.SubscriptionParser;
 
 import java.util.Arrays;
 
@@ -19,15 +19,15 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class InputMessageParserTest {
-    InputMessageParser messageParser;
+public class SubscriptionParserTest {
+    SubscriptionParser messageParser;
     @Mock
     private AllProgramTypes mockAllSubcriptionTypes;
 
     @Before
     public void setUp() {
         initMocks(this);
-        messageParser = new InputMessageParser(mockAllSubcriptionTypes);
+        messageParser = new SubscriptionParser(mockAllSubcriptionTypes);
     }
 
     @Test

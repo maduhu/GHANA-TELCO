@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.validation;
+package org.motechproject.ghana.mtn.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.ProgramType;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import static ch.lambdaj.Lambda.*;
 
 @Component
-public class InputMessageParser {
+public class SubscriptionParser {
     public static final String START_OF_PATTERN = "^(";
     private static String programCodes = "P|p|C|c";
     public static final String END_OF_PATTERN = ")\\s([\\d]{1,2})$";
@@ -26,7 +26,7 @@ public class InputMessageParser {
     private AllProgramTypes allProgramTypes;
 
     @Autowired
-    public InputMessageParser(AllProgramTypes allProgramTypes) {
+    public SubscriptionParser(AllProgramTypes allProgramTypes) {
         this.allProgramTypes = allProgramTypes;
     }
 
