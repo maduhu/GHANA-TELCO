@@ -13,10 +13,6 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/subscription")
 public class SubscriptionController {
-    public static final String JSON_PREFIX = "{\"responseText\" : \"";
-    public static final String JSON_SUFFIX = "\"}";
-    public static final String CONTENT_TYPE_JSON = "application/json";
-
     private SubscriptionService subscriptionService;
 
     @Autowired

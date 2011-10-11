@@ -64,7 +64,6 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
         ProgramType programType = allProgramTypes.findByCampaignShortCode(shortCode);
         Subscription subscription = subscriptions.get(0);
 
-        assertThat(response.getContentType(), is(SubscriptionController.CONTENT_TYPE_JSON));
         assertThat(subscriptions.size(), is(1));
         assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
@@ -72,12 +71,6 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
         assertThat(subscribers.size(), is(1));
         assertThat(subscription.getSubscriber(), new SubscriberMatcher(subscribers.get(0)));
 
-
-        String expectedResponse =
-                SubscriptionController.JSON_PREFIX
-                + String.format("Welcome to Mobile Midwife %s Program. You are now enrolled & will receive SMSs full of great info every Mon,Weds &Fri. To stop these messages send STOP", program)
-                + SubscriptionController.JSON_SUFFIX;
-        assertThat(response.getContentAsString(), is(expectedResponse));
     }
 
     @Test
