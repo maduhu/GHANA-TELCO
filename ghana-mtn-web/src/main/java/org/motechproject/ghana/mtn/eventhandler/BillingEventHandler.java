@@ -44,8 +44,7 @@ public class BillingEventHandler {
         String subscriberNumber = (String) params.get(EXTERNAL_ID_KEY);
 
         Subscription subscription = allSubscriptions.findBy(subscriberNumber, programName);
-        BillingServiceResponse<CustomerBill> response = billingService.
-                chargeProgramFee(new BillingServiceRequest(subscriberNumber, subscription.getProgramType()));
+        BillingServiceResponse<CustomerBill> response = billingService.chargeProgramFee(new BillingServiceRequest(subscriberNumber, subscription.getProgramType()));
         if(!response.hasErrors())
             sms(subscriberNumber, subscription, format(messageBundle.get(MessageBundle.BILLING_SUCCESS),response.getValue().amountChargedWithCurrency()));
     }
