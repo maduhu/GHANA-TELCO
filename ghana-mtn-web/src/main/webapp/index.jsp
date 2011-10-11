@@ -20,7 +20,20 @@
             <input id="smsText" type="text"/>
             <input type="submit" onclick="return submitRequest(); return false;" value="Submit Request"/>
         </form>
-        <div id="requestResponse"></div>
+    </fieldset>
+</div>
+
+<div class="audit_box">
+    <fieldset>
+        <legend>Message Audit</legend>
+        <form id="audit-form">
+            <select id="audit_options">
+                <option value="sms">SMSAudit</option>
+                <option value="bill">BillAudit</option>
+            </select>
+            <input type="submit" onclick="return refreshAudit(); return false;" value="Refresh"/>
+        </form>
+        <div id="audit_table"></div>
     </fieldset>
 </div>
 
@@ -39,21 +52,6 @@
         </form>
     </fieldset>
 </div>
-
-<div class="audit_box">
-    <fieldset>
-        <legend>Message Audit</legend>
-        <form id="audit-form">
-            <select id="audit_options">
-                <option value="sms">SMSAudit</option>
-                <option value="bill">BillAudit</option>
-            </select>
-            <input type="submit" onclick="return refreshAudit(); return false;" value="Refresh"/>
-        </form>
-        <div id="audit_table"></div>
-    </fieldset>
-</div>
-
 
 </body>
 </html>

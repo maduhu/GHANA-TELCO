@@ -71,7 +71,7 @@ public class AuditController {
     private String header(Object... headers) {
          StringBuilder builder = new StringBuilder();
          for(Object header : headers) {
-             builder.append("<th>").append(header).append("</th");
+             builder.append("<th>").append(header).append("</th>");
          }
         return builder.toString();
     }
