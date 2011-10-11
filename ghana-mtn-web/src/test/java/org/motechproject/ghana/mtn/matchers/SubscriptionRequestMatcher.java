@@ -1,9 +1,9 @@
 package org.motechproject.ghana.mtn.matchers;
 
 import org.mockito.ArgumentMatcher;
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
+import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 
-public class SubscriptionRequestMatcher extends ArgumentMatcher<SubscriptionServiceRequest> {
+public class SubscriptionRequestMatcher extends ArgumentMatcher<SubscriptionRequest> {
     private String subscriberNumber;
     private String inputMessage;
 
@@ -14,7 +14,7 @@ public class SubscriptionRequestMatcher extends ArgumentMatcher<SubscriptionServ
 
     @Override
     public boolean matches(Object o) {
-        SubscriptionServiceRequest request = (SubscriptionServiceRequest) o;
+        SubscriptionRequest request = (SubscriptionRequest) o;
         return request.getInputMessage().equals(inputMessage) && request.getSubscriberNumber().equals(subscriberNumber);
     }
 }

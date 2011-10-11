@@ -36,7 +36,6 @@ public class BillingEventHandler {
         this.messageBundle = messageBundle;
     }
 
-    //TODO: to be moved to SubscriptionService - alex
     @MotechListener(subjects = {BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT})
     public void chargeCustomer(MotechEvent motechEvent) {
         Map params = motechEvent.getParameters();

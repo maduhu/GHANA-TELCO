@@ -22,16 +22,7 @@ public class SubscriptionParser {
         this.messageBundle = messageBundle;
     }
 
-    public Subscription parseForEnrollment(String mobileNumber, String input) {
-        try {
-            return inputMessageParser.parse(input);
-        } catch (Exception e) {
-            sendSMS(mobileNumber);
-        }
-        return null;
-    }
-
-    public Subscription parseForWithDraw(String mobileNumber, String input) {
+    public Subscription parse(String mobileNumber, String input) {
         try {
             return inputMessageParser.parse(input);
         } catch (Exception e) {

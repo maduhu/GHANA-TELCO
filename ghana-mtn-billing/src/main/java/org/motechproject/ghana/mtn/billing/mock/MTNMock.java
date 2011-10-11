@@ -50,7 +50,6 @@ public class MTNMock {
                     return true;
                 }
             }
-
             fileForSubscribers.close();
         } catch (IOException e) {
             log.error(e);

@@ -2,21 +2,18 @@ package org.motechproject.ghana.mtn.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.MessageBundle;
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
-import org.motechproject.ghana.mtn.matchers.SubscriptionRequestMatcher;
+import org.motechproject.ghana.mtn.domain.Subscriber;
+import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
+import org.motechproject.ghana.mtn.service.process.SubscriptionParser;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SubscriptionControllerTest {
@@ -24,27 +21,33 @@ public class SubscriptionControllerTest {
     @Mock
     private SubscriptionService subscriptionService;
     @Mock
-    private HttpServletRequest httpRequest;
-    @Mock
-    private HttpServletResponse httpResponse;
-    @Mock
-    private PrintWriter writer;
+    private SubscriptionParser parser;
 
     @Before
     public void setUp() {
         initMocks(this);
-        controller = new SubscriptionController(subscriptionService);
+        controller = new SubscriptionController(subscriptionService, parser);
     }
 
     @Test
     public void ShouldParseAndValidateInputMessage() throws IOException {
-        SubscriptionServiceRequest subscriptionRequest = new SubscriptionServiceRequest();
-        subscriptionRequest.setSubscriberNumber("1234567890");
-        subscriptionRequest.setInputMessage("C 25");
+        String subscriberNumber = "1234567890";
+        String inputMessage = "C 25";
 
-        controller.enroll(subscriptionRequest);
+        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+        subscriptionRequest.setSubscriberNumber(subscriberNumber);
+        subscriptionRequest.setInputMessage(inputMessage);
 
-        verify(subscriptionService).startFor(argThat(new SubscriptionRequestMatcher("1234567890", "C 25")));
+        Subscription subscription = mock(Subscription.class);
+        when(parser.parse(subscriberNumber, inputMessage)).thenReturn(subscription);
+
+        controller.handle(subscriptionRequest);
+
+        verify(subscriptionService).start(subscription);
+        ArgumentCaptor<Subscriber> captor = ArgumentCaptor.forClass(Subscriber.class);
+        verify(subscription).setSubscriber(captor.capture());
+        Subscriber captured = captor.getValue();
+        assertEquals(subscriberNumber, captured.getNumber());
     }
 
 }

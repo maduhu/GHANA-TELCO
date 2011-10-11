@@ -11,7 +11,7 @@ import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
+import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
@@ -55,9 +55,9 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     public void ShouldEnrollSubscriber() throws IOException {
         String shortCode = "P";
         String program = "Pregnancy";
-        SubscriptionServiceRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "9500012345");
+        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "9500012345");
 
-        subscriptionController.enroll(subscriptionRequest);
+        subscriptionController.handle(subscriptionRequest);
 
         List<Subscription> subscriptions = allSubscriptions.getAll();
         List<Subscriber> subscribers = allSubscribers.getAll();
@@ -76,13 +76,13 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
     @Test
     @Ignore
     public void ShouldSendFailureResponseForInvalidMessage() throws IOException {
-        SubscriptionServiceRequest subscriptionRequest = createSubscriptionRequest("P25", "1234567890");
-        subscriptionController.enroll(subscriptionRequest);
+        SubscriptionRequest subscriptionRequest = createSubscriptionRequest("P25", "1234567890");
+        subscriptionController.handle(subscriptionRequest);
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
     }
 
-    private SubscriptionServiceRequest createSubscriptionRequest(String inputMessage, String subscriberNumber) {
-        SubscriptionServiceRequest subscriptionRequest = new SubscriptionServiceRequest();
+    private SubscriptionRequest createSubscriptionRequest(String inputMessage, String subscriberNumber) {
+        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setInputMessage(inputMessage);
         subscriptionRequest.setSubscriberNumber(subscriberNumber);
         return subscriptionRequest;

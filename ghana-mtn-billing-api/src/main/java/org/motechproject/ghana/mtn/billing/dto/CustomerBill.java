@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.billing.dto;
 import org.motechproject.ghana.mtn.vo.Money;
 
 public class CustomerBill {
-
     private Money amountCharged;
     private String message;
 

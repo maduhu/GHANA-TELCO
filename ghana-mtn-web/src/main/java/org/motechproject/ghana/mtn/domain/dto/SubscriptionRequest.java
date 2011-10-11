@@ -1,6 +1,6 @@
 package org.motechproject.ghana.mtn.domain.dto;
 
-public class SubscriptionServiceRequest {
+public class SubscriptionRequest {
     private String subscriberNumber;
     private String inputMessage;
 
@@ -8,7 +8,7 @@ public class SubscriptionServiceRequest {
         return subscriberNumber;
     }
 
-    public SubscriptionServiceRequest setSubscriberNumber(String subscriberNumber) {
+    public SubscriptionRequest setSubscriberNumber(String subscriberNumber) {
         this.subscriberNumber = subscriberNumber;
         return this;
     }
@@ -17,7 +17,7 @@ public class SubscriptionServiceRequest {
         return inputMessage;
     }
 
-    public SubscriptionServiceRequest setInputMessage(String inputMessage) {
+    public SubscriptionRequest setInputMessage(String inputMessage) {
         this.inputMessage = inputMessage;
         return this;
     }

@@ -10,8 +10,8 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SubscriptionCampaignTest {
     private SubscriptionCampaign campaign;

@@ -1,8 +1,6 @@
 package org.motechproject.ghana.mtn.service;
 
-import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.dto.SubscriptionServiceRequest;
 import org.motechproject.ghana.mtn.service.process.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,11 +14,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private SubscriptionBilling billing;
     private SubscriptionPersistence persistence;
     private SubscriptionCampaign campaign;
-    private SubscriptionParser parser;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionParser parser,
-                                   SubscriptionValidation validation,
+    public SubscriptionServiceImpl(SubscriptionValidation validation,
                                    SubscriptionBilling billing,
                                    SubscriptionPersistence persistence,
                                    SubscriptionCampaign campaign) {
@@ -28,19 +24,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.billing = billing;
         this.persistence = persistence;
         this.campaign = campaign;
-        this.parser = parser;
     }
 
     @Override
-    public void startFor(SubscriptionServiceRequest subscriptionRequest) {
-        String subscriberNumber = subscriptionRequest.getSubscriberNumber();
-        String inputMessage = subscriptionRequest.getInputMessage();
-        Subscription subscription = parser.parseForEnrollment(subscriberNumber, inputMessage);
-        if (subscription == null) return;
-
-        Subscriber subscriber = new Subscriber(subscriberNumber);
-        subscription.setSubscriber(subscriber);
-
+    public void start(Subscription subscription) {
         List<BaseSubscriptionProcess> processes = Arrays.asList(validation, billing, persistence, campaign);
         for (BaseSubscriptionProcess process : processes) {
             if (process.startFor(subscription)) continue;
@@ -49,13 +36,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void endFor(SubscriptionServiceRequest subscriptionRequest) {
-        String subscriberNumber = subscriptionRequest.getSubscriberNumber();
-        String inputMessage = subscriptionRequest.getInputMessage();
-        Subscription subscription = parser.parseForWithDraw(subscriberNumber, inputMessage);
-        if (subscription == null) return;
-
-        List<BaseSubscriptionProcess> processes = Arrays.asList(billing, persistence, campaign);
+    public void stop(Subscription subscription) {
+        List<BaseSubscriptionProcess> processes = Arrays.asList(billing, campaign, persistence);
         for (BaseSubscriptionProcess process : processes) {
             if (process.endFor(subscription)) continue;
             break;
