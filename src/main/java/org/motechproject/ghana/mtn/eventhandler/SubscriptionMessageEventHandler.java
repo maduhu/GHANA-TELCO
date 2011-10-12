@@ -37,15 +37,20 @@ public class SubscriptionMessageEventHandler {
 
         Subscription subscription = allSubscriptions.findBy(subscriberNo, programName);
         SubscriptionMessage message = allSubscriptionMessages.findBy(subscription.getSubscriptionType(), subscription.currentWeek(), subscription.currentDay());
+
+        if(message == null) return;        
         if (subscription.alreadySent(message)) {
-            log.info("message already sent:" + message);
-            System.out.println("message already sent:" + message);
+            log("Subscriber : " + subscriberNo + " : Message already sent:" + message);
             return;
         }
-        log.info("message sent:" + message);
-        System.out.println("message sent:" + message);
+        log("Subscriber : " + subscriberNo + " : Message sent:" + message);
         subscription.updateLastMessageSent();
         allSubscriptions.update(subscription);
+    }
+
+    private void log(String message) {
+        log.info(message);
+        System.out.println(message);
     }
 
 }
