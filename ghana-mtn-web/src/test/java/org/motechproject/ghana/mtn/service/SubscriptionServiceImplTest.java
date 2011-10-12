@@ -8,6 +8,7 @@ import org.motechproject.ghana.mtn.process.SubscriptionBilling;
 import org.motechproject.ghana.mtn.process.SubscriptionCampaign;
 import org.motechproject.ghana.mtn.process.SubscriptionPersistence;
 import org.motechproject.ghana.mtn.process.SubscriptionValidation;
+import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -24,11 +25,13 @@ public class SubscriptionServiceImplTest {
     private SubscriptionPersistence persistence;
     @Mock
     private SubscriptionCampaign campaign;
+    @Mock
+    private AllSubscriptions allSubscriptions;
 
     @Before
     public void setUp() {
         initMocks(this);
-        service = new SubscriptionServiceImpl(validation, billing, persistence, campaign);
+        service = new SubscriptionServiceImpl(allSubscriptions, validation, billing, persistence, campaign);
     }
 
     @Test
@@ -61,6 +64,19 @@ public class SubscriptionServiceImplTest {
         verify(billing).stopFor(subscription);
         verify(campaign).stopFor(subscription);
         verify(persistence).stopFor(subscription);
+    }
+
+    @Test
+    public void shouldFindSubscriptionByMobileNumberUsingRepository() {
+        String subscriberNumber = "123";
+        String program = "program";
+        Subscription subscription = new Subscription();
+        when(allSubscriptions.findBy(subscriberNumber, program)).thenReturn(subscription);
+
+        Subscription returned = service.findBy(subscriberNumber, program);
+
+        assertEquals(subscription, returned);
+        verify(allSubscriptions).findBy(subscriberNumber, program);
     }
 
 }

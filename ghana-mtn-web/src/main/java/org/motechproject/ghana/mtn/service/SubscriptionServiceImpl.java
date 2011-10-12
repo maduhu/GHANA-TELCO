@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.service;
 
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.process.*;
+import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,16 +11,19 @@ import java.util.List;
 
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
+    private AllSubscriptions allSubscriptions;
     private SubscriptionValidation validation;
     private SubscriptionBilling billing;
     private SubscriptionPersistence persistence;
     private SubscriptionCampaign campaign;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionValidation validation,
+    public SubscriptionServiceImpl(AllSubscriptions allSubscriptions,
+                                   SubscriptionValidation validation,
                                    SubscriptionBilling billing,
                                    SubscriptionPersistence persistence,
                                    SubscriptionCampaign campaign) {
+        this.allSubscriptions = allSubscriptions;
         this.validation = validation;
         this.billing = billing;
         this.persistence = persistence;
@@ -42,9 +46,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
+    @Override
+    public Subscription findBy(String subscriberNumber, String programName) {
+        return allSubscriptions.findBy(subscriberNumber, programName);
+    }
+
     private List<ISubscriptionProcessFlow> processes(ISubscriptionProcessFlow... processes) {
-        List<ISubscriptionProcessFlow> list = new ArrayList<ISubscriptionProcessFlow>();
-        for (ISubscriptionProcessFlow process : processes) list.add(process);
+        List<ISubscriptionProcessFlow> list = new ArrayList();
+        for (ISubscriptionProcessFlow process : processes)
+            list.add(process);
         return list;
     }
 
