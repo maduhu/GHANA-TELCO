@@ -160,6 +160,6 @@ public class Subscription extends MotechAuditableDataObject {
 
     @JsonIgnore
     public Boolean isCompleted() {
-        return currentWeek().getNumber() >= programType.getMaxWeek();
+        return currentWeek().getNumber() > programType.getMaxWeek() && Day.FRIDAY.equals(currentDay());
     }
 }
