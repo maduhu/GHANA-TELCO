@@ -11,6 +11,8 @@ import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.matchers.SubscriptionTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllSubscriptionTypes;
 
+import java.util.Arrays;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -58,7 +60,7 @@ public class InputMessageParserTest {
         String inputText = "c 25";
         SubscriptionType subscriptionType = new SubscriptionTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
 
-        when(mockAllSubcriptionTypes.findByCampaignShortCode("c")).thenReturn(subscriptionType);
+        when(mockAllSubcriptionTypes.findByCampaignShortCode("C")).thenReturn(subscriptionType);
 
         Subscription subscription = messageParser.parse(inputText);
         assertThat(subscription.getSubscriptionType(), is(subscriptionType));
@@ -82,5 +84,19 @@ public class InputMessageParserTest {
     public void ShouldCreateSubscriptionForWeekWithSingleDigit() {
         Subscription subscription = messageParser.parse("P 5");
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(5));
+    }
+
+    @Test
+    public void ShouldParseBasedOnNewShortCodes() {
+        String shortCode = "CHI";
+        SubscriptionType childCareSubscriptionType = new SubscriptionTypeBuilder().withShortCode(shortCode).withShortCode("C").withProgramName("ChildCare").withMinWeek(5).withMaxWeek(35).build();
+
+        when(mockAllSubcriptionTypes.findByCampaignShortCode(shortCode)).thenReturn(childCareSubscriptionType);
+        when(mockAllSubcriptionTypes.getAll()).thenReturn(Arrays.asList(childCareSubscriptionType));
+
+        messageParser.recompilePattern();
+        Subscription actualSubscription = messageParser.parse(shortCode + " 5");
+
+        assertThat(actualSubscription.getSubscriptionType(), new SubscriptionTypeMatcher(childCareSubscriptionType));
     }
 }
