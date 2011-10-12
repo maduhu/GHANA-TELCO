@@ -42,6 +42,9 @@ public class AllProgramTypesTest extends BaseIntegrationTest {
     public void ShouldReturnPregnancyProgramTypeForShortCodeP() {
         ProgramType programType = allProgramTypes.findByCampaignShortCode("P");
         assertThat(programType.getProgramName(), is("Pregnancy"));
+        assertThat(allProgramTypes.findByCampaignShortCode("p").getProgramName(), is("Pregnancy"));
+        assertThat(allProgramTypes.findByCampaignShortCode("c").getProgramName(), is("Child Care"));
+        assertThat(allProgramTypes.findByCampaignShortCode("C").getProgramName(), is("Child Care"));
     }
 
     @After

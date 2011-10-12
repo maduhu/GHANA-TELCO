@@ -33,8 +33,9 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
         return this;
     }
 
-    public ProgramTypeBuilder withShortCode(String shortCode) {
-        this.shortCodes.add(shortCode);
+    public ProgramTypeBuilder withShortCode(String... shortCodes) {
+        for(String shortCode : shortCodes)
+            this.shortCodes.add(shortCode);
         return this;
     }
 

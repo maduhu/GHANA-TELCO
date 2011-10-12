@@ -17,7 +17,7 @@ public class AdminController {
 
     @RequestMapping("/recompile")
     public void console(HttpServletResponse httpServletResponse) throws IOException {
-        inputMessageParser.recompilePattern();
+        inputMessageParser.recompilePatterns();
         httpServletResponse.getWriter().append("Recompiled");
     }
 }

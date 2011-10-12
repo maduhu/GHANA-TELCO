@@ -3,6 +3,8 @@ package org.motechproject.ghana.mtn.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.domain.RegisterProgramMessageParser;
+import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
@@ -13,6 +15,8 @@ import org.motechproject.ghana.mtn.utils.InputMessageParser;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -23,67 +27,87 @@ public class InputMessageParserTest {
     InputMessageParser messageParser;
     @Mock
     private AllProgramTypes allProgramTypes;
+    private RegisterProgramMessageParser registerProgramMessageParser;
+
+    ProgramType pregnancy;
+    ProgramType childCare;
 
     @Before
     public void setUp() {
         initMocks(this);
-        messageParser = new InputMessageParser(allProgramTypes);
+
+        pregnancy = new ProgramTypeBuilder().withShortCode("p").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
+        childCare = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
+        when(allProgramTypes.getAll()).thenReturn(asList(pregnancy, childCare));
+        registerProgramMessageParser = new RegisterProgramMessageParser(allProgramTypes);
+        messageParser = new InputMessageParser(registerProgramMessageParser);
     }
 
     @Test
     public void ShouldParsePregnancyMessage() {
         int startFrom = 25;
-        String inputText = "P " + startFrom;
-        ProgramType programType = new ProgramTypeBuilder().withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
+        String messageText = "P " + startFrom;
 
-        when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(programType);
+        when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(pregnancy);
 
-        Subscription subscription = messageParser.parse(inputText);
+        SMS sms = messageParser.parse(messageText);
+        Subscription subscription = (Subscription) sms.getDomain();
 
-        assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
+        assertMobileNumberAndMessage(sms, messageText);
+        assertThat(subscription.getProgramType(), new ProgramTypeMatcher(pregnancy));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(startFrom));
     }
 
     @Test
     public void ShouldParseChildCareMessage() {
-        String inputText = "C 25";
-        ProgramType programType = new ProgramTypeBuilder().withShortCode("C").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
+        String messageText = "C 25";
 
-        when(allProgramTypes.findByCampaignShortCode("C")).thenReturn(programType);
-        Subscription subscription = messageParser.parse(inputText);
+        when(allProgramTypes.findByCampaignShortCode("C")).thenReturn(childCare);
+        SMS sms = messageParser.parse(messageText);
+        Subscription subscription = (Subscription) sms.getDomain();
 
-        assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
+        assertMobileNumberAndMessage(sms, messageText);
+        assertThat(subscription.getProgramType(), new ProgramTypeMatcher(childCare));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
     }
 
     @Test
     public void ShouldParseMessagesEvenWithLowerCase() {
-        String inputText = "c 25";
+        String messageText = "c 25";
         ProgramType programType = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
 
-        when(allProgramTypes.findByCampaignShortCode("C")).thenReturn(programType);
+        when(allProgramTypes.findByCampaignShortCode("c")).thenReturn(programType);
 
-        Subscription subscription = messageParser.parse(inputText);
+        SMS sms = messageParser.parse(messageText);
+        Subscription subscription = (Subscription) sms.getDomain();
+
+        assertMobileNumberAndMessage(sms, messageText);
         assertThat(subscription.getProgramType(), is(programType));
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
     }
 
     @Test(expected = MessageParseFailException.class)
     public void ShouldFailForMessagesThatAreNotValid() {
-        String inputText = "q 25";
-        messageParser.parse(inputText);
+        String messageText = "q 25";
+        messageParser.parse(messageText);
     }
 
     @Test
     public void ShouldCreateSubscriptionWithActiveStatusForValidInputMessage() {
-        Subscription subscription = messageParser.parse("P 10");
-        assertNull(subscription.getStatus());
+        String messageText = "P 10";
+        SMS sms = messageParser.parse(messageText);
+        Subscription subscription = (Subscription) sms.getDomain();
 
+        assertMobileNumberAndMessage(sms, messageText);
+        assertNull(subscription.getStatus());
     }
 
     @Test
     public void ShouldCreateSubscriptionForWeekWithSingleDigit() {
-        Subscription subscription = messageParser.parse("P 5");
+        String messageText = "P 5";
+        SMS sms = messageParser.parse(messageText);
+        Subscription subscription = (Subscription) sms.getDomain();
+        assertMobileNumberAndMessage(sms, messageText);
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(5));
     }
 
@@ -95,9 +119,17 @@ public class InputMessageParserTest {
         when(allProgramTypes.findByCampaignShortCode(shortCode)).thenReturn(childCareProgramType);
         when(allProgramTypes.getAll()).thenReturn(Arrays.asList(childCareProgramType));
 
-        messageParser.recompilePattern();
-        Subscription actualSubscription = messageParser.parse(shortCode + " 5");
-
+        messageParser.recompilePatterns();
+        String messageText = shortCode + " 5";
+        SMS sms = messageParser.parse(messageText);
+        Subscription actualSubscription = (Subscription) sms.getDomain();
+        assertMobileNumberAndMessage(sms, messageText);
         assertThat(actualSubscription.getProgramType(), new ProgramTypeMatcher(childCareProgramType));
     }
+
+    private void assertMobileNumberAndMessage(SMS sms, String message) {
+        assertNull(sms.getFromMobileNumber());
+        assertEquals(message, sms.getMessage());
+    }
+
 }

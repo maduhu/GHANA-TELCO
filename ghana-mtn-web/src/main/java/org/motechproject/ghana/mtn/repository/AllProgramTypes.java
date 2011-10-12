@@ -18,9 +18,14 @@ public class AllProgramTypes extends MotechAuditableRepository<ProgramType> {
 
     public ProgramType findByCampaignShortCode(String shortCode) {
         List<ProgramType> programTypes = getAll();
+        String shortCodeLowerCase = shortCode.toLowerCase();
+
         for (ProgramType programType : programTypes) {
-            if (programType.getShortCodes().contains(shortCode))
-                return programType;
+            List<String> shortCodes = programType.getShortCodes();
+            for (String code : shortCodes) {
+                if (code.toLowerCase().contains(shortCodeLowerCase))
+                    return programType;
+            }
         }
         return null;
     }
