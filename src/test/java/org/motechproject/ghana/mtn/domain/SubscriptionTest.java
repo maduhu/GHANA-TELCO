@@ -24,19 +24,39 @@ public class SubscriptionTest {
     }
 
     @Test
-    public void shouldReturnCurrentRunningWeekForPregnancySubscriptionProgram() {
-        Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), subscriptionType("Pregnancy"));
-        Subscription sub2 = subscription("9999933333", new DateTime(2012, 2, 26, 10, 10), new Week(7), subscriptionType("Child Care"));
+    public void shouldReturnCurrentRunningWeekForSubscriptionProgramBasedOnSundayAsStartOfWeek() {
 
-        mockCurrentDate(new DateTime(2012, 2, 27, 23, 2));
-        assertWeek(new Week(9), sub1.currentWeek());
-        assertWeek(new Week(7), sub2.currentWeek());
+        DateTime wedFeb2 = date(2012, 2, 2);
+        DateTime satFeb5 = date(2012, 2, 5);
+        DateTime sunFeb6 = date(2012, 2, 6);
+        DateTime wedFeb24 = date(2012, 2, 24);
 
-        mockCurrentDate(new DateTime(2012, 5, 6, 2, 2));
-        assertWeek(new Week(19), sub1.currentWeek());
-        assertWeek(new Week(16), sub2.currentWeek());
+        Subscription registeredOn_wedFeb2 = subscription("9999933333", wedFeb2, new Week(6), subscriptionType("Pregnancy"));
+        Subscription registeredOn_satFeb5 = subscription("9999933333", satFeb5, new Week(6), subscriptionType("Child"));
+        Subscription registeredOn_sunFeb6 = subscription("9999933333", sunFeb6, new Week(8), subscriptionType("Child"));
+        Subscription registeredOn_wedFeb24 = subscription("9999933333", wedFeb24, new Week(9), subscriptionType("Child"));
+
+        mockCurrentDate(date(2012, 2, 5)); // sat
+        assertWeek(new Week(6), registeredOn_wedFeb2.currentWeek());
+        assertWeek(new Week(6), registeredOn_satFeb5.currentWeek());
+
+        mockCurrentDate(date(2012, 2, 6)); // sun
+        assertWeek(new Week(7), registeredOn_wedFeb2.currentWeek());
+        assertWeek(new Week(7), registeredOn_satFeb5.currentWeek());
+        assertWeek(new Week(8), registeredOn_sunFeb6.currentWeek());
+
+        mockCurrentDate(date(2012, 2, 19)); // sat
+        assertWeek(new Week(8), registeredOn_wedFeb2.currentWeek());
+        assertWeek(new Week(8), registeredOn_satFeb5.currentWeek());
+        assertWeek(new Week(9), registeredOn_sunFeb6.currentWeek());
+
+        mockCurrentDate(date(2012, 2, 27)); // sun
+        assertWeek(new Week(10), registeredOn_wedFeb2.currentWeek());
+        assertWeek(new Week(10), registeredOn_satFeb5.currentWeek());
+        assertWeek(new Week(11), registeredOn_sunFeb6.currentWeek());
+        assertWeek(new Week(10), registeredOn_wedFeb24.currentWeek());
     }
-
+    
     @Test
     public void shouldReturnCurrentDay() {
         Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), subscriptionType("Pregnancy"));
@@ -67,9 +87,12 @@ public class SubscriptionTest {
     }
 
      @Test
-
     public void shouldCheckIfMessageAlreadySent() {
         Subscription sub1 = new Subscription();
         assertFalse(sub1.alreadySent(new SubscriptionMessage()));
      }
+
+    private DateTime date(int year, int month, int date) {
+        return new DateTime(year, month, date, 10, 10);
+    }
 }

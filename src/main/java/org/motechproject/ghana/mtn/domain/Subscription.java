@@ -3,9 +3,7 @@ package org.motechproject.ghana.mtn.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
+import org.joda.time.*;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -81,8 +79,11 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public Week currentWeek() {
-        Period period = new Period(registrationDate, dateUtils.now(), PeriodType.weeks());
-        return startWeekAndDay.getWeek().add(period.getWeeks());
+        int dayOfWeek = registrationDate.get(DateTimeFieldType.dayOfWeek());
+        Period period = new Period(registrationDate, dateUtils.now(), PeriodType.days());
+        // substract of -1 => eg., Reg date : 2nd Feb Wed 2011, On 6th Feb Sat, Date difference is 3, DayofWeek is 4= (3+4) 7/7 = 1
+        int weeksToAddBasedOnSundayAsStartDay = (period.getDays() + dayOfWeek - 1) / 7;
+        return startWeekAndDay.getWeek().add(weeksToAddBasedOnSundayAsStartDay);
     }
 
     public Day currentDay() {
