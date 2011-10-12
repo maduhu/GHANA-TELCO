@@ -37,15 +37,18 @@ public class ProgramMessageEventHandlerTest {
         String programName = "pregnancy";
         Subscription subscription = mock(Subscription.class);
 
+
         Map params = new HashMap();
         params.put(EventKeys.CAMPAIGN_NAME_KEY, programName);
         params.put(EventKeys.EXTERNAL_ID_KEY, subscriberNumber);
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
 
-        when(service.findBy(subscriberNumber,programName)).thenReturn(subscription);
+        when(service.findBy(subscriberNumber, programName)).thenReturn(subscription);
+        when(subscription.isCompleted()).thenReturn(true);
 
         programMessageEventHandler.sendMessageReminder(motechEvent);
 
         verify(messenger).process(subscription);
+        verify(service).stop(subscription);
     }
 }

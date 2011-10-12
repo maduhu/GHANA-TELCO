@@ -155,6 +155,7 @@ public class Subscription extends MotechAuditableDataObject {
         this.billingStartDate = billingStartDate;
     }
 
+    @JsonIgnore
     public Boolean isCompleted() {
         return currentWeek().getNumber() >= programType.getMaxWeek();
     }
