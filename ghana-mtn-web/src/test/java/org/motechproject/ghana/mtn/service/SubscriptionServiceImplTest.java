@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.process.SubscriptionBilling;
+import org.motechproject.ghana.mtn.process.SubscriptionBillingCycle;
 import org.motechproject.ghana.mtn.process.SubscriptionCampaign;
 import org.motechproject.ghana.mtn.process.SubscriptionPersistence;
 import org.motechproject.ghana.mtn.process.SubscriptionValidation;
@@ -20,7 +20,7 @@ public class SubscriptionServiceImplTest {
     @Mock
     private SubscriptionValidation validation;
     @Mock
-    private SubscriptionBilling billing;
+    private SubscriptionBillingCycle billing;
     @Mock
     private SubscriptionPersistence persistence;
     @Mock

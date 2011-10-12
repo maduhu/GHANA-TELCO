@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionBilling extends BaseSubscriptionProcess implements ISubscriptionProcessFlow {
+public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements ISubscriptionProcessFlow {
     private BillingService billingService;
 
     @Autowired
-    public SubscriptionBilling(BillingService billingService, SMSService smsService, MessageBundle messageBundle) {
+    public SubscriptionBillingCycle(BillingService billingService, SMSService smsService, MessageBundle messageBundle) {
         super(smsService, messageBundle);
         this.billingService = billingService;
     }

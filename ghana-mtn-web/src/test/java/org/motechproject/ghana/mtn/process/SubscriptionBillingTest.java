@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SubscriptionBillingTest {
-    private SubscriptionBilling billing;
+    private SubscriptionBillingCycle billing;
     @Mock
     private BillingService billingService;
     @Mock
@@ -37,7 +37,7 @@ public class SubscriptionBillingTest {
     @Before
     public void setUp() {
         initMocks(this);
-        billing = new SubscriptionBilling(billingService, smsService, messageBundle);
+        billing = new SubscriptionBillingCycle(billingService, smsService, messageBundle);
     }
 
     @Test

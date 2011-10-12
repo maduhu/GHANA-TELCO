@@ -13,14 +13,14 @@ import java.util.List;
 public class SubscriptionServiceImpl implements SubscriptionService {
     private AllSubscriptions allSubscriptions;
     private SubscriptionValidation validation;
-    private SubscriptionBilling billing;
+    private SubscriptionBillingCycle billing;
     private SubscriptionPersistence persistence;
     private SubscriptionCampaign campaign;
 
     @Autowired
     public SubscriptionServiceImpl(AllSubscriptions allSubscriptions,
                                    SubscriptionValidation validation,
-                                   SubscriptionBilling billing,
+                                   SubscriptionBillingCycle billing,
                                    SubscriptionPersistence persistence,
                                    SubscriptionCampaign campaign) {
         this.allSubscriptions = allSubscriptions;

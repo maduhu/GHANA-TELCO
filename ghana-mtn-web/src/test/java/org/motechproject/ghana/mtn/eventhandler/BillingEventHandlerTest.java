@@ -14,6 +14,7 @@ import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.process.SubscriptionFeeCharger;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.vo.Money;
@@ -41,49 +42,30 @@ public class BillingEventHandlerTest {
     private SMSService smsService;
     @Mock
     private MessageBundle messageBundle;
+    @Mock
+    private SubscriptionFeeCharger feeCharger;
 
-    ProgramType childCareProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52)
-            .withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
-
-    String successMsg = "Success message for billing - amount %s";
     @Before
     public void setUp() {
         initMocks(this);
-        eventHandler = new BillingEventHandler(allSubscriptions, billingService, smsService, messageBundle);
-        when(messageBundle.get(MessageBundle.BILLING_SUCCESS)).thenReturn(successMsg);
+        eventHandler = new BillingEventHandler(allSubscriptions, feeCharger);
     }
 
     @Test
     public void shouldChargeCustomerForEveryMonthSchedule() {
-
         String subscriberNumber = "9500012345";
         String programName = "Child Care";
-
         Subscription subscription = mock(Subscription.class);
-        BillingServiceResponse<CustomerBill> billingResponse = new BillingServiceResponse<CustomerBill>(new CustomerBill(successMsg, childCareProgramType.getFee()));
-        when(subscription.getProgramType()).thenReturn(childCareProgramType);
-        when(allSubscriptions.findBy(subscriberNumber, programName)).thenReturn(subscription);
-        when(billingService.chargeProgramFee(any(BillingServiceRequest.class))).thenReturn(billingResponse);
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(BillingScheduler.EXTERNAL_ID_KEY, subscriberNumber);
-        params.put(BillingScheduler.PROGRAM, programName);
+        params.put(BillingScheduler.PROGRAM_KEY, programName);
         MotechEvent event = new MotechEvent(BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT, params);
+
+        when(allSubscriptions.findBy(subscriberNumber, programName)).thenReturn(subscription);
 
         eventHandler.chargeCustomer(event);
 
-        ArgumentCaptor<BillingServiceRequest> billingRequestCaptor = ArgumentCaptor.forClass(BillingServiceRequest.class);
-        verify(billingService).chargeProgramFee(billingRequestCaptor.capture());
-        BillingServiceRequest billingRequest = billingRequestCaptor.getValue();
-        assertEquals(subscriberNumber, billingRequest.getMobileNumber());
-        assertEquals(childCareProgramType.getFee(), billingRequest.getProgramFee());
-        assertEquals(childCareProgramType, billingRequest.getProgramType());
-
-        ArgumentCaptor<SMSServiceRequest> smsRequestCaptor = ArgumentCaptor.forClass(SMSServiceRequest.class);
-        verify(smsService).send(smsRequestCaptor.capture());
-        SMSServiceRequest request = smsRequestCaptor.getValue();
-        assertEquals(format(successMsg, childCareProgramType.getFee()), request.getMessage());
-        assertEquals(subscriberNumber, request.getMobileNumber());
-        assertEquals(childCareProgramType, request.getProgramType());
+        verify(feeCharger).process(subscription);
     }
 }

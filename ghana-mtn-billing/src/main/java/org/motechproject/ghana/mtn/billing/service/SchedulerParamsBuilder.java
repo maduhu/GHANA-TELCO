@@ -5,7 +5,7 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import java.util.HashMap;
 
 import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.EXTERNAL_ID_KEY;
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.PROGRAM;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.PROGRAM_KEY;
 
 public class SchedulerParamsBuilder {
 
@@ -26,7 +26,7 @@ public class SchedulerParamsBuilder {
     }
 
     public SchedulerParamsBuilder withProgram(String program) {
-        params.put(PROGRAM, program);
+        params.put(PROGRAM_KEY, program);
         return this;
     }
 }

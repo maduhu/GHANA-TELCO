@@ -18,7 +18,7 @@ import static java.lang.String.format;
 public class BillingScheduler {
     private static final Logger log = Logger.getLogger(BillingScheduler.class);
     public static final String MONTHLY_BILLING_SCHEDULE_SUBJECT = "org.motechproject.ghana.mtn.service.billingschedule";
-    public final static String PROGRAM = "Program";
+    public final static String PROGRAM_KEY = "Program";
     public final static String EXTERNAL_ID_KEY = "ExternalID";
 
     private MotechSchedulerService schedulerService;
