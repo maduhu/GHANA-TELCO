@@ -15,6 +15,7 @@ import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -56,7 +57,7 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
 
         ProgramType programType = new ProgramTypeBuilder()
                 .withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
-        subscription = new SubscriptionBuilder().withRegistrationDate(new DateTime())
+        subscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
                 .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(new Subscriber(mobileNumber))
                 .withType(programType).build();

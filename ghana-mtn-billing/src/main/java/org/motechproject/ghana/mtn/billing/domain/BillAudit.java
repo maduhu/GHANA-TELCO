@@ -5,6 +5,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.util.DateUtil;
 
 @TypeDiscriminator("doc.type === 'BillAudit'")
 public class BillAudit extends MotechAuditableDataObject {
@@ -26,7 +27,7 @@ public class BillAudit extends MotechAuditableDataObject {
         this.amountCharged = amountCharged;
         this.billStatus = billStatus;
         this.failureReason = failureReason;
-        this.date = DateTime.now();
+        this.date = DateUtil.now();
     }
 
     public String getMobileNumber() {

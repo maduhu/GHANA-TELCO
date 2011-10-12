@@ -15,6 +15,7 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class SubscriptionBillingTest {
 
     @Test
     public void shouldReturnFalseInCaseOfValidationErrorsOnStartingCycle() {
-        DateTime now = DateTime.now();
+        DateTime now = DateUtil.now();
         String mobileNumber = "123";
         String program = "program";
 
@@ -66,7 +67,7 @@ public class SubscriptionBillingTest {
 
     @Test
     public void shouldReturnTrueAndSendBillingSuccessMessageOnStartingCycle() {
-        DateTime now = DateTime.now();
+        DateTime now = DateUtil.now();
         String mobileNumber = "123";
         String program = "program";
 
@@ -92,7 +93,7 @@ public class SubscriptionBillingTest {
 
     @Test
     public void shouldReturnFalseInCaseOfValidationErrorsOnStoppingCycle() {
-        DateTime now = DateTime.now();
+        DateTime now = DateUtil.now();
         String mobileNumber = "123";
         String program = "program";
 
@@ -117,7 +118,7 @@ public class SubscriptionBillingTest {
 
     @Test
     public void shouldReturnTrueAndSendBillingSuccessMessageOnStoppingCycle() {
-        DateTime now = DateTime.now();
+        DateTime now = DateUtil.now();
         String mobileNumber = "123";
         String program = "program";
         ProgramType programType = mock(ProgramType.class);

@@ -9,6 +9,7 @@ import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.util.DateUtil;
 import org.quartz.CronExpression;
 
 import java.text.ParseException;
@@ -37,7 +38,7 @@ public class BillingSchedulerTest {
     @Test
     public void shouldRaiseACronJobWithPlatformSchedulerService() {
         BillingCycleRequest request = mock(BillingCycleRequest.class);
-        DateTime cycleStartDate = DateTime.now();
+        DateTime cycleStartDate = DateUtil.now();
         Date startDate = cycleStartDate.monthOfYear().addToCopy(1).toDate();
 
         when(request.getMobileNumber()).thenReturn("123");

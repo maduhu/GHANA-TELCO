@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.utils;
 
-import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
@@ -8,7 +7,6 @@ import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
-import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +34,7 @@ public class InputMessageParser {
             return new SubscriptionBuilder()
                     .withType(allProgramTypes.findByCampaignShortCode(matcher.group(1)))
                     .withStartWeekAndDay(new WeekAndDay(new Week(Integer.parseInt(matcher.group(2))), new DateUtils().today()))
-                    .withRegistrationDate(DateTime.now())
+                    .withRegistrationDate(new DateUtils().now())
                     .build();
         }
         throw new MessageParseFailException("Input Message is not valid <" + input + ">");
