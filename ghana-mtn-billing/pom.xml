@@ -13,6 +13,8 @@
     </parent>
     <properties>
         <motech-api-version>0.3-SNAPSHOT</motech-api-version>
+        <couchdb.server>localhost</couchdb.server>
+        <couchdb.port>5984</couchdb.port>
     </properties>
     <groupId>org.motechproject</groupId>
     <artifactId>ghana-mtn-billing</artifactId>
@@ -35,5 +37,52 @@
             <version>${motech-api-version}</version>
         </dependency>
     </dependencies>
-    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>drop billing-integration-test DB</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${couchdb.server}:${couchdb.port}/ghana-mtn-billing-test"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>drop billing DB</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${couchdb.server}:${couchdb.port}/ghana-mtn-billing"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

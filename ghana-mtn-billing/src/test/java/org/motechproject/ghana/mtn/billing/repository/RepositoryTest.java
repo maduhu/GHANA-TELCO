@@ -1,7 +1,6 @@
 package org.motechproject.ghana.mtn.billing.repository;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.model.MotechAuditableDataObject;
@@ -9,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationContextBilling.xml"})
+@ContextConfiguration(locations = {"/testApplicationContextBilling.xml"})
 public abstract class RepositoryTest<T extends MotechAuditableDataObject> {
 
     private MotechAuditableRepository<T> repository;
