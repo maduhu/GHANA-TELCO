@@ -91,12 +91,11 @@ public class Subscription extends MotechAuditableDataObject {
         DateTime currentDateStartDayTime = dateUtils.startOfDay(dateUtils.now());
         int daysDiff = new Period(registeredDateStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();
 
-        if(daysDiff > 0) {
+        if (daysDiff > 0) {
             int dayOfWeek = registeredDateStartDayTime.get(DateTimeFieldType.dayOfWeek());
-            int numberOfDaysToSaturday = dayOfWeek == DateTimeConstants.SUNDAY ? 6 : SATURDAY - dayOfWeek;
-
-            int daysAfterFirstSaturday = daysDiff > numberOfDaysToSaturday ? daysDiff - numberOfDaysToSaturday : 0;
-            int weeksAfterFirstSaturday = daysAfterFirstSaturday/7 + (daysAfterFirstSaturday % 7 > 0 ? 1 : 0);
+            int daysToSaturday = (dayOfWeek == DateTimeConstants.SUNDAY) ? 6 : SATURDAY - dayOfWeek;
+            int daysAfterFirstSaturday = daysDiff > daysToSaturday ? daysDiff - daysToSaturday : 0;
+            int weeksAfterFirstSaturday = daysAfterFirstSaturday / 7 + (daysAfterFirstSaturday % 7 > 0 ? 1 : 0);
             return startWeekAndDay.getWeek().add(weeksAfterFirstSaturday);
         }
         return startWeekAndDay.getWeek();
@@ -128,13 +127,13 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     private DateTime cycleStartDate() {
-       return dateUtils.startOfDay(new ProgramMessageCycle().nearestCycleDate(registrationDate));
+        return dateUtils.startOfDay(new ProgramMessageCycle().nearestCycleDate(registrationDate));
     }
 
     public DateTime billingStartDate() {
         List<Integer> forDaysToMoveToFirstOfMonth = asList(29, 30, 31);
         DateTime billingStartDate = cycleStartDate();
-        if(forDaysToMoveToFirstOfMonth.contains(billingStartDate.getDayOfMonth()))
+        if (forDaysToMoveToFirstOfMonth.contains(billingStartDate.getDayOfMonth()))
             return billingStartDate.dayOfMonth().addToCopy(1).withDayOfMonth(1);
         return billingStartDate;
     }
@@ -154,5 +153,9 @@ public class Subscription extends MotechAuditableDataObject {
 
     public void setBillingStartDate(DateTime billingStartDate) {
         this.billingStartDate = billingStartDate;
+    }
+
+    public Boolean isCompleted() {
+        return currentWeek().getNumber() >= programType.getMaxWeek();
     }
 }

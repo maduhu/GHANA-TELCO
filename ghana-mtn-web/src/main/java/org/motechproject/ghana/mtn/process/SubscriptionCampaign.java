@@ -22,6 +22,7 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess  implements IS
     public Boolean startFor(Subscription subscription) {
         CampaignRequest campaignRequest = subscription.createCampaignRequest();
         campaignService.startFor(campaignRequest);
+        sendMessage(subscription,messageFor(MessageBundle.ENROLLMENT_SUCCESS));
         return true;
     }
 
@@ -29,6 +30,7 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess  implements IS
     public Boolean stopFor(Subscription subscription) {
         CampaignRequest campaignRequest = subscription.createCampaignRequest();
         campaignService.stopFor(campaignRequest);
+        sendMessage(subscription,messageFor(MessageBundle.ENROLLMENT_STOPPED));
         return true;
     }
 }

@@ -12,14 +12,14 @@ import java.util.Properties;
 @Component
 public class MessageBundle {
     private Properties values;
-
+    public static final String PROGRAM_NAME_MARKER = "${p}";
     public static final String ENROLLMENT_SUCCESS = "enrollment.success";
     public static final String ENROLLMENT_FAILURE = "enrollment.failure";
+    public static final String ENROLLMENT_STOPPED = "enrollment.stopped";
     public static final String ACTIVE_SUBSCRIPTION_PRESENT = "enrollment.active.subscription.present";
     public static final String BILLING_SUCCESS = "billing.success";
     public static final String BILLING_FAILURE = "billing.failure";
     public static final String BILLING_STOPPED = "billing.stopped";
-    public static final String SUBSCRIPTION_STOPPED = "subscription.stopped";
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {
