@@ -65,8 +65,9 @@ public class SubscriptionValidationTest {
     @Test
     public void shouldReturnErrorMessageIfActiveSubscriptionIsAlreadyPresent() {
         String mobileNumber = "123";
-        String errMsg = "error msg";
+        String errMsg = "error msg %s";
         String program = "program";
+
 
         Subscription subscription = mock(Subscription.class);
         ProgramType programType = mock(ProgramType.class);
@@ -74,13 +75,14 @@ public class SubscriptionValidationTest {
 
         setupSubscriptionMock(mobileNumber, program, programType, subscription);
         when(subscription.isNotValid()).thenReturn(false);
+        when(subscription.programName()).thenReturn("program");
         when(messageBundle.get(MessageBundle.ACTIVE_SUBSCRIPTION_PRESENT)).thenReturn(errMsg);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber(mobileNumber)).thenReturn(dbSubscriptions);
 
         Boolean reply = validation.startFor(subscription);
 
         assertFalse(reply);
-        assertSMSRequest(mobileNumber, errMsg, program);
+        assertSMSRequest(mobileNumber, "error msg program", program);
     }
 
 

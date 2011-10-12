@@ -25,7 +25,7 @@ function http(url, fn) {
 function submitRequest() {
     var subscriberNumber = document.getElementsByName('subscriberNumber')[0].value;
     var queryParam = "subscriberNumber=" + subscriberNumber + "&inputMessage=" + document.getElementById('smsText').value;
-    var url = 'subscription/enroll?' + queryParam;
+    var url = 'subscription/handle?' + queryParam;
     http(url, updateEnrollmentResponse);
     document.getElementById('smsText').value = "";
     return false;

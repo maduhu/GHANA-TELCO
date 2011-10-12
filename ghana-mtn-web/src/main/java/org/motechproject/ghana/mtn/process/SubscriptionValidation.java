@@ -40,7 +40,8 @@ public class SubscriptionValidation extends BaseSubscriptionProcess implements I
             return false;
         }
         if (hasActiveSubscription(subscriberNumber, subscription)) {
-            sendMessage(subscription, messageFor(MessageBundle.ACTIVE_SUBSCRIPTION_PRESENT));
+            String content = String.format(messageFor(MessageBundle.ACTIVE_SUBSCRIPTION_PRESENT), subscription.programName());
+            sendMessage(subscription, content);
             return false;
         }
         BillingServiceRequest request = new BillingServiceRequest(subscriberNumber, subscription.getProgramType());
