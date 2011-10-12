@@ -5,6 +5,8 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechAuditableDataObject;
 
+import static org.motechproject.util.DateUtil.setTimeZone;
+
 @TypeDiscriminator("doc.type === 'SMSAudit'")
 public class SMSAudit extends MotechAuditableDataObject {
     @JsonProperty("type")
@@ -41,7 +43,7 @@ public class SMSAudit extends MotechAuditableDataObject {
     }
 
     public DateTime getSentTime() {
-        return sentTime;
+        return setTimeZone(sentTime);
     }
 
     public void setSentTime(DateTime sentTime) {

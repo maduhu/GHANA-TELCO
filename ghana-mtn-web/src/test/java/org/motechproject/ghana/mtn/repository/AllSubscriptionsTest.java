@@ -61,7 +61,7 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
                 .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(new Subscriber(mobileNumber))
                 .withType(programType).build();
-
+        subscription.updateStartCycleInfo();
         allSubscriptions.add(subscription);
     }
 
@@ -81,6 +81,7 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
                 .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                         .withSubscriber(subscriber1)
                         .withType(programType).build();
+        subscription.updateStartCycleInfo();
         allSubscriptions.add(subscription);
 
         List<Subscription> subscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(mobileNumber);
@@ -95,12 +96,12 @@ public class AllSubscriptionsTest extends BaseIntegrationTest {
     @Test
     public void shouldFetchSubscriptionBasedOnMobileNumberAndEnrolledProgram() {
         String user1Mobile = "9999933333";
-        Subscription pregnancyProgramForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build();
-        Subscription childCareForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 3, 0, 0), new Week(7), childCare).build();
+        Subscription pregnancyProgramForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build().updateStartCycleInfo();
+        Subscription childCareForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 3, 0, 0), new Week(7), childCare).build().updateStartCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser1);
         allSubscriptions.add(childCareForUser1);
 
-        Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build();
+        Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateStartCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser2);
 
         Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findBy(user1Mobile, pregnancy.getProgramName());

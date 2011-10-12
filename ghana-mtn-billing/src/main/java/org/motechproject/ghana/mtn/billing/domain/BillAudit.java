@@ -7,6 +7,8 @@ import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.util.DateUtil;
 
+import static org.motechproject.util.DateUtil.setTimeZone;
+
 @TypeDiscriminator("doc.type === 'BillAudit'")
 public class BillAudit extends MotechAuditableDataObject {
     @JsonProperty("type")
@@ -63,7 +65,7 @@ public class BillAudit extends MotechAuditableDataObject {
     }
 
     public DateTime getDate() {
-        return date;
+        return setTimeZone(date);
     }
 
     public void setDate(DateTime date) {

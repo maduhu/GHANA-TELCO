@@ -12,11 +12,13 @@ import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
+import org.motechproject.util.DateUtil;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.joda.time.DateTimeConstants.SATURDAY;
+import static org.motechproject.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type === 'Subscription'")
 public class Subscription extends MotechAuditableDataObject {
@@ -75,7 +77,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public DateTime getRegistrationDate() {
-        return registrationDate;
+        return setTimeZone(registrationDate);
     }
 
     public void setRegistrationDate(DateTime registrationDate) {
@@ -138,9 +140,10 @@ public class Subscription extends MotechAuditableDataObject {
         return billingStartDate;
     }
 
-    public void updateStartCycleInfo() {
+    public Subscription updateStartCycleInfo() {
         this.getStartWeekAndDay().setDay(dateUtils.day(cycleStartDate()));
         this.billingStartDate = billingStartDate();
+        return this;
     }
 
     public String subscriberNumber() {
@@ -148,7 +151,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public DateTime getBillingStartDate() {
-        return billingStartDate;
+        return setTimeZone(billingStartDate);
     }
 
     public void setBillingStartDate(DateTime billingStartDate) {
