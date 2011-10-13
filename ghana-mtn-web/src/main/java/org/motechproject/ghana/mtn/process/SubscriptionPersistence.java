@@ -39,7 +39,11 @@ public class SubscriptionPersistence extends BaseSubscriptionProcess implements 
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
+        toSubscription.setStatus(SubscriptionStatus.ACTIVE);
+        allSubscriptions.update(fromSubscription);
+        allSubscriptions.update(toSubscription);
+        return true;
     }
 
 

@@ -11,6 +11,7 @@ import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.Mockito.*;
 
@@ -53,5 +54,20 @@ public class SubscriptionPersistenceTest {
 
         verify(allSubscriptions).update(subscription);
         verify(subscription).setStatus(SubscriptionStatus.EXPIRED);
+    }
+
+    @Test
+    public void shouldUpdateSubscriptionStateOfSourceAndTargetSubscription(){
+        Subscription source = mock(Subscription.class);
+        Subscription target = mock(Subscription.class);
+
+        Boolean reply = persistence.rollOver(source, target);
+
+        assertTrue(reply);
+        verify(source).setStatus(SubscriptionStatus.ROLLED_OFF);
+        verify(target).setStatus(SubscriptionStatus.ACTIVE);
+        verify(allSubscriptions).update(source);
+        verify(allSubscriptions).update(target);
+
     }
 }
