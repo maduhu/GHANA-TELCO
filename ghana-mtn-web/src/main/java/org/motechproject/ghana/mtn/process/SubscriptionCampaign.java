@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionCampaign extends BaseSubscriptionProcess  implements ISubscriptionFlowProcess {
+public class SubscriptionCampaign extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private MessageCampaignService campaignService;
 
     @Autowired
@@ -20,23 +20,24 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess  implements IS
 
     @Override
     public Boolean startFor(Subscription subscription) {
-        CampaignRequest campaignRequest = subscription.createCampaignRequest();
-        campaignService.startFor(campaignRequest);
-        sendMessage(subscription,messageFor(MessageBundle.ENROLLMENT_SUCCESS));
+        campaignService.startFor(subscription.createCampaignRequest());
+        sendMessage(subscription, messageFor(MessageBundle.ENROLLMENT_SUCCESS));
         return true;
     }
 
     @Override
     public Boolean stopFor(Subscription subscription) {
-        CampaignRequest campaignRequest = subscription.createCampaignRequest();
-        campaignService.stopFor(campaignRequest);
-        sendMessage(subscription,messageFor(MessageBundle.ENROLLMENT_STOPPED));
+        campaignService.stopFor(subscription.createCampaignRequest());
+        sendMessage(subscription, messageFor(MessageBundle.ENROLLMENT_STOPPED));
         return true;
     }
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        campaignService.stopFor(fromSubscription.createCampaignRequest());
+        campaignService.startFor(toSubscription.createCampaignRequest());
+        sendMessage(toSubscription, messageFor(MessageBundle.ENROLLMENT_ROLlOVER));
+        return true;
     }
 
 
