@@ -1,5 +1,18 @@
 package org.motechproject.ghana.mtn.domain;
 
 public enum SubscriptionStatus {
-    ACTIVE, ROLLED_OFF, EXPIRED, SUSPENDED
+
+    ACTIVE("subscription is active and sending messages to subscriber"),
+    ROLLED_OFF("subscription is rolled-off, stops sending its messages"),
+    EXPIRED("subscription has ended, all messages are sent"),
+    SUSPENDED("subscriber has ended the subscription, not all messages are sent"),
+    PAYMENT_DEFAULT("subscriber has defaulted on payment, stop sending messages, can be reactivated");
+
+    private String description;
+
+    SubscriptionStatus(String description) {
+        this.description = description;
+    }
+
+
 }
