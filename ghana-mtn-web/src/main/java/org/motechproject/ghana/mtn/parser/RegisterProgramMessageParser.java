@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
-@Component("RegisterProgramMessageParser")
+@Component
 public class RegisterProgramMessageParser extends MessageParser {
 
     public static final String START_OF_PATTERN = "^(";

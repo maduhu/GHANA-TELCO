@@ -27,7 +27,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
+public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private SubscriptionController subscriptionController;
@@ -93,7 +93,7 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest{
         super.after();
         remove(allSubscriptions.getAll());
         remove(allSubscribers.getAll());
-        for(BillAccount billAccount : allBillAccounts.getAll()) allBillAccounts.remove(billAccount);                
+        for (BillAccount billAccount : allBillAccounts.getAll()) allBillAccounts.remove(billAccount);
         removeAllQuartzJobs();
     }
 

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
+import org.motechproject.ghana.mtn.parser.RelativeProgramMessageHandler;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.parser.InputMessageParser;
 
@@ -15,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class SubscriptionMessageParserTest {
+public class SubscriptionUserMessageParserTest {
     private SubscriptionUserMessageParser parserHandle;
     @Mock
     private SMSService smsService;
@@ -23,11 +24,13 @@ public class SubscriptionMessageParserTest {
     private InputMessageParser inputParser;
     @Mock
     private MessageBundle messageBundle;
+    @Mock
+    private RelativeProgramMessageHandler relativeProgramMessageHandler;
 
     @Before
     public void setUp() {
         initMocks(this);
-        parserHandle = new SubscriptionUserMessageParser(inputParser, smsService, messageBundle);
+        parserHandle = new SubscriptionUserMessageParser(inputParser, relativeProgramMessageHandler, smsService, messageBundle);
     }
 
     @Test

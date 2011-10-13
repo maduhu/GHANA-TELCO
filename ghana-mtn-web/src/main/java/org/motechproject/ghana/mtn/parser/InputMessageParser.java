@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.parser;
 import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public class InputMessageParser {
     private List<MessageParser> messageParsers;
 
     @Autowired
-    public InputMessageParser(@Qualifier("RegisterProgramMessageParser") RegisterProgramMessageParser registerProgramParser,
+    public InputMessageParser(RegisterProgramMessageParser registerProgramParser,
                               StopMessageParser stopMessageParser) {
         this.registerProgramParser = registerProgramParser;
         this.stopMessageParser = stopMessageParser;

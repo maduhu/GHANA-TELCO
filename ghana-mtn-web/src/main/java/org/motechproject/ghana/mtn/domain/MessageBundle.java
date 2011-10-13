@@ -22,6 +22,7 @@ public class MessageBundle {
     public static final String BILLING_SUCCESS = "billing.success";
     public static final String BILLING_FAILURE = "billing.failure";
     public static final String BILLING_STOPPED = "billing.stopped";
+    public static final String INVALID_MOBILE_NUMBER = "enrollment.invalid.mobile.number";
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {
@@ -45,5 +46,4 @@ public class MessageBundle {
         }
         return builder.toString();
     }
-
 }

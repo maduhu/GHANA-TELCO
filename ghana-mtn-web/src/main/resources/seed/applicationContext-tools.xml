@@ -9,6 +9,7 @@
             <list>
                 <ref bean="programTypeSeed"/>
                 <ref bean="programMessageSeed"/>
+                <ref bean="shortCodeSeed"/>
             </list>
         </constructor-arg>
     </bean>
