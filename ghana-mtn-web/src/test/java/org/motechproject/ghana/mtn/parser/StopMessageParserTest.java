@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service.parser;
+package org.motechproject.ghana.mtn.parser;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service.parser;
+package org.motechproject.ghana.mtn.parser;
 
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.SMS;
