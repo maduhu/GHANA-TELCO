@@ -31,29 +31,6 @@ public abstract class SMS<T> {
     }
 
     public abstract void process(SMSHandler handler);
-
-    public static class RegisterProgramSMS extends SMS<Subscription> {
-
-        public RegisterProgramSMS(String message, Subscription domain) {
-            super(message, domain);
-        }
-
-        @Override
-        public void process(SMSHandler handler) {
-            handler.register(this);
-        }
-    }
-
-    public static class StopSMS extends SMS<IProgramType> {
-        public StopSMS(String message, IProgramType domain) {
-            super(message, domain);
-        }
-
-        @Override
-        public void process(SMSHandler handler) {
-            handler.stop(this);
-        }
-    }
 }
 
 

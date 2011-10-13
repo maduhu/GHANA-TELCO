@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
 import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
@@ -37,7 +38,7 @@ public class SubscriptionControllerTest {
         subscriptionRequest.setInputMessage(inputMessage);
 
         Subscription subscription = mock(Subscription.class);
-        SMS sms = spy(new SMS.RegisterProgramSMS(inputMessage, subscription).setFromMobileNumber(subscriberNumber));
+        SMS sms = spy(new RegisterProgramSMS(inputMessage, subscription).setFromMobileNumber(subscriberNumber));
         when(parserHandle.process(subscriberNumber, inputMessage)).thenReturn(sms);
 
         controller.handle(subscriptionRequest);

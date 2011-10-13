@@ -1,13 +1,14 @@
 package org.motechproject.ghana.mtn.service.parser;
 
+import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.SMS;
+import org.motechproject.ghana.mtn.domain.StopSMS;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
-import static org.motechproject.ghana.mtn.domain.SMS.StopSMS;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

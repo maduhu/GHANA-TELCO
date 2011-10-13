@@ -1,12 +1,11 @@
 package org.motechproject.ghana.mtn.service;
 
-import org.motechproject.ghana.mtn.domain.SMS;
+import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
+import org.motechproject.ghana.mtn.domain.StopSMS;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static org.motechproject.ghana.mtn.domain.SMS.RegisterProgramSMS;
 
 @Service
 public class SMSHandler {
@@ -25,6 +24,6 @@ public class SMSHandler {
         service.start(subscription);
     }
 
-    public void stop(SMS.StopSMS stopSMS) {
+    public void stop(StopSMS stopSMS) {
     }
 }

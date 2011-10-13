@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.service.parser;
 
+import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
 import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
@@ -29,7 +30,7 @@ public class RegisterProgramMessageParser extends MessageParser {
     public SMS<Subscription> parse(String input) {
         Matcher matcher = pattern().matcher(input);
         if (matcher.find()) {
-            return new SMS.RegisterProgramSMS(input, new SubscriptionBuilder()
+            return new RegisterProgramSMS(input, new SubscriptionBuilder()
                     .withType(allProgramTypes.findByCampaignShortCode(matcher.group(1)))
                     .withStartWeekAndDay(new WeekAndDay(new Week(Integer.parseInt(matcher.group(2))), new DateUtils().today()))
                     .withRegistrationDate(new DateUtils().now())

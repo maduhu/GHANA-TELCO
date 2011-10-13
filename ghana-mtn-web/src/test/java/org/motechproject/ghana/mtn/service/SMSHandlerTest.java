@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.SMS;
+import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
@@ -36,7 +36,7 @@ public class SMSHandlerTest {
         String inputMessage = "C 25";
 
         Subscription subscription = new SubscriptionBuilder().build();
-        SMS.RegisterProgramSMS sms = (SMS.RegisterProgramSMS) new SMS.RegisterProgramSMS(inputMessage, subscription).setFromMobileNumber(subscriberNumber);
+        RegisterProgramSMS sms = (RegisterProgramSMS) new RegisterProgramSMS(inputMessage, subscription).setFromMobileNumber(subscriberNumber);
 
         handler.register(sms);
 
