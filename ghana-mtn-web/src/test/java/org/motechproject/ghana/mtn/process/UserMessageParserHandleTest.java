@@ -8,7 +8,7 @@ import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.ghana.mtn.utils.InputMessageParser;
+import org.motechproject.ghana.mtn.service.parser.InputMessageParser;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;

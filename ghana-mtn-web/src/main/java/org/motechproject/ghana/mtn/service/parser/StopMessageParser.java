@@ -1,5 +1,7 @@
-package org.motechproject.ghana.mtn.domain;
+package org.motechproject.ghana.mtn.service.parser;
 
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

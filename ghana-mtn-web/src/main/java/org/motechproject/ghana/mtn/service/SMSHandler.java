@@ -19,7 +19,6 @@ public class SMSHandler {
     }
 
     public void register(RegisterProgramSMS sms) {
-
         Subscription subscription = sms.getDomain();
         Subscriber subscriber = new Subscriber(sms.getFromMobileNumber());
         subscription.setSubscriber(subscriber);

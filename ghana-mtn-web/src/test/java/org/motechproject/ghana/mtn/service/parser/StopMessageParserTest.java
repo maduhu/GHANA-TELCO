@@ -1,8 +1,10 @@
-package org.motechproject.ghana.mtn.domain;
+package org.motechproject.ghana.mtn.service.parser;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 

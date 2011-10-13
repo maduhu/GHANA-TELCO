@@ -2,9 +2,8 @@ package org.motechproject.ghana.mtn.process;
 
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.SMS;
-import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.ghana.mtn.utils.InputMessageParser;
+import org.motechproject.ghana.mtn.service.parser.InputMessageParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,9 +1,6 @@
-package org.motechproject.ghana.mtn.utils;
+package org.motechproject.ghana.mtn.service.parser;
 
-import org.motechproject.ghana.mtn.domain.MessageParser;
-import org.motechproject.ghana.mtn.domain.RegisterProgramMessageParser;
 import org.motechproject.ghana.mtn.domain.SMS;
-import org.motechproject.ghana.mtn.domain.StopMessageParser;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

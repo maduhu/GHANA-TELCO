@@ -1,5 +1,7 @@
-package org.motechproject.ghana.mtn.domain;
+package org.motechproject.ghana.mtn.service.parser;
 
+import org.motechproject.ghana.mtn.domain.SMS;
+import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
