@@ -7,19 +7,24 @@ import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
+import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.ghana.mtn.vo.Money;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -37,6 +42,9 @@ public class SubscriptionValidationTest {
     private AllSubscriptions allSubscriptions;
     @Mock
     private BillingService billingService;
+
+    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+
 
     @Before
     public void setUp() {
@@ -125,6 +133,36 @@ public class SubscriptionValidationTest {
         assertTrue(reply);
         verify(source).canRollOff();
 
+    }
+
+    @Test
+    public void shouldCheckIfUserCanStopWithoutEnteringProgramType_OnlyIfEnrolledInOneSubscription() {
+        Subscription subscription = new SubscriptionBuilder().build();
+        List<Subscription> subscriptions = asList(subscription);
+        String subscriberNumber = "9500012345";
+
+        assertTrue(validation.validateIfUserCanStopProgram(subscriptions, subscriberNumber, null));
+        assertTrue(validation.validateIfUserCanStopProgram(subscriptions, subscriberNumber, mock(IProgramType.class)));
+    }
+
+    @Test
+    public void shouldCheckIfUserCanStopEnteringProgramType_IfEnrolledInTwoSubscriptions() {
+        Subscription subscription = new SubscriptionBuilder().build();
+        Subscription subscription2 = new SubscriptionBuilder().build();
+        List<Subscription> subscriptions = asList(subscription, subscription2);
+        String subscriberNumber = "9500012345";
+        String errorMess = "error message";
+        when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn(errorMess);
+
+        assertFalse(validation.validateIfUserCanStopProgram(subscriptions, subscriberNumber, null));
+
+        assertTrue(validation.validateIfUserCanStopProgram(subscriptions, subscriberNumber, childCarePregnancyType));
+        ArgumentCaptor<SMSServiceRequest> requestCaptor = ArgumentCaptor.forClass(SMSServiceRequest.class);
+
+        verify(smsService).send(requestCaptor.capture());
+        SMSServiceRequest request = requestCaptor.getValue();
+        assertEquals(subscriberNumber, request.getMobileNumber());
+        assertEquals(errorMess, request.getMessage());
     }
 
     private void assertSMSRequest(String mobileNumber, String errorMsg, String program) {

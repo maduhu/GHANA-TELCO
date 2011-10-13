@@ -50,7 +50,7 @@ public class SubscriptionPersistenceTest {
     @Test
     public void shouldUpdateSubscriptionStateAndSaveItOnEnding() {
         Subscription subscription = mock(Subscription.class);
-        persistence.stopFor(subscription);
+        persistence.stopExpired(subscription);
 
         verify(allSubscriptions).update(subscription);
         verify(subscription).setStatus(SubscriptionStatus.EXPIRED);

@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.process.SubscriptionMessenger;
-import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.messagecampaign.EventKeys;
@@ -13,7 +12,6 @@ import org.motechproject.server.messagecampaign.EventKeys;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -49,6 +47,6 @@ public class ProgramMessageEventHandlerTest {
         programMessageEventHandler.sendMessageReminder(motechEvent);
 
         verify(messenger).process(subscription);
-        verify(service).stop(subscription);
+        verify(service).stopExpired(subscription);
     }
 }

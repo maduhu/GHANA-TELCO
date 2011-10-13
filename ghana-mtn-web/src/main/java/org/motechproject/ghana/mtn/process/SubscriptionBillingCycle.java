@@ -31,7 +31,7 @@ public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements
     }
 
     @Override
-    public Boolean stopFor(Subscription subscription) {
+    public Boolean stopExpired(Subscription subscription) {
         BillingCycleRequest request = new BillingCycleRequest(
                 subscription.subscriberNumber(),
                 subscription.getProgramType(),
@@ -41,12 +41,17 @@ public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        if (!stopFor(fromSubscription)) return false;
+        if (!stopExpired(fromSubscription)) return false;
         BillingCycleRequest request = new BillingCycleRequest(
                 toSubscription.subscriberNumber(),
                 toSubscription.getProgramType(),
                 fromSubscription.billingStartDate());
         return startFor(toSubscription, request);
+    }
+
+    @Override
+    public Boolean stopByUser(Subscription subscription) {
+        return true;
     }
 
     private Boolean stopFor(Subscription subscription, BillingCycleRequest request) {

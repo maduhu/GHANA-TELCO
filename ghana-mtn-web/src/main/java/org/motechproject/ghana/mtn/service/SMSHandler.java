@@ -24,6 +24,7 @@ public class SMSHandler {
         service.start(subscription);
     }
 
-    public void stop(StopSMS stopSMS) {
+    public void stop(StopSMS sms) {
+        service.stopByUser(sms.getFromMobileNumber(), sms.getDomain());
     }
 }

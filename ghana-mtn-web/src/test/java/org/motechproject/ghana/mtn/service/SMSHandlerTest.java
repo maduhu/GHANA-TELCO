@@ -4,15 +4,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
-import org.motechproject.ghana.mtn.domain.Subscriber;
-import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.process.SubscriptionUserMessageParser;
+import org.motechproject.ghana.mtn.vo.Money;
 
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -23,6 +25,8 @@ public class SMSHandlerTest {
     @Mock
     private SubscriptionUserMessageParser parserHandle;
     private SMSHandler handler;
+
+    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
     @Before
     public void setUp() {
@@ -44,5 +48,16 @@ public class SMSHandlerTest {
         verify(subscriptionService).start(captor.capture());
         Subscriber subscriber = captor.getValue().getSubscriber();
         assertEquals(subscriberNumber, subscriber.getNumber());
+    }
+
+    @Test
+    public void ShouldStopIfSubscriberSendsStop() {
+        String stopMessage = "STOP";
+        String subscriberNumber = "1234567890";
+
+        StopSMS stopSMS = (StopSMS) new StopSMS(stopMessage,pregnancyProgramType).setFromMobileNumber(subscriberNumber);
+        handler.stop(stopSMS);
+
+        verify(subscriptionService).stopByUser(eq(subscriberNumber), refEq(pregnancyProgramType));
     }
 }

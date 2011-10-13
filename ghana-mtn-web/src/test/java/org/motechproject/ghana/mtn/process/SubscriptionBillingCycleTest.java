@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
@@ -19,12 +18,9 @@ import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -111,7 +107,7 @@ public class SubscriptionBillingCycleTest {
         when(messageBundle.get(errors)).thenReturn("errors message");
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(response);
 
-        Boolean reply = billing.stopFor(subscription);
+        Boolean reply = billing.stopExpired(subscription);
 
         assertFalse(reply);
         assertSMSRequest(mobileNumber, "errors message", program);
@@ -137,7 +133,7 @@ public class SubscriptionBillingCycleTest {
         when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(response);
 
-        Boolean reply = billing.stopFor(subscription);
+        Boolean reply = billing.stopExpired(subscription);
 
         assertTrue(reply);
         assertSMSRequest(mobileNumber, "billing stopped", program);

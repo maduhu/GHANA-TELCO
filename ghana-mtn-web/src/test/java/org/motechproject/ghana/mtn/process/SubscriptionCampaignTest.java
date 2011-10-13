@@ -53,7 +53,7 @@ public class SubscriptionCampaignTest {
         when(subscription.createCampaignRequest()).thenReturn(campaignRequest);
         when(messageBundle.get(MessageBundle.ENROLLMENT_STOPPED)).thenReturn(message);
 
-        Boolean reply = campaign.stopFor(subscription);
+        Boolean reply = campaign.stopExpired(subscription);
         assertTrue(reply);
         verify(campaignService).stopFor(campaignRequest);
         assertSMS(message);

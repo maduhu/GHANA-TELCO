@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.process;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,9 +25,14 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess implements ISu
     }
 
     @Override
-    public Boolean stopFor(Subscription subscription) {
+    public Boolean stopExpired(Subscription subscription) {
         campaignService.stopFor(subscription.createCampaignRequest());
         sendMessage(subscription, messageFor(MessageBundle.ENROLLMENT_STOPPED));
+        return true;
+    }
+
+    @Override
+    public Boolean stopByUser(Subscription subscription) {
         return true;
     }
 

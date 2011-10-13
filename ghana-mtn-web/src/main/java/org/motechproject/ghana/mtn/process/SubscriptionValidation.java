@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.process;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
+import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
@@ -14,9 +15,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.select;
+import static ch.lambdaj.Lambda.*;
 
 @Component
 public class SubscriptionValidation extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
@@ -61,12 +60,28 @@ public class SubscriptionValidation extends BaseSubscriptionProcess implements I
     }
 
     @Override
-    public Boolean stopFor(Subscription subscription) {
+    public Boolean stopExpired(Subscription subscription) {
+        return true;
+    }
+
+    @Override
+    public Boolean stopByUser(Subscription subscription) {
         return true;
     }
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
         return fromSubscription.canRollOff();
+    }
+
+    public Boolean validateIfUserCanStopProgram(List<Subscription> allSubscriptions, String subscriberNumber, IProgramType programType) {
+
+        String programToStop = programType != null ? programType.getProgramName() : null;
+
+        if(allSubscriptions.size() == 0 || (allSubscriptions.size() > 1 && programToStop == null) )  {
+            sendMessage(subscriberNumber, messageFor(MessageBundle.ENROLLMENT_FAILURE));
+            return false;
+        }
+        return true;
     }
 }

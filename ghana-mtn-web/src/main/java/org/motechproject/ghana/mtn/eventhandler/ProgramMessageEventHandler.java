@@ -33,6 +33,6 @@ public class ProgramMessageEventHandler {
         Subscription subscription = service.findBy(subscriberNumber, programName);
         messenger.process(subscription);
 
-        if(subscription.isCompleted()) service.stop(subscription);
+        if(subscription.isCompleted()) service.stopExpired(subscription);
     }
 }
