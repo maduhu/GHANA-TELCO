@@ -26,7 +26,6 @@ public class SubscriptionController {
     @ResponseBody
     public void handle(@ModelAttribute SubscriptionRequest request) {
         SMS sms = parserHandle.process(request.getSubscriberNumber(), request.getInputMessage());
-
         if (sms == null) return;
         sms.process(smsHandler);
     }
