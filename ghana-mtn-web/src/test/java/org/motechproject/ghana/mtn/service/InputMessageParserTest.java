@@ -3,10 +3,7 @@ package org.motechproject.ghana.mtn.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.RegisterProgramMessageParser;
-import org.motechproject.ghana.mtn.domain.SMS;
-import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
@@ -20,6 +17,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -28,6 +27,7 @@ public class InputMessageParserTest {
     @Mock
     private AllProgramTypes allProgramTypes;
     private RegisterProgramMessageParser registerProgramMessageParser;
+    private StopMessageParser stopMessageParser;
 
     ProgramType pregnancy;
     ProgramType childCare;
@@ -40,7 +40,8 @@ public class InputMessageParserTest {
         childCare = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
         when(allProgramTypes.getAll()).thenReturn(asList(pregnancy, childCare));
         registerProgramMessageParser = new RegisterProgramMessageParser(allProgramTypes);
-        messageParser = new InputMessageParser(registerProgramMessageParser);
+        stopMessageParser = new StopMessageParser(allProgramTypes);
+        messageParser = new InputMessageParser(registerProgramMessageParser, stopMessageParser);
     }
 
     @Test
@@ -125,6 +126,27 @@ public class InputMessageParserTest {
         Subscription actualSubscription = (Subscription) sms.getDomain();
         assertMobileNumberAndMessage(sms, messageText);
         assertThat(actualSubscription.getProgramType(), new ProgramTypeMatcher(childCareProgramType));
+    }
+    
+    @Test
+    public void ShouldParseStopMessageWithProgramCaseInsensitive() {
+        String messageText = "sToP P";
+        ProgramType programType = mock(ProgramType.class);
+        when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(programType);
+
+        SMS sms = messageParser.parse(messageText);
+        assertMobileNumberAndMessage(sms, messageText);
+        assertEquals(programType, sms.getDomain());
+
+        reset(allProgramTypes);
+
+        messageText = "StoP c";
+        programType = mock(ProgramType.class);
+        when(allProgramTypes.findByCampaignShortCode("c")).thenReturn(programType);
+
+        sms = messageParser.parse(messageText);
+        assertMobileNumberAndMessage(sms, messageText);
+        assertEquals(programType, sms.getDomain());
     }
 
     private void assertMobileNumberAndMessage(SMS sms, String message) {

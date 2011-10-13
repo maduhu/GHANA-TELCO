@@ -15,8 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class SubscriptionParserTest {
-    private SubscriptionParser parser;
+public class UserMessageParserHandleTest {
+    private UserMessageParserHandle parserHandle;
     @Mock
     private SMSService smsService;
     @Mock
@@ -27,7 +27,7 @@ public class SubscriptionParserTest {
     @Before
     public void setUp() {
         initMocks(this);
-        parser = new SubscriptionParser(inputParser, smsService, messageBundle);
+        parserHandle = new UserMessageParserHandle(inputParser, smsService, messageBundle);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class SubscriptionParserTest {
         when(inputParser.parse(input)).thenThrow(new MessageParseFailException(""));
         when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn(errorMsg);
 
-        parser.process(mobileNumber, input);
+        parserHandle.process(mobileNumber, input);
 
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());

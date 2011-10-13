@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionParser extends BaseSubscriptionProcess {
+public class UserMessageParserHandle extends BaseSubscriptionProcess {
     private InputMessageParser inputMessageParser;
 
     @Autowired
-    public SubscriptionParser(InputMessageParser inputMessageParser, SMSService smsService, MessageBundle messageBundle) {
+    public UserMessageParserHandle(InputMessageParser inputMessageParser, SMSService smsService, MessageBundle messageBundle) {
         super(smsService, messageBundle);
         this.inputMessageParser = inputMessageParser;
     }
