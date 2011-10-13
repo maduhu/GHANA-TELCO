@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionPersistence extends BaseSubscriptionProcess implements ISubscriptionProcessFlow {
+public class SubscriptionPersistence extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private AllSubscribers allSubscribers;
     private AllSubscriptions allSubscriptions;
 
@@ -36,4 +36,11 @@ public class SubscriptionPersistence extends BaseSubscriptionProcess implements 
         allSubscriptions.update(subscription);
         return true;
     }
+
+    @Override
+    public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
 }

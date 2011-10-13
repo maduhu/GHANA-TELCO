@@ -1,5 +1,5 @@
 package org.motechproject.ghana.mtn.domain;
 
 public enum SubscriptionStatus {
-    ACTIVE, EXPIRED
+    ACTIVE, ROLLED_OFF, EXPIRED
 }

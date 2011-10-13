@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionCampaign extends BaseSubscriptionProcess  implements ISubscriptionProcessFlow {
+public class SubscriptionCampaign extends BaseSubscriptionProcess  implements ISubscriptionFlowProcess {
     private MessageCampaignService campaignService;
 
     @Autowired
@@ -33,4 +33,11 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess  implements IS
         sendMessage(subscription,messageFor(MessageBundle.ENROLLMENT_STOPPED));
         return true;
     }
+
+    @Override
+    public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
 }

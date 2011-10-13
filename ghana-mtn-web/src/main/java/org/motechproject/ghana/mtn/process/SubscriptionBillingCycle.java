@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements ISubscriptionProcessFlow {
+public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private BillingService billingService;
 
     @Autowired
@@ -45,5 +45,10 @@ public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements
         subscription.setStatus(SubscriptionStatus.EXPIRED);
         sendMessage(subscription, messageFor(MessageBundle.BILLING_STOPPED));
         return true;
+    }
+
+    @Override
+    public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

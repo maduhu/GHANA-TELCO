@@ -67,6 +67,25 @@ public class SubscriptionServiceImplTest {
     }
 
     @Test
+    public void shouldInvokeAllProcessInvolvedInRollOverProcess() {
+        Subscription source = mock(Subscription.class);
+        Subscription target = mock(Subscription.class);
+
+        when(validation.rollOver(source,target)).thenReturn(true);
+        when(billing.rollOver(source,target)).thenReturn(true);
+        when(campaign.rollOver(source,target)).thenReturn(true);
+        when(persistence.rollOver(source,target)).thenReturn(true);
+
+        service.rollOver(source, target);
+
+        verify(validation).rollOver(source,target);
+        verify(billing).rollOver(source,target);
+        verify(campaign).rollOver(source,target);
+        verify(persistence).rollOver(source,target);
+
+    }
+
+    @Test
     public void shouldFindSubscriptionByMobileNumberUsingRepository() {
         String subscriberNumber = "123";
         String program = "program";

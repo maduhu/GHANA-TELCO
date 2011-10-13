@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -32,7 +35,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void start(Subscription subscription) {
-        for (ISubscriptionProcessFlow process : processes(validation, billing, persistence, campaign)) {
+        for (ISubscriptionFlowProcess process : asList(validation, billing, persistence, campaign)) {
             if (process.startFor(subscription)) continue;
             break;
         }
@@ -40,8 +43,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void stop(Subscription subscription) {
-        for (ISubscriptionProcessFlow process : processes(billing, campaign, persistence)) {
+        for (ISubscriptionFlowProcess process : asList(billing, campaign, persistence)) {
             if (process.stopFor(subscription)) continue;
+            break;
+        }
+    }
+
+    @Override
+    public void rollOver(Subscription source, Subscription target) {
+        for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
+            if (process.rollOver(source, target)) continue;
             break;
         }
     }
@@ -49,13 +60,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public Subscription findBy(String subscriberNumber, String programName) {
         return allSubscriptions.findBy(subscriberNumber, programName);
-    }
-
-    private List<ISubscriptionProcessFlow> processes(ISubscriptionProcessFlow... processes) {
-        List<ISubscriptionProcessFlow> list = new ArrayList();
-        for (ISubscriptionProcessFlow process : processes)
-            list.add(process);
-        return list;
     }
 
 }
