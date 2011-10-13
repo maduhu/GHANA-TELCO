@@ -9,12 +9,13 @@ import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
-import org.motechproject.ghana.mtn.domain.MessageBundle;
-import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
@@ -32,6 +33,9 @@ public class SubscriptionBillingCycleTest {
     private SMSService smsService;
     @Mock
     private MessageBundle messageBundle;
+
+    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
     @Before
     public void setUp() {
@@ -118,27 +122,58 @@ public class SubscriptionBillingCycleTest {
     public void shouldReturnTrueAndSendBillingSuccessMessageOnStoppingCycle() {
         DateTime now = DateUtil.now();
         String mobileNumber = "123";
-        String program = "program";
-        ProgramType programType = mock(ProgramType.class);
-        Subscription subscription = mock(Subscription.class);
-        BillingServiceResponse response = mock(BillingServiceResponse.class);
-        CustomerBill customerBill = mock(CustomerBill.class);
+        ProgramType programType = childCarePregnancyType;
+        Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
+                        .withType(programType).build();
+        BillingServiceResponse successResponse = new BillingServiceResponse();
 
-
-        setupMocks(now, mobileNumber, program, programType, subscription);
-
-        when(customerBill.amountCharged()).thenReturn(new Double(12));
-        when(response.hasErrors()).thenReturn(false);
-        when(response.getValue()).thenReturn(customerBill);
         when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
-        when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(response);
+        when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(successResponse);
 
         Boolean reply = billing.stopExpired(subscription);
 
         assertTrue(reply);
-        assertSMSRequest(mobileNumber, "billing stopped", program);
+        assertSMSRequest(mobileNumber, "billing stopped", childCarePregnancyType.getProgramName());
+        assertEquals(SubscriptionStatus.EXPIRED, subscription.getStatus());
     }
 
+    @Test
+    public void shouldReturnFalseAndSendMessageInCaseOfValidationErrorsOnStoppingCycleByUser() {
+        DateTime now = DateUtil.now();
+        String mobileNumber = "123";
+
+        ProgramType programType = childCarePregnancyType;
+        Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
+                        .withType(programType).build();
+        BillingServiceResponse response = mock(BillingServiceResponse.class);
+        List errors = mockBillingServiceResponseWithErrors(response);
+        when(messageBundle.get(errors)).thenReturn("errors message");
+        when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(response);
+
+        Boolean reply = billing.stopByUser(subscription);
+
+        assertFalse(reply);
+        assertSMSRequest(mobileNumber, "errors message", programType.getProgramName());
+    }
+
+    @Test
+    public void shouldReturnTrueAndSendBillingSuccessMessageOnStoppingCycle_WhenUserWantsToStop() {
+        DateTime now = DateUtil.now();
+        String mobileNumber = "123";
+        String program = "Child Care";
+        ProgramType programType = childCarePregnancyType;
+        Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
+                        .withType(programType).build();
+        BillingServiceResponse successResponse = new BillingServiceResponse();
+        when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(successResponse);
+        when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
+
+        Boolean reply = billing.stopByUser(subscription);
+
+        assertTrue(reply);
+        assertSMSRequest(mobileNumber, "billing stopped", program);
+        assertEquals(SubscriptionStatus.SUSPENDED, subscription.getStatus());
+    }
 
     @Test
     public void shouldSourceBillingCycleAndStartTargetBilling() {
@@ -179,14 +214,19 @@ public class SubscriptionBillingCycleTest {
 
     }
 
+    private List mockBillingServiceResponseWithErrors(BillingServiceResponse response) {
+        List errors = new ArrayList<ValidationError>();
+        when(response.hasErrors()).thenReturn(true);
+        when(response.getValidationErrors()).thenReturn(errors);
+        return errors;
+    }
+
     private void setupMocks(DateTime now, String mobileNumber, String program, ProgramType programType, Subscription subscription) {
         when(programType.getProgramName()).thenReturn(program);
         when(subscription.subscriberNumber()).thenReturn(mobileNumber);
         when(subscription.billingStartDate()).thenReturn(now);
         when(subscription.getProgramType()).thenReturn(programType);
     }
-
-    ;
 
     private void assertSMSRequest(String mobileNumber, String errorMsg, String program) {
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
@@ -198,5 +238,10 @@ public class SubscriptionBillingCycleTest {
         assertEquals(program, captured.programName());
     }
 
+    private SubscriptionBuilder subscriptionBuilder(String subscriberNumber, DateTime registrationDate, DateTime billingStartDate, ProgramType programType) {
+        return new SubscriptionBuilder().withBillingStartDate(billingStartDate).withRegistrationDate(registrationDate)
+                        .withSubscriber(new Subscriber(subscriberNumber))
+                        .withType(programType);
+    }
 
 }

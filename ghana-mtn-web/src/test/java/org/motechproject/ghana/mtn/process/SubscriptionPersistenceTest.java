@@ -57,6 +57,15 @@ public class SubscriptionPersistenceTest {
     }
 
     @Test
+    public void shouldUpdateSubscriptionStateAsSuspendedAndSaveItOnEnding() {
+        Subscription subscription = mock(Subscription.class);
+        persistence.stopByUser(subscription);
+
+        verify(allSubscriptions).update(subscription);
+        verify(subscription).setStatus(SubscriptionStatus.SUSPENDED);
+    }
+
+    @Test
     public void shouldUpdateSubscriptionStateOfSourceAndTargetSubscription(){
         Subscription source = mock(Subscription.class);
         Subscription target = mock(Subscription.class);

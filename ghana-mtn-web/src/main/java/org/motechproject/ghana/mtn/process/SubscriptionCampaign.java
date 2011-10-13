@@ -33,7 +33,7 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess implements ISu
 
     @Override
     public Boolean stopByUser(Subscription subscription) {
-        return true;
+        return stopExpired(subscription);
     }
 
     @Override

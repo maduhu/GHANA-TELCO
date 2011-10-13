@@ -36,7 +36,7 @@ public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements
                 subscription.subscriberNumber(),
                 subscription.getProgramType(),
                 subscription.billingStartDate());
-        return stopFor(subscription, request);
+        return stopFor(subscription, request, SubscriptionStatus.EXPIRED);
     }
 
     @Override
@@ -51,16 +51,20 @@ public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements
 
     @Override
     public Boolean stopByUser(Subscription subscription) {
-        return true;
+        BillingCycleRequest request = new BillingCycleRequest(
+                subscription.subscriberNumber(),
+                subscription.getProgramType(),
+                subscription.billingStartDate());
+        return stopFor(subscription, request, SubscriptionStatus.SUSPENDED);
     }
 
-    private Boolean stopFor(Subscription subscription, BillingCycleRequest request) {
+    private Boolean stopFor(Subscription subscription, BillingCycleRequest request, SubscriptionStatus status) {
         BillingServiceResponse<CustomerBill> response = billingService.stopBilling(request);
         if (response.hasErrors()) {
             sendMessage(subscription, messageFor(response.getValidationErrors()));
             return false;
         }
-        subscription.setStatus(SubscriptionStatus.EXPIRED);
+        subscription.setStatus(status);
         sendMessage(subscription, messageFor(MessageBundle.BILLING_STOPPED));
         return true;
     }

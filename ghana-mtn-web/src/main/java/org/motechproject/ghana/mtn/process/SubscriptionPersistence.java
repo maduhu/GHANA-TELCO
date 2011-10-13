@@ -39,6 +39,8 @@ public class SubscriptionPersistence extends BaseSubscriptionProcess implements 
 
     @Override
     public Boolean stopByUser(Subscription subscription) {
+        subscription.setStatus(SubscriptionStatus.SUSPENDED);
+        allSubscriptions.update(subscription);
         return true;
     }
 

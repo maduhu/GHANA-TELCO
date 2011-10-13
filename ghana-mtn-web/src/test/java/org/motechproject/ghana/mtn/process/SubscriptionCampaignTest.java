@@ -60,6 +60,20 @@ public class SubscriptionCampaignTest {
     }
 
     @Test
+    public void shouldAskSubscriptionForCampaignRequestAndSendToCampaignServiceForStopByUser() {
+        String message = "pop";
+        Subscription subscription = mock(Subscription.class);
+        CampaignRequest campaignRequest = new CampaignRequest();
+        when(subscription.createCampaignRequest()).thenReturn(campaignRequest);
+        when(messageBundle.get(MessageBundle.ENROLLMENT_STOPPED)).thenReturn(message);
+
+        Boolean reply = campaign.stopByUser(subscription);
+        assertTrue(reply);
+        verify(campaignService).stopFor(campaignRequest);
+        assertSMS(message);
+    }
+
+    @Test
     public void shouldRollOverUsingCampaignService() {
         String message = "rock & roll";
         Subscription source = mock(Subscription.class);
