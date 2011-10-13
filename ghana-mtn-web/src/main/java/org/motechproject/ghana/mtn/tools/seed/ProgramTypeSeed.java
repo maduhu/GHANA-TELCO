@@ -18,15 +18,17 @@ public class ProgramTypeSeed extends Seed {
     protected void load() {
         ProgramType pregnancyProgramType = new ProgramTypeBuilder()
                 .withProgramName("Pregnancy")
-                .withShortCode("P")
-                .withShortCode("p")
-                .withMaxWeek(35).withMinWeek(5).withFee(new Money(0.60D)).build();
+                .withShortCode("P").withShortCode("p")
+                .withMaxWeek(35).withMinWeek(5)
+                .willRollOff(true)
+                .withFee(new Money(0.60D)).build();
 
         ProgramType childCareProgramType = new ProgramTypeBuilder()
                 .withProgramName("Child Care")
-                .withShortCode("C")
-                .withShortCode("c")
-                .withMaxWeek(52).withMinWeek(1).withFee(new Money(0.60D)).build();
+                .withShortCode("C").withShortCode("c")
+                .withMaxWeek(52).withMinWeek(1)
+                .willRollOff(false)
+                .withFee(new Money(0.60D)).build();
 
         allProgramTypes.add(pregnancyProgramType);
         allProgramTypes.add(childCareProgramType);

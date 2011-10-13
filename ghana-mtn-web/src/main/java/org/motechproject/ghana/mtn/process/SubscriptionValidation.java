@@ -67,6 +67,6 @@ public class SubscriptionValidation extends BaseSubscriptionProcess implements I
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return fromSubscription.canRollOff();
     }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -112,6 +113,19 @@ public class SubscriptionValidationTest {
         assertSMSRequest(mobileNumber, errMsg, program);
     }
 
+
+    @Test
+    public void shouldAskTheSourceSubscriptionIfItCanRollOver() {
+        Subscription source = mock(Subscription.class);
+        Subscription target = mock(Subscription.class);
+
+        when(source.canRollOff()).thenReturn(true);
+
+        Boolean reply = validation.rollOver(source, target);
+        assertTrue(reply);
+        verify(source).canRollOff();
+
+    }
 
     private void assertSMSRequest(String mobileNumber, String errorMsg, String program) {
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
