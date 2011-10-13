@@ -17,11 +17,11 @@ public class UserMessageParserHandle extends BaseSubscriptionProcess {
         this.inputMessageParser = inputMessageParser;
     }
 
-    public SMS process(String mobileNumber, String input) {
+    public SMS process(String senderMobileNumber, String input) {
         try {
-            return inputMessageParser.parse(input).setFromMobileNumber(mobileNumber);
+            return inputMessageParser.parse(input, senderMobileNumber);
         } catch (Exception e) {
-            sendMessage(mobileNumber, messageFor(MessageBundle.ENROLLMENT_FAILURE));
+            sendMessage(senderMobileNumber, messageFor(MessageBundle.ENROLLMENT_FAILURE));
         }
         return null;
     }

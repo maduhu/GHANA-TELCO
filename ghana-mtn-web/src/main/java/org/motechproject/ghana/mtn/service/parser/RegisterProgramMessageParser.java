@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
-@Component
+@Component("RegisterProgramMessageParser")
 public class RegisterProgramMessageParser extends MessageParser {
 
     public static final String START_OF_PATTERN = "^(";
@@ -27,14 +27,16 @@ public class RegisterProgramMessageParser extends MessageParser {
         super(allProgramTypes);
     }
 
-    public SMS<Subscription> parse(String input) {
+    public SMS<Subscription> parse(String input, String enrolledMobileNumber) {
         Matcher matcher = pattern().matcher(input);
         if (matcher.find()) {
-            return new RegisterProgramSMS(input, new SubscriptionBuilder()
+            RegisterProgramSMS registerProgramSMS = new RegisterProgramSMS(input, new SubscriptionBuilder()
                     .withType(allProgramTypes.findByCampaignShortCode(matcher.group(1)))
                     .withStartWeekAndDay(new WeekAndDay(new Week(Integer.parseInt(matcher.group(2))), new DateUtils().today()))
                     .withRegistrationDate(new DateUtils().now())
                     .build());
+            registerProgramSMS.setFromMobileNumber(enrolledMobileNumber);
+            return registerProgramSMS;
         }
         return null;
     }

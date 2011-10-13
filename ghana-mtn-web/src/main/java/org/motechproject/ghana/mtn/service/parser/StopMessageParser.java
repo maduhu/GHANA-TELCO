@@ -8,10 +8,10 @@ import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static java.util.regex.Pattern.CASE_INSENSITIVE;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 
 @Component
@@ -25,12 +25,14 @@ public class StopMessageParser extends MessageParser {
         super(allProgramTypes);
     }
 
-    public SMS<IProgramType> parse(String input) {
+    public SMS<IProgramType> parse(String input, String enrolledMobileNumber) {
         Matcher matcher = pattern().matcher(input);
         if (matcher.find()) {
             String program = matcher.group(2);
             ProgramType programType = program != null ? allProgramTypes.findByCampaignShortCode(program): null;
-            return new StopSMS(input, programType);
+            StopSMS stopSMS = new StopSMS(input, programType);
+            stopSMS.setFromMobileNumber(enrolledMobileNumber);
+            return stopSMS;
         }
         return null;
     }

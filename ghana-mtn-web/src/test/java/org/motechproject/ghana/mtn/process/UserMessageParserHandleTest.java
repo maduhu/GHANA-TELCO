@@ -36,7 +36,7 @@ public class UserMessageParserHandleTest {
         String errorMsg = "error";
         String input = "P 24";
 
-        when(inputParser.parse(input)).thenThrow(new MessageParseFailException(""));
+        when(inputParser.parse(input, mobileNumber)).thenThrow(new MessageParseFailException(""));
         when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn(errorMsg);
 
         parserHandle.process(mobileNumber, input);

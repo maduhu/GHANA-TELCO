@@ -30,6 +30,7 @@ public class InputMessageParserTest {
 
     ProgramType pregnancy;
     ProgramType childCare;
+    private String senderMobileNumber = "12345";
 
     @Before
     public void setUp() {
@@ -50,7 +51,7 @@ public class InputMessageParserTest {
 
         when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(pregnancy);
 
-        SMS sms = messageParser.parse(messageText);
+        SMS sms = messageParser.parse(messageText, senderMobileNumber);
         Subscription subscription = (Subscription) sms.getDomain();
 
         assertMobileNumberAndMessage(sms, messageText);
@@ -63,7 +64,7 @@ public class InputMessageParserTest {
         String messageText = "C 25";
 
         when(allProgramTypes.findByCampaignShortCode("C")).thenReturn(childCare);
-        SMS sms = messageParser.parse(messageText);
+        SMS sms = messageParser.parse(messageText, senderMobileNumber);
         Subscription subscription = (Subscription) sms.getDomain();
 
         assertMobileNumberAndMessage(sms, messageText);
@@ -78,7 +79,7 @@ public class InputMessageParserTest {
 
         when(allProgramTypes.findByCampaignShortCode("c")).thenReturn(programType);
 
-        SMS sms = messageParser.parse(messageText);
+        SMS sms = messageParser.parse(messageText, senderMobileNumber);
         Subscription subscription = (Subscription) sms.getDomain();
 
         assertMobileNumberAndMessage(sms, messageText);
@@ -89,13 +90,13 @@ public class InputMessageParserTest {
     @Test(expected = MessageParseFailException.class)
     public void ShouldFailForMessagesThatAreNotValid() {
         String messageText = "q 25";
-        messageParser.parse(messageText);
+        messageParser.parse(messageText, senderMobileNumber);
     }
 
     @Test
     public void ShouldCreateSubscriptionWithActiveStatusForValidInputMessage() {
         String messageText = "P 10";
-        SMS sms = messageParser.parse(messageText);
+        SMS sms = messageParser.parse(messageText, senderMobileNumber);
         Subscription subscription = (Subscription) sms.getDomain();
 
         assertMobileNumberAndMessage(sms, messageText);
@@ -105,7 +106,7 @@ public class InputMessageParserTest {
     @Test
     public void ShouldCreateSubscriptionForWeekWithSingleDigit() {
         String messageText = "P 5";
-        SMS sms = messageParser.parse(messageText);
+        SMS sms = messageParser.parse(messageText, senderMobileNumber);
         Subscription subscription = (Subscription) sms.getDomain();
         assertMobileNumberAndMessage(sms, messageText);
         assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(5));
@@ -121,7 +122,7 @@ public class InputMessageParserTest {
 
         messageParser.recompilePatterns();
         String messageText = shortCode + " 5";
-        SMS sms = messageParser.parse(messageText);
+        SMS sms = messageParser.parse(messageText, senderMobileNumber);
         Subscription actualSubscription = (Subscription) sms.getDomain();
         assertMobileNumberAndMessage(sms, messageText);
         assertThat(actualSubscription.getProgramType(), new ProgramTypeMatcher(childCareProgramType));
@@ -133,7 +134,7 @@ public class InputMessageParserTest {
         ProgramType programType = mock(ProgramType.class);
         when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(programType);
 
-        SMS sms = messageParser.parse(messageText);
+        SMS sms = messageParser.parse(messageText, senderMobileNumber);
         assertMobileNumberAndMessage(sms, messageText);
         assertEquals(programType, sms.getDomain());
 
@@ -143,13 +144,12 @@ public class InputMessageParserTest {
         programType = mock(ProgramType.class);
         when(allProgramTypes.findByCampaignShortCode("c")).thenReturn(programType);
 
-        sms = messageParser.parse(messageText);
+        sms = messageParser.parse(messageText, senderMobileNumber);
         assertMobileNumberAndMessage(sms, messageText);
         assertEquals(programType, sms.getDomain());
     }
 
     private void assertMobileNumberAndMessage(SMS sms, String message) {
-        assertNull(sms.getFromMobileNumber());
         assertEquals(message, sms.getMessage());
     }
 

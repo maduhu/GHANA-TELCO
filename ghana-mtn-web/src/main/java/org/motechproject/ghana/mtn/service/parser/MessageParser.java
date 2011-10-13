@@ -16,7 +16,7 @@ public abstract class MessageParser {
         this.allProgramTypes = allProgramTypes;
     }
 
-    public abstract SMS parse(String message);
+    public abstract SMS parse(String message, String senderMobileNumber);
 
     public String getProgramCodePatterns() {
         return joinFrom(flatten(extract(allProgramTypes.getAll(), on(ProgramType.class).getShortCodes())), "|").toString();

@@ -23,6 +23,7 @@ public class StopMessageParserTest {
 
     ProgramType pregnancy;
     ProgramType childCare;
+    private String senderMobileNumber = "123456";
 
     @Before
     public void setUp() {
@@ -37,7 +38,7 @@ public class StopMessageParserTest {
     @Test
     public void ShouldParseStopMessageWithoutProgram() {
         String messageText = "stop ";
-        SMS sms = parser.parse(messageText);
+        SMS sms = parser.parse(messageText, senderMobileNumber);
 
         verify(allProgramTypes, never()).findByCampaignShortCode(anyString());
         assertMobileNumberAndMessage(sms, messageText);
@@ -50,7 +51,7 @@ public class StopMessageParserTest {
         ProgramType programType = mock(ProgramType.class);
         when(allProgramTypes.findByCampaignShortCode("p")).thenReturn(programType);
 
-        SMS sms = parser.parse(messageText);
+        SMS sms = parser.parse(messageText, senderMobileNumber);
         assertMobileNumberAndMessage(sms, messageText);
         assertEquals(programType, sms.getDomain());
 
@@ -60,7 +61,7 @@ public class StopMessageParserTest {
         programType = mock(ProgramType.class);
         when(allProgramTypes.findByCampaignShortCode("c")).thenReturn(programType);
 
-        sms = parser.parse(messageText);
+        sms = parser.parse(messageText, senderMobileNumber);
         assertMobileNumberAndMessage(sms, messageText);
         assertEquals(programType, sms.getDomain());
     }
@@ -71,7 +72,7 @@ public class StopMessageParserTest {
         ProgramType programType = mock(ProgramType.class);
         when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(programType);
 
-        SMS sms = parser.parse(messageText);
+        SMS sms = parser.parse(messageText, senderMobileNumber);
         assertMobileNumberAndMessage(sms, messageText);
         assertEquals(programType, sms.getDomain());
 
@@ -81,13 +82,12 @@ public class StopMessageParserTest {
         programType = mock(ProgramType.class);
         when(allProgramTypes.findByCampaignShortCode("c")).thenReturn(programType);
 
-        sms = parser.parse(messageText);
+        sms = parser.parse(messageText, senderMobileNumber);
         assertMobileNumberAndMessage(sms, messageText);
         assertEquals(programType, sms.getDomain());
     }
 
     private void assertMobileNumberAndMessage(SMS sms, String message) {
-        assertNull(sms.getFromMobileNumber());
         assertEquals(message, sms.getMessage());
     }
 }

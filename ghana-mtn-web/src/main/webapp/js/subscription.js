@@ -32,7 +32,8 @@ function submitRequest() {
 }
 
 function updateEnrollmentResponse(inputString) {
-    document.getElementById('requestResponse').innerHTML = document.getElementById('requestResponse').innerHTML + "<br/>" + inputString;
+    //document.getElementById('requestResponse').innerHTML = document.getElementById('requestResponse').innerHTML + "<br/>" + inputString;
+   refreshAudit();
 }
 
 function submitEventRequest() {
