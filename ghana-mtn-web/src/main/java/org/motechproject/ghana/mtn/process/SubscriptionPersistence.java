@@ -40,8 +40,8 @@ public class SubscriptionPersistence extends BaseSubscriptionProcess implements 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
         fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
-        toSubscription.setStatus(SubscriptionStatus.ACTIVE);
         allSubscriptions.update(fromSubscription);
+        toSubscription.setStatus(SubscriptionStatus.ACTIVE);
         allSubscriptions.update(toSubscription);
         return true;
     }

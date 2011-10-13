@@ -23,20 +23,33 @@ public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements
 
     @Override
     public Boolean startFor(Subscription subscription) {
-        BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), subscription.billingStartDate());
-        BillingServiceResponse<CustomerBill> response = billingService.startBilling(request);
-        if (response.hasErrors()) {
-            sendMessage(subscription, messageFor(response.getValidationErrors()));
-            return false;
-        }
-        String content = String.format(messageFor(MessageBundle.BILLING_SUCCESS), response.getValue().amountCharged());
-        sendMessage(subscription, content);
-        return true;
+        BillingCycleRequest request = new BillingCycleRequest(
+                subscription.subscriberNumber(),
+                subscription.getProgramType(),
+                subscription.billingStartDate());
+        return startFor(subscription, request);
     }
 
     @Override
     public Boolean stopFor(Subscription subscription) {
-        BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), subscription.billingStartDate());
+        BillingCycleRequest request = new BillingCycleRequest(
+                subscription.subscriberNumber(),
+                subscription.getProgramType(),
+                subscription.billingStartDate());
+        return stopFor(subscription, request);
+    }
+
+    @Override
+    public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
+        if (!stopFor(fromSubscription)) return false;
+        BillingCycleRequest request = new BillingCycleRequest(
+                toSubscription.subscriberNumber(),
+                toSubscription.getProgramType(),
+                fromSubscription.billingStartDate());
+        return startFor(toSubscription, request);
+    }
+
+    private Boolean stopFor(Subscription subscription, BillingCycleRequest request) {
         BillingServiceResponse<CustomerBill> response = billingService.stopBilling(request);
         if (response.hasErrors()) {
             sendMessage(subscription, messageFor(response.getValidationErrors()));
@@ -47,8 +60,14 @@ public class SubscriptionBillingCycle extends BaseSubscriptionProcess implements
         return true;
     }
 
-    @Override
-    public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    private Boolean startFor(Subscription subscription, BillingCycleRequest request) {
+        BillingServiceResponse<CustomerBill> response = billingService.startBilling(request);
+        if (response.hasErrors()) {
+            sendMessage(subscription, messageFor(response.getValidationErrors()));
+            return false;
+        }
+        String content = String.format(messageFor(MessageBundle.BILLING_SUCCESS), response.getValue().amountCharged());
+        sendMessage(subscription, content);
+        return true;
     }
 }
