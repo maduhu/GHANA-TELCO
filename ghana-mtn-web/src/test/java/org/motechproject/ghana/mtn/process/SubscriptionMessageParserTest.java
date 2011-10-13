@@ -15,8 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class UserMessageParserHandleTest {
-    private UserMessageParserHandle parserHandle;
+public class SubscriptionMessageParserTest {
+    private SubscriptionUserMessageParser parserHandle;
     @Mock
     private SMSService smsService;
     @Mock
@@ -27,7 +27,7 @@ public class UserMessageParserHandleTest {
     @Before
     public void setUp() {
         initMocks(this);
-        parserHandle = new UserMessageParserHandle(inputParser, smsService, messageBundle);
+        parserHandle = new SubscriptionUserMessageParser(inputParser, smsService, messageBundle);
     }
 
     @Test

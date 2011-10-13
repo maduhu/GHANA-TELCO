@@ -8,7 +8,7 @@ import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
-import org.motechproject.ghana.mtn.process.UserMessageParserHandle;
+import org.motechproject.ghana.mtn.process.SubscriptionUserMessageParser;
 
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ public class SMSHandlerTest {
     @Mock
     private SubscriptionService subscriptionService;
     @Mock
-    private UserMessageParserHandle parserHandle;
+    private SubscriptionUserMessageParser parserHandle;
     private SMSHandler handler;
 
     @Before
