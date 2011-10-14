@@ -2,7 +2,7 @@ package org.motechproject.ghana.mtn.repository;
 
 
 import org.junit.Test;
-import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.assertEquals;
 
-public class AllSubscriptionMessagesTest extends BaseIntegrationTest {
+public class AllSubscriptionMessagesTest extends BaseSpringTestContext {
     @Autowired
     private AllProgramTypes allProgramTypes;
     @Autowired

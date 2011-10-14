@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.controller.SubscriptionController;
@@ -27,7 +27,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
+public class SubscriptionServiceIntegrationTest extends BaseSpringTestContext {
 
     @Autowired
     private SubscriptionController subscriptionController;

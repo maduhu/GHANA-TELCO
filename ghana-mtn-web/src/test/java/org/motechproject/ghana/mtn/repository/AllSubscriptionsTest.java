@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
@@ -26,7 +26,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.EXPIRED;
 
-public class AllSubscriptionsTest extends BaseIntegrationTest {
+public class AllSubscriptionsTest extends BaseSpringTestContext {
     @Autowired
     private AllSubscriptions allSubscriptions;
     private String mobileNumber = "1234567890";

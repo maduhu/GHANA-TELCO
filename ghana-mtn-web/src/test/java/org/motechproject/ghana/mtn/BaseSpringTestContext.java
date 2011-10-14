@@ -31,7 +31,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/testApplicationContext.xml"})
-public abstract class BaseIntegrationTest extends AbstractJUnit4SpringContextTests {
+public abstract class BaseSpringTestContext extends AbstractJUnit4SpringContextTests {
 
     protected MockHttpServletResponse response;
     protected MockHttpServletRequest request;

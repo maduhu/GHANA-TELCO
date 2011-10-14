@@ -3,7 +3,7 @@ package org.motechproject.ghana.mtn.repository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class AllProgramTypesTest extends BaseIntegrationTest {
+public class AllProgramTypesTest extends BaseSpringTestContext {
 
     @Autowired
     private AllProgramTypes allProgramTypes;

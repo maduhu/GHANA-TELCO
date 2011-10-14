@@ -2,7 +2,7 @@ package org.motechproject.ghana.mtn.integration.listener;
 
 import org.junit.Test;
 import org.motechproject.context.Context;
-import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.motechproject.ghana.mtn.eventhandler.ProgramMessageEventHandler;
 import org.motechproject.ghana.mtn.listener.AppContextListener;
 import org.motechproject.server.event.EventListener;
@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
 
 
-public class AppContextListenerTest extends BaseIntegrationTest {
+public class AppContextListenerTest extends BaseSpringTestContext {
 
     @Test
     public void shouldRegisterMotechListenersOnAppStartUp() {

@@ -2,11 +2,11 @@ package org.motechproject.ghana.mtn.repository;
 
 
 import org.junit.Ignore;
-import org.motechproject.ghana.mtn.BaseIntegrationTest;
+import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Ignore
-public class AllProgramMessageAuditsTest extends BaseIntegrationTest {
+public class AllProgramMessageAuditsTest extends BaseSpringTestContext {
     @Autowired
     private AllSMSAudits allProgramMessageAudits;
 
