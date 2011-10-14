@@ -11,6 +11,7 @@ public class ShortCode extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "ShortCode";
     public static final String RELATIVE = "relative";
+    public static final String STOP = "stop";
 
     private String codeKey;
     private List<String> codes;
@@ -19,15 +20,17 @@ public class ShortCode extends MotechAuditableDataObject {
         return codeKey;
     }
 
-    public void setCodeKey(String codeKey) {
+    public ShortCode setCodeKey(String codeKey) {
         this.codeKey = codeKey;
+        return this;
     }
 
     public List<String> getCodes() {
         return codes;
     }
 
-    public void setCodes(List<String> codes) {
+    public ShortCode setCodes(List<String> codes) {
         this.codes = codes;
+        return this;
     }
 }

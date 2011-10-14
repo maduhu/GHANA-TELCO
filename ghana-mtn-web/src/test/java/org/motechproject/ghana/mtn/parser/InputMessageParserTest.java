@@ -5,11 +5,15 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.SMS;
+import org.motechproject.ghana.mtn.domain.ShortCode;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
+import org.motechproject.ghana.mtn.repository.AllShortCodes;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 
@@ -25,6 +29,8 @@ public class InputMessageParserTest {
     InputMessageParser messageParser;
     @Mock
     private AllProgramTypes allProgramTypes;
+    @Mock
+    protected AllShortCodes allShortCodes;
     private RegisterProgramMessageParser registerProgramMessageParser;
     private StopMessageParser stopMessageParser;
 
@@ -39,8 +45,12 @@ public class InputMessageParserTest {
         pregnancy = new ProgramTypeBuilder().withShortCode("p").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
         childCare = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
         when(allProgramTypes.getAll()).thenReturn(asList(pregnancy, childCare));
+        when(allShortCodes.getAllCodesFor(ShortCode.STOP))
+                .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.STOP).setCodes(asList("stop"))));
+
         registerProgramMessageParser = new RegisterProgramMessageParser(allProgramTypes);
         stopMessageParser = new StopMessageParser(allProgramTypes);
+        ReflectionTestUtils.setField(stopMessageParser, "allShortCodes", allShortCodes);
         messageParser = new InputMessageParser(registerProgramMessageParser, stopMessageParser);
     }
 

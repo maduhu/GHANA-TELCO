@@ -5,8 +5,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.SMS;
+import org.motechproject.ghana.mtn.domain.ShortCode;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
+import org.motechproject.ghana.mtn.repository.AllShortCodes;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -14,12 +16,15 @@ import static junit.framework.Assert.assertNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class StopMessageParserTest {
 
     StopMessageParser parser;
     @Mock
     private AllProgramTypes allProgramTypes;
+    @Mock
+    private AllShortCodes allShortCodes;
 
     ProgramType pregnancy;
     ProgramType childCare;
@@ -33,12 +38,24 @@ public class StopMessageParserTest {
         childCare = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
         when(allProgramTypes.getAll()).thenReturn(asList(pregnancy, childCare));
         parser = new StopMessageParser(allProgramTypes);
+        when(allShortCodes.getAllCodesFor(ShortCode.STOP))
+                .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.STOP).setCodes(asList("stop"))));
+        setField(parser, "allShortCodes", allShortCodes);
     }
 
     @Test
     public void ShouldParseStopMessageWithoutProgram() {
-        String messageText = "stop ";
+        String messageText = "stop";
         SMS sms = parser.parse(messageText, senderMobileNumber);
+
+        verify(allProgramTypes, never()).findByCampaignShortCode(anyString());
+        assertMobileNumberAndMessage(sms, messageText);
+        assertNull(sms.getDomain());
+
+        reset(allProgramTypes);
+
+        messageText = "stop ";
+        sms = parser.parse(messageText, senderMobileNumber);
 
         verify(allProgramTypes, never()).findByCampaignShortCode(anyString());
         assertMobileNumberAndMessage(sms, messageText);
