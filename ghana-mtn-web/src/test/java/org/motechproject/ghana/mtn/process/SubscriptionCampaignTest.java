@@ -65,7 +65,7 @@ public class SubscriptionCampaignTest {
         Subscription subscription = mock(Subscription.class);
         CampaignRequest campaignRequest = new CampaignRequest();
         when(subscription.createCampaignRequest()).thenReturn(campaignRequest);
-        when(messageBundle.get(MessageBundle.ENROLLMENT_STOPPED)).thenReturn(message);
+        when(messageBundle.get(MessageBundle.STOP_PROGRAM_SUCCESS)).thenReturn(message);
 
         Boolean reply = campaign.stopByUser(subscription);
         assertTrue(reply);

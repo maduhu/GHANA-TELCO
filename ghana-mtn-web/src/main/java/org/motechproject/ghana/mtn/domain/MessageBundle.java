@@ -27,6 +27,7 @@ public class MessageBundle {
     public static final String STOP_NOT_ENROLLED = "stop.notenrolled";
     public static final String STOP_SPECIFY_PROGRAM = "stop.specify.program";
     public static final String STOP_SUCCESS = "stop.success";
+    public static final String STOP_PROGRAM_SUCCESS = "stop.program.success";
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {

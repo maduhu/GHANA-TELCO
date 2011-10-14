@@ -33,7 +33,9 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess implements ISu
 
     @Override
     public Boolean stopByUser(Subscription subscription) {
-        return stopExpired(subscription);
+        campaignService.stopFor(subscription.createCampaignRequest());
+        sendMessage(subscription, messageFor(MessageBundle.STOP_PROGRAM_SUCCESS));
+        return true;
     }
 
     @Override
@@ -43,6 +45,4 @@ public class SubscriptionCampaign extends BaseSubscriptionProcess implements ISu
         sendMessage(toSubscription, messageFor(MessageBundle.ENROLLMENT_ROLlOVER));
         return true;
     }
-
-
 }
