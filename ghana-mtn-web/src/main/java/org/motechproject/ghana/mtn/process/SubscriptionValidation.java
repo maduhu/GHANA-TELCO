@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.process;
 
+import org.hamcrest.Matchers;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
@@ -16,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
+import static org.hamcrest.Matchers.equalTo;
 
 @Component
 public class SubscriptionValidation extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
@@ -74,14 +76,22 @@ public class SubscriptionValidation extends BaseSubscriptionProcess implements I
         return fromSubscription.canRollOff();
     }
 
-    public Boolean validateIfUserCanStopProgram(List<Subscription> allSubscriptions, String subscriberNumber, IProgramType programType) {
+    public Subscription validateSubscriptionToStop(String subscriberNumber, IProgramType programType) {
 
-        String programToStop = programType != null ? programType.getProgramName() : null;
+        List<Subscription> subscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
+        boolean isUserWith2ProgrammesNotSpecifyProgramToStop = subscriptions.size() > 1 && programType == null;
 
-        if(allSubscriptions.size() == 0 || (allSubscriptions.size() > 1 && programToStop == null) )  {
-            sendMessage(subscriberNumber, messageFor(MessageBundle.ENROLLMENT_FAILURE));
-            return false;
+        if(subscriptions.size() == 0)  {
+            sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
+        } else if (isUserWith2ProgrammesNotSpecifyProgramToStop) {
+            sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_SPECIFY_PROGRAM));
+        } else {
+            Subscription subscriptionToStop = programType != null ?
+                (Subscription) selectUnique(subscriptions, having(on(Subscription.class).programName(), equalTo(programType.getProgramName()))) :
+                                    subscriptions.get(0);
+            if(subscriptionToStop == null) sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
+            return subscriptionToStop;
         }
-        return true;
+        return null;
     }
 }

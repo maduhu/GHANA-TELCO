@@ -14,9 +14,6 @@ import org.motechproject.ghana.mtn.process.SubscriptionValidation;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.vo.Money;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -99,18 +96,15 @@ public class SubscriptionServiceImplTest {
         String subscriberNumber = "9500012345";
         IProgramType programType = childCarePregnancyType;
         Subscription subscription = mock(Subscription.class);
-        when(subscription.programName()).thenReturn(childCarePregnancyType.getProgramName());
 
-        List<Subscription> subscriptions = asList(subscription);
-        when(allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber)).thenReturn(subscriptions);
-        when(validation.validateIfUserCanStopProgram(subscriptions, subscriberNumber, programType)).thenReturn(true);
+        when(validation.validateSubscriptionToStop(subscriberNumber, programType)).thenReturn(subscription);
         when(billing.stopByUser(subscription)).thenReturn(true);
         when(campaign.stopByUser(subscription)).thenReturn(true);
         when(persistence.stopByUser(subscription)).thenReturn(true);
 
         service.stopByUser(subscriberNumber, programType);
 
-        verify(validation).validateIfUserCanStopProgram(subscriptions, subscriberNumber, programType);
+        verify(validation).validateSubscriptionToStop(subscriberNumber, programType);
         verify(billing).stopByUser(subscription);
         verify(campaign).stopByUser(subscription);
         verify(persistence).stopByUser(subscription);
@@ -122,18 +116,15 @@ public class SubscriptionServiceImplTest {
         String subscriberNumber = "9500012345";
         IProgramType programType = childCarePregnancyType;
         Subscription subscription = mock(Subscription.class);
-        when(subscription.programName()).thenReturn(childCarePregnancyType.getProgramName());
 
-        List<Subscription> subscriptions = asList(subscription);
-        when(allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber)).thenReturn(subscriptions);
-        when(validation.validateIfUserCanStopProgram(subscriptions, subscriberNumber, programType)).thenReturn(false);
+        when(validation.validateSubscriptionToStop(subscriberNumber, programType)).thenReturn(null);
         when(billing.stopByUser(subscription)).thenReturn(true);
         when(campaign.stopByUser(subscription)).thenReturn(true);
         when(persistence.stopByUser(subscription)).thenReturn(true);
 
         service.stopByUser(subscriberNumber, programType);
 
-        verify(validation).validateIfUserCanStopProgram(subscriptions, subscriberNumber, programType);
+        verify(validation).validateSubscriptionToStop(subscriberNumber, programType);
         verify(billing, never()).stopByUser(subscription);
         verify(campaign, never()).stopByUser(subscription);
         verify(persistence, never()).stopByUser(subscription);
