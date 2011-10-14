@@ -1,26 +1,22 @@
 package org.motechproject.ghana.mtn.integration;
 
-import org.hamcrest.Matcher;
 import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.Subscriber;
+import org.motechproject.ghana.mtn.domain.ShortCode;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.domain.builder.ShortCodeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
-import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
+import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.vo.Money;
-import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -28,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class BaseIntegrationTest extends BaseSpringTestContext {
+public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
     @Autowired
     protected SubscriptionController subscriptionController;
@@ -41,10 +37,9 @@ public class BaseIntegrationTest extends BaseSpringTestContext {
     @Autowired
     protected AllBillAccounts allBillAccounts;
     @Autowired
-    protected MessageCampaignService campaignService;
-    @Autowired
-    SchedulerFactoryBean schedulerFactoryBean;
+    protected AllShortCodes allShortCodes;
 
+    protected ShortCode shortCode = new ShortCodeBuilder().withCodeKey(ShortCode.RELATIVE).withShortCode("R").build();
     public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
     public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
