@@ -67,13 +67,6 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
     }
 
-    private SubscriptionRequest createSubscriptionRequest(String inputMessage, String subscriberNumber) {
-        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-        subscriptionRequest.setInputMessage(inputMessage);
-        subscriptionRequest.setSubscriberNumber(subscriberNumber);
-        return subscriptionRequest;
-    }
-
     @After
     public void after() {
         super.after();
