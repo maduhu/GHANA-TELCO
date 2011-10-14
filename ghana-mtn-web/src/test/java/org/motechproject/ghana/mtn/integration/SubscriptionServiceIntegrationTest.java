@@ -27,21 +27,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-public class SubscriptionServiceIntegrationTest extends BaseSpringTestContext {
-
-    @Autowired
-    private SubscriptionController subscriptionController;
-    @Autowired
-    private AllSubscriptions allSubscriptions;
-    @Autowired
-    private AllSubscribers allSubscribers;
-    @Autowired
-    private AllProgramTypes allProgramTypes;
-    @Autowired
-    private AllBillAccounts allBillAccounts;
-
-    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
-    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
+public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
 
     @Before
     public void setUp() {
