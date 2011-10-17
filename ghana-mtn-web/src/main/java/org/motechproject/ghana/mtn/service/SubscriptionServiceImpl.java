@@ -1,9 +1,14 @@
 package org.motechproject.ghana.mtn.service;
 
+import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.process.*;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,10 +55,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void stopByUser(String subscriberNumber, IProgramType programType) {
-
         Subscription subscription = validation.validateSubscriptionToStop(subscriberNumber, programType);
         if (subscription != null) {
-
             for (ISubscriptionFlowProcess process : asList(billing, campaign, persistence)) {
                 if (process.stopByUser(subscription)) continue;
                 break;
@@ -67,6 +70,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             if (process.rollOver(source, target)) continue;
             break;
         }
+    }
+
+    @Override
+    public void processAfterEvent(Subscription subscription) {
+        if (!subscription.isCompleted()) return;
+        if (!subscription.canRollOff()) stopExpired(subscription);
+        Subscription nextSubscription = new Subscription(
+                subscription.getSubscriber(),
+                subscription.getRollOverProgramType(),
+                SubscriptionStatus.ACTIVE,
+                new WeekAndDay(subscription.currentWeek(), subscription.currentDay()),
+                DateUtil.now());
+        rollOver(subscription, nextSubscription);
     }
 
     @Override

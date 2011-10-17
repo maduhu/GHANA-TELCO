@@ -2,11 +2,16 @@ package org.motechproject.ghana.mtn.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.domain.vo.Day;
+import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.process.SubscriptionBillingCycle;
 import org.motechproject.ghana.mtn.process.SubscriptionCampaign;
 import org.motechproject.ghana.mtn.process.SubscriptionPersistence;
@@ -77,17 +82,17 @@ public class SubscriptionServiceImplTest {
         Subscription source = mock(Subscription.class);
         Subscription target = mock(Subscription.class);
 
-        when(validation.rollOver(source,target)).thenReturn(true);
-        when(billing.rollOver(source,target)).thenReturn(true);
-        when(campaign.rollOver(source,target)).thenReturn(true);
-        when(persistence.rollOver(source,target)).thenReturn(true);
+        when(validation.rollOver(source, target)).thenReturn(true);
+        when(billing.rollOver(source, target)).thenReturn(true);
+        when(campaign.rollOver(source, target)).thenReturn(true);
+        when(persistence.rollOver(source, target)).thenReturn(true);
 
         service.rollOver(source, target);
 
-        verify(validation).rollOver(source,target);
-        verify(billing).rollOver(source,target);
-        verify(campaign).rollOver(source,target);
-        verify(persistence).rollOver(source,target);
+        verify(validation).rollOver(source, target);
+        verify(billing).rollOver(source, target);
+        verify(campaign).rollOver(source, target);
+        verify(persistence).rollOver(source, target);
 
     }
 
@@ -149,5 +154,85 @@ public class SubscriptionServiceImplTest {
         service.activeSubscriptions(subscriberNumber);
         verify(allSubscriptions).getAllActiveSubscriptionsForSubscriber(subscriberNumber);
     }
+
+
+    @Test
+    public void shouldDoNothingIfSubscriptionIsNotCompletedDuringProcessAfterEvent() {
+        Subscription subscription = mock(Subscription.class);
+        when(subscription.isCompleted()).thenReturn(false);
+
+        service.processAfterEvent(subscription);
+        verify(subscription, never()).canRollOff();
+    }
+
+    @Test
+    public void shouldStopIfSubscriptionIsCompletedAndCannotRollOffDuringProcessAfterEvent() {
+        Subscription subscription = mock(Subscription.class);
+        when(subscription.isCompleted()).thenReturn(true);
+        when(subscription.canRollOff()).thenReturn(false);
+        when(billing.stopExpired(subscription)).thenReturn(true);
+        when(campaign.stopExpired(subscription)).thenReturn(true);
+        when(persistence.stopExpired(subscription)).thenReturn(true);
+
+        service.processAfterEvent(subscription);
+
+        verify(billing).stopExpired(subscription);
+        verify(campaign).stopExpired(subscription);
+        verify(persistence).stopExpired(subscription);
+    }
+
+    @Test
+    public void shouldRollOverDuringDuringProcessAfterEvent() {
+        Subscription source = mock(Subscription.class);
+        Subscriber subscriber = mock(Subscriber.class);
+        ProgramType programType = mock(ProgramType.class);
+        Week week = new Week(4);
+
+        when(source.getSubscriber()).thenReturn(subscriber);
+        when(source.getRollOverProgramType()).thenReturn(programType);
+        when(source.currentWeek()).thenReturn(week);
+        when(source.currentDay()).thenReturn(Day.SUNDAY);
+        when(source.isCompleted()).thenReturn(true);
+        when(source.canRollOff()).thenReturn(true);
+
+        when(validation.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
+        when(billing.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
+        when(campaign.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
+        when(persistence.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
+
+        service.processAfterEvent(source);
+
+        SubscriptionMatcher matcher = new SubscriptionMatcher(subscriber, programType, week, Day.SUNDAY);
+        verify(validation).rollOver(eq(source), argThat(matcher));
+        verify(billing).rollOver(eq(source), argThat(matcher));
+        verify(campaign).rollOver(eq(source), argThat(matcher));
+        verify(persistence).rollOver(eq(source), argThat(matcher));
+
+    }
+
+    private class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
+
+        private Subscriber subscriber;
+        private ProgramType programType;
+        private Week week;
+        private Day day;
+
+        private SubscriptionMatcher(Subscriber subscriber, ProgramType programType, Week week, Day day) {
+            this.subscriber = subscriber;
+            this.programType = programType;
+            this.week = week;
+            this.day = day;
+        }
+
+        @Override
+        public boolean matches(Object o) {
+            Subscription subscription = (Subscription) o;
+            return subscriber.equals(subscription.getSubscriber())
+                    && programType.equals(subscription.getProgramType())
+                    && week.equals(subscription.getStartWeekAndDay().getWeek())
+                    && day.equals(subscription.getStartWeekAndDay().getDay());
+        }
+    }
+
 
 }

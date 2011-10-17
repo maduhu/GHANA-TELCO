@@ -1,7 +1,5 @@
 package org.motechproject.ghana.mtn.domain;
 
-import ch.lambdaj.Lambda;
-import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
@@ -12,7 +10,6 @@ import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
-import org.motechproject.util.DateUtil;
 
 import java.util.List;
 
@@ -27,16 +24,25 @@ public class Subscription extends MotechAuditableDataObject {
 
     private Subscriber subscriber;
     private ProgramType programType;
+    private ProgramType rollOverProgramType;
+
     private SubscriptionStatus status;
-
     private WeekAndDay startWeekAndDay;
-    private WeekAndDay lastMsgSentWeekAndDay;
 
+    private WeekAndDay lastMsgSentWeekAndDay;
     private DateTime registrationDate;
     private DateTime billingStartDate;
     private DateUtils dateUtils = new DateUtils();
 
     public Subscription() {
+    }
+
+    public Subscription(Subscriber subscriber, ProgramType programType, SubscriptionStatus status, WeekAndDay startWeekAndDay, DateTime registrationDate) {
+        this.subscriber = subscriber;
+        this.programType = programType;
+        this.status = status;
+        this.startWeekAndDay = startWeekAndDay;
+        this.registrationDate = registrationDate;
     }
 
     @JsonIgnore
@@ -165,5 +171,9 @@ public class Subscription extends MotechAuditableDataObject {
 
     public Boolean canRollOff() {
         return programType.getCanRollOff();
+    }
+
+    public ProgramType getRollOverProgramType() {
+        return rollOverProgramType;
     }
 }

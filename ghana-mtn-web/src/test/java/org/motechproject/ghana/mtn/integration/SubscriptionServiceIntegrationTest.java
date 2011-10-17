@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.integration;
 import org.ektorp.DbPath;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.domain.ProgramType;
@@ -20,6 +21,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
+@Ignore
 public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
 
     @Before
