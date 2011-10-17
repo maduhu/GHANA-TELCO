@@ -39,7 +39,6 @@ public class ProgramMessageSeed extends Seed {
             String programName = programType.getProgramName();
             Week week = new Week(i);
             allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
-            allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.TUESDAY.name(), new WeekAndDay(week, Day.TUESDAY)));
             allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
             allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.FRIDAY.name(), new WeekAndDay(week, Day.FRIDAY)));
         }

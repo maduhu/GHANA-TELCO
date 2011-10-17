@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
+import static org.motechproject.util.DateUtil.now;
 
 @Service
 public class ProgramMessageEventHandler {
@@ -48,7 +49,7 @@ public class ProgramMessageEventHandler {
     }
 
     private void audit(String programName, String subscriberNumber, ProgramMessage message) {
-        log.info("Subscriber: " + subscriberNumber + ":" + message);
+        log.info("Subscriber: " + subscriberNumber + ":" + message + " : @" + now());
         ProgramMessageAudit audit = new ProgramMessageAudit(subscriberNumber, programName, DateUtil.now(), message.getContent());
         allMessageAudits.add(audit);
     }

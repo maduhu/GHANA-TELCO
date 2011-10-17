@@ -11,6 +11,8 @@ import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
+import static org.joda.time.DateTimeConstants.SATURDAY;
+
 @TypeDiscriminator("doc.type === 'Subscription'")
 public class Subscription extends MotechAuditableDataObject {
     @JsonProperty("type")
@@ -79,11 +81,20 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public Week currentWeek() {
-        int dayOfWeek = registrationDate.get(DateTimeFieldType.dayOfWeek());
-        Period period = new Period(registrationDate, dateUtils.now(), PeriodType.days());
-        // substract of -1 => eg., Reg date : 2nd Feb Wed 2011, On 6th Feb Sat, Date difference is 3, DayofWeek is 4= (3+4) 7/7 = 1
-        int weeksToAddBasedOnSundayAsStartDay = (period.getDays() + dayOfWeek - 1) / 7;
-        return startWeekAndDay.getWeek().add(weeksToAddBasedOnSundayAsStartDay);
+
+        DateTime registeredDateStartDayTime = registrationDate.hourOfDay().roundFloorCopy();
+        DateTime currentDateStartDayTime = dateUtils.now().hourOfDay().roundFloorCopy();
+        int daysDiff = new Period(registeredDateStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();
+
+        if(daysDiff > 0) {
+            int dayOfWeek = registeredDateStartDayTime.get(DateTimeFieldType.dayOfWeek());
+            int numberOfDaysToSaturday = dayOfWeek == DateTimeConstants.SUNDAY ? 6 : SATURDAY - dayOfWeek;
+
+            int daysAfterFirstSaturday = daysDiff > numberOfDaysToSaturday ? daysDiff - numberOfDaysToSaturday : 0;
+            int weeksAfterFirstSaturday = daysAfterFirstSaturday/7 + (daysAfterFirstSaturday % 7 > 0 ? 1 : 0);
+            return startWeekAndDay.getWeek().add(weeksAfterFirstSaturday);
+        }
+        return startWeekAndDay.getWeek();
     }
 
     public Day currentDay() {
