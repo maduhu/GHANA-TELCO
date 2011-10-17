@@ -1,11 +1,14 @@
 <html>
 <head>
-    <title>Mockup for MoTeCH</title>
+    <title>Ghana MTN</title>
     <script type="text/javascript" src="js/subscription.js"></script>
     <link rel="stylesheet" type="text/css" href="css/subscription.css" media="screen, projection, print"/>
 </head>
 <body>
-<div class="title_box">Ghana MTN Test Screen</div>
+<div class="title_box">
+    <img src="images/mobile.png" class="icon"/>
+    <span>Ghana MTN Test Screen</span>
+</div>
 <div class="enrollment_box">
     <fieldset>
         <legend>Enrollment of subscribers</legend>
