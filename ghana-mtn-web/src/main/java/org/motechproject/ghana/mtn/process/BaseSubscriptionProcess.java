@@ -28,14 +28,14 @@ public abstract class BaseSubscriptionProcess {
     }
 
     protected void sendMessage(Subscription subscription, String content) {
-        StringUtils.replace(content, MessageBundle.PROGRAM_NAME_MARKER, subscription.programName());
-        SMSServiceRequest smsServiceRequest = new SMSServiceRequest(subscription.subscriberNumber(), content, subscription.getProgramType());
+        String message = StringUtils.replace(content, MessageBundle.PROGRAM_NAME_MARKER, subscription.programName());
+        SMSServiceRequest smsServiceRequest = new SMSServiceRequest(subscription.subscriberNumber(), message, subscription.getProgramType());
         smsService.send(smsServiceRequest);
     }
 
     protected void sendMessage(String mobileNumber, String content) {
-        StringUtils.replace(content, "${p}", StringUtils.EMPTY);
-        SMSServiceRequest smsServiceRequest = new SMSServiceRequest(mobileNumber, content);
+        String message = StringUtils.replace(content, MessageBundle.PROGRAM_NAME_MARKER, StringUtils.EMPTY);
+        SMSServiceRequest smsServiceRequest = new SMSServiceRequest(mobileNumber, message);
         smsService.send(smsServiceRequest);
     }
 

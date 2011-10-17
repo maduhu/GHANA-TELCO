@@ -58,9 +58,10 @@ legend {
     overflow: hidden;
 }
 
-table,tbody {
+table, tbody {
     font-size: 14px;
     border-spacing: 3px;
+    width: 100%;
 }
 
 td, th {
