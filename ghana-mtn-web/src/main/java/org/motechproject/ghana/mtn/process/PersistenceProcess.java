@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionPersistence extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
+public class PersistenceProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private AllSubscribers allSubscribers;
     private AllSubscriptions allSubscriptions;
 
     @Autowired
-    public SubscriptionPersistence(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions, SMSService smsService, MessageBundle messageBundle) {
+    public PersistenceProcess(AllSubscribers allSubscribers, AllSubscriptions allSubscriptions, SMSService smsService, MessageBundle messageBundle) {
         super(smsService, messageBundle);
         this.allSubscribers = allSubscribers;
         this.allSubscriptions = allSubscriptions;

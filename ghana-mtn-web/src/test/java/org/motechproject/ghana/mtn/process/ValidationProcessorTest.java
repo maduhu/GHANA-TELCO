@@ -26,9 +26,9 @@ import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class SubscriptionValidationTest {
+public class ValidationProcessorTest {
 
-    private SubscriptionValidation validation;
+    private ValidationProcess validation;
     @Mock
     private SMSService smsService;
     @Mock
@@ -44,7 +44,7 @@ public class SubscriptionValidationTest {
     @Before
     public void setUp() {
         initMocks(this);
-        validation = new SubscriptionValidation(smsService, messageBundle, allSubscriptions, billingService);
+        validation = new ValidationProcess(smsService, messageBundle, allSubscriptions, billingService);
     }
 
     @Test

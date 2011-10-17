@@ -1,7 +1,7 @@
 package org.motechproject.ghana.mtn.eventhandler;
 
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.process.SubscriptionMessenger;
+import org.motechproject.ghana.mtn.process.MessengerProcess;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -16,10 +16,10 @@ import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIG
 @Service
 public class ProgramMessageEventHandler {
     private SubscriptionService service;
-    private SubscriptionMessenger messenger;
+    private MessengerProcess messenger;
 
     @Autowired
-    public ProgramMessageEventHandler(SubscriptionMessenger messenger, SubscriptionService service) {
+    public ProgramMessageEventHandler(MessengerProcess messenger, SubscriptionService service) {
         this.messenger = messenger;
         this.service = service;
     }

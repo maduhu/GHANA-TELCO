@@ -20,14 +20,14 @@ import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.equalTo;
 
 @Component
-public class SubscriptionValidation extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
+public class ValidationProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private AllSubscriptions allSubscriptions;
     private BillingService billingService;
 
     @Autowired
-    protected SubscriptionValidation(SMSService smsService, MessageBundle messageBundle,
-                                     AllSubscriptions allSubscriptions,
-                                     BillingService billingService) {
+    protected ValidationProcess(SMSService smsService, MessageBundle messageBundle,
+                                AllSubscriptions allSubscriptions,
+                                BillingService billingService) {
         super(smsService, messageBundle);
         this.allSubscriptions = allSubscriptions;
         this.billingService = billingService;

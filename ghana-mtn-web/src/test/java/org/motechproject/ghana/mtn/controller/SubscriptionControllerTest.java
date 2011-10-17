@@ -7,7 +7,7 @@ import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
 import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
-import org.motechproject.ghana.mtn.process.SubscriptionUserMessageParser;
+import org.motechproject.ghana.mtn.process.UserMessageParserProcess;
 import org.motechproject.ghana.mtn.service.SMSHandler;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class SubscriptionControllerTest {
     private SubscriptionController controller;
     @Mock
-    private SubscriptionUserMessageParser parserHandle;
+    private UserMessageParserProcess parserHandle;
     @Mock
     private SMSHandler handler;
 

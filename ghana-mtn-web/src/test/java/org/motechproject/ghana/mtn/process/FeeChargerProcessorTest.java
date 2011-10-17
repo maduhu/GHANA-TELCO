@@ -21,8 +21,8 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.Mockito.*;
 
-public class SubscriptionFeeChargerTest {
-    private SubscriptionFeeCharger charger;
+public class FeeChargerProcessorTest {
+    private FeeChargerProcess charger;
     @Mock
     private SMSService smsService;
     @Mock
@@ -33,7 +33,7 @@ public class SubscriptionFeeChargerTest {
     @Before
     public void setUp() {
         initMocks(this);
-        charger = new SubscriptionFeeCharger(smsService, messageBundle, billingService);
+        charger = new FeeChargerProcess(smsService, messageBundle, billingService);
     }
 
     @Test

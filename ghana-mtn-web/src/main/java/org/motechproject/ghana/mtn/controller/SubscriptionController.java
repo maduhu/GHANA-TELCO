@@ -2,7 +2,7 @@ package org.motechproject.ghana.mtn.controller;
 
 import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
-import org.motechproject.ghana.mtn.process.SubscriptionUserMessageParser;
+import org.motechproject.ghana.mtn.process.UserMessageParserProcess;
 import org.motechproject.ghana.mtn.service.SMSHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/subscription")
 public class SubscriptionController {
-    private SubscriptionUserMessageParser subscriptionParser;
+    private UserMessageParserProcess subscriptionParser;
     private SMSHandler smsHandler;
 
     @Autowired
-    public SubscriptionController(SubscriptionUserMessageParser subscriptionParser, SMSHandler smsHandler) {
+    public SubscriptionController(UserMessageParserProcess subscriptionParser, SMSHandler smsHandler) {
         this.subscriptionParser = subscriptionParser;
         this.smsHandler = smsHandler;
     }

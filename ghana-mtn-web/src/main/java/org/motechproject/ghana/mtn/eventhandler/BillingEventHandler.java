@@ -2,7 +2,7 @@ package org.motechproject.ghana.mtn.eventhandler;
 
 import org.motechproject.ghana.mtn.billing.service.BillingScheduler;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.process.SubscriptionFeeCharger;
+import org.motechproject.ghana.mtn.process.FeeChargerProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -18,10 +18,10 @@ import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.PROGR
 @Service
 public class BillingEventHandler {
     private AllSubscriptions allSubscriptions;
-    private SubscriptionFeeCharger feeCharger;
+    private FeeChargerProcess feeCharger;
 
     @Autowired
-    public BillingEventHandler(AllSubscriptions allSubscriptions, SubscriptionFeeCharger feeCharger) {
+    public BillingEventHandler(AllSubscriptions allSubscriptions, FeeChargerProcess feeCharger) {
         this.allSubscriptions = allSubscriptions;
         this.feeCharger = feeCharger;
     }

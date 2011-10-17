@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
-import org.motechproject.ghana.mtn.process.SubscriptionUserMessageParser;
+import org.motechproject.ghana.mtn.process.UserMessageParserProcess;
 import org.motechproject.ghana.mtn.vo.Money;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class SMSHandlerTest {
     @Mock
     private SubscriptionService subscriptionService;
     @Mock
-    private SubscriptionUserMessageParser parserHandle;
+    private UserMessageParserProcess parserHandle;
     private SMSHandler handler;
 
     public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();

@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionCampaign extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
+public class CampaignProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private MessageCampaignService campaignService;
 
     @Autowired
-    public SubscriptionCampaign(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService) {
+    public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService) {
         super(smsService, messageBundle);
         this.campaignService = campaignService;
     }

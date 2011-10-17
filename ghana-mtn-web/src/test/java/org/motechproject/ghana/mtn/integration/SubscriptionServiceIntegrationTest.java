@@ -34,7 +34,6 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void ShouldEnrollSubscriber() throws IOException {
         String shortCode = "P";
-        String program = "Pregnancy";
         SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "9500012345");
 
         subscriptionController.handle(subscriptionRequest);

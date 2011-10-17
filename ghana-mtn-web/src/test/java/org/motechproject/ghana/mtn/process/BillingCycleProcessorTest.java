@@ -25,8 +25,8 @@ import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class SubscriptionBillingCycleTest {
-    private SubscriptionBillingCycle billing;
+public class BillingCycleProcessorTest {
+    private BillingCycleProcess billing;
     @Mock
     private BillingService billingService;
     @Mock
@@ -40,7 +40,7 @@ public class SubscriptionBillingCycleTest {
     @Before
     public void setUp() {
         initMocks(this);
-        billing = new SubscriptionBillingCycle(billingService, smsService, messageBundle);
+        billing = new BillingCycleProcess(billingService, smsService, messageBundle);
     }
 
     @Test

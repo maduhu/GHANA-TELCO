@@ -15,8 +15,8 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.Mockito.*;
 
-public class SubscriptionPersistenceTest {
-    private SubscriptionPersistence persistence;
+public class PersistenceProcessorTest {
+    private PersistenceProcess persistence;
     @Mock
     private SMSService smsService;
     @Mock
@@ -29,7 +29,7 @@ public class SubscriptionPersistenceTest {
     @Before
     public void setUp() {
         initMocks(this);
-        persistence = new SubscriptionPersistence(allSubscribers, allSubscriptions, smsService, messageBundle);
+        persistence = new PersistenceProcess(allSubscribers, allSubscriptions, smsService, messageBundle);
     }
 
     @Test

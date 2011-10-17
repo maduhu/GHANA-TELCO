@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 import static java.lang.String.format;
 
 @Component
-public class SubscriptionFeeCharger extends BaseSubscriptionProcess {
+public class FeeChargerProcess extends BaseSubscriptionProcess {
 
     private BillingService billingService;
 
     @Autowired
-    public SubscriptionFeeCharger(SMSService smsService, MessageBundle messageBundle, BillingService billingService) {
+    public FeeChargerProcess(SMSService smsService, MessageBundle messageBundle, BillingService billingService) {
         super(smsService, messageBundle);
         this.billingService = billingService;
     }

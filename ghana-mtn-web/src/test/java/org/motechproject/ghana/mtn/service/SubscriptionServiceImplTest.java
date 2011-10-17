@@ -2,7 +2,6 @@ package org.motechproject.ghana.mtn.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -12,10 +11,10 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
-import org.motechproject.ghana.mtn.process.SubscriptionBillingCycle;
-import org.motechproject.ghana.mtn.process.SubscriptionCampaign;
-import org.motechproject.ghana.mtn.process.SubscriptionPersistence;
-import org.motechproject.ghana.mtn.process.SubscriptionValidation;
+import org.motechproject.ghana.mtn.process.BillingCycleProcess;
+import org.motechproject.ghana.mtn.process.CampaignProcess;
+import org.motechproject.ghana.mtn.process.PersistenceProcess;
+import org.motechproject.ghana.mtn.process.ValidationProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.vo.Money;
 
@@ -27,13 +26,13 @@ public class SubscriptionServiceImplTest {
 
     private SubscriptionServiceImpl service;
     @Mock
-    private SubscriptionValidation validation;
+    private ValidationProcess validation;
     @Mock
-    private SubscriptionBillingCycle billing;
+    private BillingCycleProcess billing;
     @Mock
-    private SubscriptionPersistence persistence;
+    private PersistenceProcess persistence;
     @Mock
-    private SubscriptionCampaign campaign;
+    private CampaignProcess campaign;
     @Mock
     private AllSubscriptions allSubscriptions;
 

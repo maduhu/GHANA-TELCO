@@ -19,8 +19,8 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.Mockito.*;
 
-public class SubscriptionMessengerTest {
-    private SubscriptionMessenger messenger;
+public class MessengerProcessorTest {
+    private MessengerProcess messenger;
     @Mock
     private SMSService smsService;
     @Mock
@@ -33,7 +33,7 @@ public class SubscriptionMessengerTest {
     @Before
     public void setUp() {
         initMocks(this);
-        messenger = new SubscriptionMessenger(smsService, messageBundle, allProgramMessages, allSubscriptions);
+        messenger = new MessengerProcess(smsService, messageBundle, allProgramMessages, allSubscriptions);
     }
 
     @Test

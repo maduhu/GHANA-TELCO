@@ -2,22 +2,14 @@ package org.motechproject.ghana.mtn.eventhandler;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.service.BillingScheduler;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
-import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
-import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
-import org.motechproject.ghana.mtn.process.SubscriptionFeeCharger;
+import org.motechproject.ghana.mtn.process.FeeChargerProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechEvent;
 
 import java.util.HashMap;
@@ -43,7 +35,7 @@ public class BillingEventHandlerTest {
     @Mock
     private MessageBundle messageBundle;
     @Mock
-    private SubscriptionFeeCharger feeCharger;
+    private FeeChargerProcess feeCharger;
 
     @Before
     public void setUp() {

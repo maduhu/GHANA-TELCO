@@ -16,8 +16,8 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class SubscriptionCampaignTest {
-    private SubscriptionCampaign campaign;
+public class CampaignProcessorTest {
+    private CampaignProcess campaign;
     @Mock
     private SMSService smsService;
     @Mock
@@ -28,7 +28,7 @@ public class SubscriptionCampaignTest {
     @Before
     public void setUp() {
         initMocks(this);
-        campaign = new SubscriptionCampaign(smsService, messageBundle, campaignService);
+        campaign = new CampaignProcess(smsService, messageBundle, campaignService);
     }
 
     @Test

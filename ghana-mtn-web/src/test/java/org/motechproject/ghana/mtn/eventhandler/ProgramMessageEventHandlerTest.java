@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.process.SubscriptionMessenger;
+import org.motechproject.ghana.mtn.process.MessengerProcess;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.messagecampaign.EventKeys;
@@ -19,7 +19,7 @@ public class ProgramMessageEventHandlerTest {
 
     private ProgramMessageEventHandler programMessageEventHandler;
     @Mock
-    private SubscriptionMessenger messenger;
+    private MessengerProcess messenger;
     @Mock
     private SubscriptionService service;
 

@@ -10,15 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionMessenger extends BaseSubscriptionProcess {
+public class MessengerProcess extends BaseSubscriptionProcess {
     private AllProgramMessages allProgramMessages;
     private AllSubscriptions allSubscriptions;
 
     @Autowired
-    protected SubscriptionMessenger(SMSService smsService,
-                                    MessageBundle messageBundle,
-                                    AllProgramMessages allProgramMessages,
-                                    AllSubscriptions allSubscriptions) {
+    protected MessengerProcess(SMSService smsService,
+                               MessageBundle messageBundle,
+                               AllProgramMessages allProgramMessages,
+                               AllSubscriptions allSubscriptions) {
 
         super(smsService, messageBundle);
         this.allProgramMessages = allProgramMessages;

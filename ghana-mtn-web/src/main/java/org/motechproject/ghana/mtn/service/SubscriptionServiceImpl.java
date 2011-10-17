@@ -1,10 +1,8 @@
 package org.motechproject.ghana.mtn.service;
 
-import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.process.*;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
@@ -19,17 +17,17 @@ import static java.util.Arrays.asList;
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
     private AllSubscriptions allSubscriptions;
-    private SubscriptionValidation validation;
-    private SubscriptionBillingCycle billing;
-    private SubscriptionPersistence persistence;
-    private SubscriptionCampaign campaign;
+    private ValidationProcess validation;
+    private BillingCycleProcess billing;
+    private PersistenceProcess persistence;
+    private CampaignProcess campaign;
 
     @Autowired
     public SubscriptionServiceImpl(AllSubscriptions allSubscriptions,
-                                   SubscriptionValidation validation,
-                                   SubscriptionBillingCycle billing,
-                                   SubscriptionPersistence persistence,
-                                   SubscriptionCampaign campaign) {
+                                   ValidationProcess validation,
+                                   BillingCycleProcess billing,
+                                   PersistenceProcess persistence,
+                                   CampaignProcess campaign) {
         this.allSubscriptions = allSubscriptions;
         this.validation = validation;
         this.billing = billing;
