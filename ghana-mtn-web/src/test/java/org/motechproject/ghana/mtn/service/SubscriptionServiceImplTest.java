@@ -167,8 +167,11 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldStopIfSubscriptionIsCompletedAndCannotRollOffDuringProcessAfterEvent() {
         Subscription subscription = mock(Subscription.class);
+        ProgramType programType = mock(ProgramType.class);
+
         when(subscription.isCompleted()).thenReturn(true);
         when(subscription.canRollOff()).thenReturn(false);
+        when(subscription.getProgramType()).thenReturn(programType);
         when(billing.stopExpired(subscription)).thenReturn(true);
         when(campaign.stopExpired(subscription)).thenReturn(true);
         when(persistence.stopExpired(subscription)).thenReturn(true);
