@@ -11,6 +11,7 @@ public class DeliverySMS extends SMS<Date> {
     }
 
     @Override
-    public void process(SMSHandler handler) {        
+    public void process(SMSHandler handler) {
+        handler.rollOver(this);
     }
 }

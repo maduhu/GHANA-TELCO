@@ -13,6 +13,7 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
     private Integer maxWeek;
     private Money fee;
     private ProgramType rollOverProgramType;
+    private String programKey;
 
     public ProgramTypeBuilder() {
         super(new ProgramType());
@@ -47,6 +48,11 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
 
     public ProgramTypeBuilder willRollOverProgramType(ProgramType rollOverProgramType) {
         this.rollOverProgramType = rollOverProgramType;
+        return this;
+    }
+
+    public ProgramTypeBuilder withProgramKey(String programKey) {
+        this.programKey = programKey;
         return this;
     }
 }

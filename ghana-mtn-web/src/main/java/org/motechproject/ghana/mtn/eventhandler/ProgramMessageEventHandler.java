@@ -32,6 +32,6 @@ public class ProgramMessageEventHandler {
 
         Subscription subscription = service.findBy(subscriberNumber, programName);
         messenger.process(subscription);
-        service.processAfterEvent(subscription);
+        service.rollOverByEvent(subscription);
     }
 }

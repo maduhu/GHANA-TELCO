@@ -157,7 +157,7 @@ public class SubscriptionServiceImplTest {
         Subscription subscription = mock(Subscription.class);
         when(subscription.isCompleted()).thenReturn(false);
 
-        service.processAfterEvent(subscription);
+        service.rollOverByEvent(subscription);
         verify(subscription, never()).canRollOff();
     }
 
@@ -174,7 +174,7 @@ public class SubscriptionServiceImplTest {
         when(campaign.stopExpired(subscription)).thenReturn(true);
         when(persistence.stopExpired(subscription)).thenReturn(true);
 
-        service.processAfterEvent(subscription);
+        service.rollOverByEvent(subscription);
 
         verify(billing).stopExpired(subscription);
         verify(campaign).stopExpired(subscription);
@@ -203,7 +203,7 @@ public class SubscriptionServiceImplTest {
         when(campaign.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
         when(persistence.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
 
-        service.processAfterEvent(source);
+        service.rollOverByEvent(source);
 
         SubscriptionMatcher matcher = new SubscriptionMatcher(subscriber, programType, SubscriptionStatus.ACTIVE);
         verify(validation).rollOver(eq(source), argThat(matcher));

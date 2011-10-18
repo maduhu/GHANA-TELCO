@@ -17,6 +17,7 @@ public class ProgramType extends MotechAuditableDataObject implements IProgramTy
     private Integer maxWeek;
     private String programName;
     private ProgramType rollOverProgramType;
+    private String programKey;
     private List<String> shortCodes;
 
     public ProgramType() {
@@ -56,13 +57,20 @@ public class ProgramType extends MotechAuditableDataObject implements IProgramTy
         return maxWeek;
     }
 
-
     public void setMaxWeek(Integer maxWeek) {
         this.maxWeek = maxWeek;
     }
 
     public Money getFee() {
         return fee;
+    }
+
+    public String getProgramKey() {
+        return programKey;
+    }
+
+    public void setProgramKey(String programKey) {
+        this.programKey = programKey;
     }
 
     public void setFee(Money fee) {

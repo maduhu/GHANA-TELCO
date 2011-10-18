@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static java.lang.String.format;
 import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.EXTERNAL_ID_KEY;
 import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.PROGRAM_KEY;
 
@@ -27,6 +26,7 @@ public class BillingEventHandler {
     }
 
     @MotechListener(subjects = {BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT})
+    //TODO: Update to programKey instead of using programName
     public void chargeCustomer(MotechEvent event) {
         Map params = event.getParameters();
         String programName = (String) params.get(PROGRAM_KEY);

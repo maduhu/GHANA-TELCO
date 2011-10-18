@@ -12,6 +12,7 @@ import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -73,10 +74,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void processAfterEvent(Subscription subscription) {
+    public void rollOver(String fromMobileNumber, Date deliveryDate) {
+        Subscription pregnancySubscription = allSubscriptions.findByKey(fromMobileNumber, IProgramType.PREGNANCY);
+        performRollOver(pregnancySubscription);
+    }
+
+    @Override
+    public void rollOverByEvent(Subscription subscription) {
         if (!subscription.isCompleted()) return;
         if (!subscription.canRollOff()) stopExpired(subscription);
 
+        performRollOver(subscription);
+    }
+
+    private void performRollOver(Subscription subscription) {
         Subscription rollOverSubscription = new Subscription(
                 subscription.getSubscriber(),
                 subscription.getProgramType().getRollOverProgramType(),

@@ -5,10 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.BaseSpringTestContext;
-import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.Subscriber;
-import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
@@ -45,22 +42,22 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
                 .withProgramName("Pregnancy")
                 .withShortCode("P")
                 .withShortCode("p")
+                .withProgramKey(IProgramType.PREGNANCY)
                 .withMaxWeek(35).withMinWeek(5).build());
         programTypes.add(new ProgramTypeBuilder()
                 .withProgramName("Child Care")
                 .withShortCode("C")
                 .withShortCode("c")
+                .withProgramKey(IProgramType.CHILDCARE)
                 .withMaxWeek(52).withMinWeek(1).build());
 
         pregnancy = programTypes.findByCampaignShortCode("P");
         childCare = programTypes.findByCampaignShortCode("C");
 
-        ProgramType programType = new ProgramTypeBuilder()
-                .withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
-        subscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
+       subscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
                 .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(new Subscriber(mobileNumber))
-                .withType(programType).build();
+                .withType(pregnancy).build();
         subscription.updateStartCycleInfo();
         allSubscriptions.add(subscription);
     }
@@ -106,6 +103,26 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
 
         Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findBy(user1Mobile, pregnancy.getProgramName());
         Subscription actualChildCareForUsr1 = allSubscriptions.findBy(user1Mobile, childCare.getProgramName());
+        assertEquals(pregnancyProgramForUser1.getRevision(), actualPregnancyProgramForUsr1.getRevision());
+        assertEquals(childCareForUser1.getRevision(), actualChildCareForUsr1.getRevision());
+
+        assertEquals(null, allSubscriptions.findBy(mobileNumber, childCare.getProgramName()));
+        remove(asList(pregnancyProgramForUser1, childCareForUser1, pregnancyProgramForUser2));
+    }
+
+    @Test
+    public void shouldFetchSubscriptionBasedOnMobileNumberAndEnrolledProgramKey() {
+        String user1Mobile = "9999933333";
+        Subscription pregnancyProgramForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build().updateStartCycleInfo();
+        Subscription childCareForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 3, 0, 0), new Week(7), childCare).build().updateStartCycleInfo();
+        allSubscriptions.add(pregnancyProgramForUser1);
+        allSubscriptions.add(childCareForUser1);
+
+        Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateStartCycleInfo();
+        allSubscriptions.add(pregnancyProgramForUser2);
+
+        Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findByKey(user1Mobile, IProgramType.PREGNANCY);
+        Subscription actualChildCareForUsr1 = allSubscriptions.findByKey(user1Mobile, IProgramType.CHILDCARE);
         assertEquals(pregnancyProgramForUser1.getRevision(), actualPregnancyProgramForUsr1.getRevision());
         assertEquals(childCareForUser1.getRevision(), actualChildCareForUsr1.getRevision());
 

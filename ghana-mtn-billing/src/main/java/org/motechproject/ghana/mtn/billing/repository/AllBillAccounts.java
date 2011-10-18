@@ -9,7 +9,6 @@ import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,7 +21,8 @@ public class AllBillAccounts extends MotechAuditableRepository<BillAccount> {
        super(BillAccount.class, db);
    }
 
-   public void updateFor(String mobileNumber, Double currentBalance, IProgramType programType) {
+    //TODO: Update ProgramKey instead of using ProgramName
+    public void updateFor(String mobileNumber, Double currentBalance, IProgramType programType) {
        BillAccount billAccount = findByMobileNumber(mobileNumber);
        if (billAccount == null)
            billAccount = new BillAccount();

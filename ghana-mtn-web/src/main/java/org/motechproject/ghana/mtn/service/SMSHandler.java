@@ -1,9 +1,6 @@
 package org.motechproject.ghana.mtn.service;
 
-import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
-import org.motechproject.ghana.mtn.domain.StopSMS;
-import org.motechproject.ghana.mtn.domain.Subscriber;
-import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +23,9 @@ public class SMSHandler {
 
     public void stop(StopSMS sms) {
         service.stopByUser(sms.getFromMobileNumber(), sms.getDomain());
+    }
+
+    public void rollOver(DeliverySMS deliverySMS) {
+        //service.rollOver(deliverySMS.getFromMobileNumber(), deliverySMS.getDomain());
     }
 }

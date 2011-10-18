@@ -45,6 +45,6 @@ public class ProgramMessageEventHandlerTest {
         programMessageEventHandler.sendMessageReminder(motechEvent);
 
         verify(messenger).process(subscription);
-        verify(service).processAfterEvent(subscription);
+        verify(service).rollOverByEvent(subscription);
     }
 }
