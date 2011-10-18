@@ -12,7 +12,7 @@ import org.motechproject.ghana.mtn.exception.MessageParseFailException;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.motechproject.ghana.mtn.repository.AllShortCodes;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.motechproject.util.DateUtil;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
@@ -32,6 +32,7 @@ public class InputMessageParserTest {
     @Mock
     protected AllShortCodes allShortCodes;
     private RegisterProgramMessageParser registerProgramMessageParser;
+    private DeliveryMessageParser deliveryMessageParser;
     private StopMessageParser stopMessageParser;
 
     ProgramType pregnancy;
@@ -47,11 +48,16 @@ public class InputMessageParserTest {
         when(allProgramTypes.getAll()).thenReturn(asList(pregnancy, childCare));
         when(allShortCodes.getAllCodesFor(ShortCode.STOP))
                 .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.STOP).setCodes(asList("stop"))));
+        when(allShortCodes.getAllCodesFor(ShortCode.DELIVERY))
+                .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.DELIVERY).setCodes(asList("dd"))));
 
         registerProgramMessageParser = new RegisterProgramMessageParser(allProgramTypes);
         stopMessageParser = new StopMessageParser(allProgramTypes);
+        deliveryMessageParser = new DeliveryMessageParser(allProgramTypes);
+        
         ReflectionTestUtils.setField(stopMessageParser, "allShortCodes", allShortCodes);
-        messageParser = new InputMessageParser(registerProgramMessageParser, stopMessageParser);
+        ReflectionTestUtils.setField(deliveryMessageParser, "allShortCodes", allShortCodes);
+        messageParser = new InputMessageParser(registerProgramMessageParser, stopMessageParser, deliveryMessageParser);
     }
 
     @Test
@@ -158,6 +164,14 @@ public class InputMessageParserTest {
         assertMobileNumberAndMessage(sms, messageText);
         assertEquals(programType, sms.getDomain());
     }
+    
+    @Test
+    public void ShouldParseDeliveryMessage() {
+       String message = "dd ";
+       SMS sms = messageParser.parse(message, senderMobileNumber);
+       assertEquals(message, sms.getMessage());
+       assertEquals(DateUtil.today().toDate(), sms.getDomain());
+   }
 
     private void assertMobileNumberAndMessage(SMS sms, String message) {
         assertEquals(message, sms.getMessage());

@@ -12,6 +12,7 @@ public class ShortCode extends MotechAuditableDataObject {
     private String type = "ShortCode";
     public static final String RELATIVE = "relative";
     public static final String STOP = "stop";
+    public static final String DELIVERY = "delivery";
 
     private String codeKey;
     private List<String> codes;

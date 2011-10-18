@@ -12,16 +12,12 @@ import static java.util.Arrays.asList;
 @Component
 public class InputMessageParser {
 
-    private RegisterProgramMessageParser registerProgramParser;
-    private StopMessageParser stopMessageParser;
     private List<MessageParser> messageParsers;
 
     @Autowired
     public InputMessageParser(RegisterProgramMessageParser registerProgramParser,
-                              StopMessageParser stopMessageParser) {
-        this.registerProgramParser = registerProgramParser;
-        this.stopMessageParser = stopMessageParser;
-        messageParsers = asList(this.registerProgramParser, this.stopMessageParser);
+                              StopMessageParser stopMessageParser, DeliveryMessageParser deliveryMessageParser) {
+        messageParsers = asList(registerProgramParser, stopMessageParser, deliveryMessageParser);
     }
 
     public SMS parse(String message, String senderMobileNumber) {

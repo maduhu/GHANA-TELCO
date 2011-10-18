@@ -13,9 +13,8 @@ public class ShortCodeSeed extends Seed {
 
     @Override
     protected void load() {
-        ShortCode relativeCode = new ShortCodeBuilder().withCodeKey(ShortCode.RELATIVE).withShortCode("R").withShortCode("r").build();
-        ShortCode stopCode = new ShortCodeBuilder().withCodeKey(ShortCode.STOP).withShortCode("stop").build();
-        allShortCodes.add(relativeCode);
-        allShortCodes.add(stopCode);
+        allShortCodes.add(new ShortCodeBuilder().withCodeKey(ShortCode.RELATIVE).withShortCode("R").withShortCode("r").build());
+        allShortCodes.add(new ShortCodeBuilder().withCodeKey(ShortCode.STOP).withShortCode("stop").withShortCode("s").build());
+        allShortCodes.add(new ShortCodeBuilder().withCodeKey(ShortCode.DELIVERY).withShortCode("d").withShortCode("dd").build());
     }
 }
