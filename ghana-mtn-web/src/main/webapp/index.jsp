@@ -4,11 +4,6 @@
     <script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript" src="js/new-subscription.js"></script>
-    <%--<script>--%>
-        <%--$(function() {--%>
-            <%--$("#tabs").tabs();--%>
-        <%--});--%>
-    <%--</script>--%>
     <link rel="stylesheet" type="text/css" href="css/subscription.css" media="screen, projection, print"/>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.16.custom.css" media="screen, projection, print"/>
 </head>
@@ -19,48 +14,60 @@
 </div>
 <div id="tabs">
     <ul>
-        <li><a href="#tabs-1">Input</a></li>
-        <li><a href="#tabs-2">Audits</a></li>
-        <li><a href="#tabs-3">MTN</a></li>
+        <li><a id="tab1" href="#tabs-1">Input</a></li>
+        <li><a id="tab2" href="#tabs-2">Audits</a></li>
+        <li><a id="tab3" href="#tabs-3">MTN</a></li>
     </ul>
     <div id="tabs-1">
         <div class="enrollment_box">
-            <fieldset>
-                <legend>Enrollment of subscribers</legend>
-                <form id="sms-form">
-                    <label for="subNo">Mobile Number:</label>
-                    <input id="subNo" name="subscriberNumber" type="text" value="9500012345"/>
-                    <label for="smsText">SMS (eg. P 27, C 5):</label>
-                    <input id="smsText" type="text"/>
-                    <input id="submit_enrollment" type="submit" value="Submit Request"/>
-                </form>
-            </fieldset>
+            <form id="sms-form">
+                <table>
+                    <tr>
+                        <td><label for="subNo">Mobile Number:</label></td>
+                        <td><input id="subNo" name="subscriberNumber" type="text" value="9500012345"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="smsText">SMS (eg. P 27, C 5):</label></td>
+                        <td><input id="smsText" type="text"/></td>
+                    </tr>
+                    <tr>
+                        <td><input id="submit_enrollment" type="button" value="Send"/></td>
+                    </tr>
+                </table>
+            </form>
         </div>
     </div>
     <div id="tabs-2">
         <div class="audit_box">
-            <fieldset>
-                <legend>Message Audit</legend>
-                <form id="audit-form">
-                    <select id="audit_options">
-                        <option value="sms">SMSAudit</option>
-                        <option value="bill">BillAudit</option>
-                    </select>
-                    <input id="submit_audit" type="submit" value="Refresh"/>
-                </form>
-                <div id="audit_table"></div>
-            </fieldset>
+            <form id="audit-form">
+                <select id="audit_options">
+                    <option value="sms">SMSAudit</option>
+                    <option value="bill">BillAudit</option>
+                </select>
+            </form>
+            <div id="audit_table"></div>
         </div>
     </div>
     <div id="tabs-3">
         <div class="mtn_user_box">
-            <fieldset>
-                <legend>MTN Users</legend>
-                <form id="mtn-form">
-                    <input id="submit_mtn" type="submit" value="Refresh"/>
+            <div id="mtn_table_box"></div>
+            <div id="mtn_user_edit">
+                <form id="mtn_user_edit_form">
+                    <table>
+                        <tr>
+                            <td><label for="mtn_user_no">Number:</label></td>
+                            <td><input id="mtn_user_no" name="mtnUserNumber" type="text"/></td>
+                        </tr>
+                        <tr>
+                            <td><label for="mtn_user_balance">Balance:</label></td>
+                            <td><input id="mtn_user_balance" name="mtnUserBalance" type="text"/></td>
+                        </tr>
+                        <tr>
+                            <td><input id="update_mtn_user" type="button" value="Update"></td>
+                        </tr>
+                    </table>
                 </form>
-                <div id="mtn_table"></div>
-            </fieldset>
+            </div>
         </div>
     </div>
 </div>

@@ -32,7 +32,8 @@ $.Audits = function() {
         $('#audit_table').html(response);
     };
     var bootstrap = function() {
-        $('#submit_audit').click(hitServer);
+        $('#tab2').click(hitServer);
+        $('#audit_options').change(hitServer);
     };
     $(bootstrap);
 };
@@ -48,10 +49,10 @@ $.MTNUsers = function() {
         return false;
     };
     var updateUsersTable = function(response) {
-        $('#mtn_table').html(response);
+        $('#mtn_table_box').html(response);
     };
     var bootstrap = function() {
-        $('#submit_mtn').click(hitServer);
+        $('#tab3').click(hitServer);
     };
     $(bootstrap);
 };
