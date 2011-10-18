@@ -12,12 +12,10 @@ import java.util.List;
 
 @Component
 public class MTNMock {
-    private String configFile;
     private AllMTNMockUsers allMTNMockUsers;
 
     @Autowired
-    public MTNMock(@Value(value = "#{mockMTNProperties['configFile']}") String configFile, AllMTNMockUsers allMTNMockUsers) throws IOException {
-        this.configFile = configFile;
+    public MTNMock(AllMTNMockUsers allMTNMockUsers) throws IOException {
         this.allMTNMockUsers = allMTNMockUsers;
     }
 
@@ -35,7 +33,7 @@ public class MTNMock {
 
     public Money chargeCustomer(String mobileNumber, double amountToCharge) {
         MTNMockUser user = fetchUser(mobileNumber);
-        if (user != null) user.getBalance().subtract(amountToCharge);\
+        if (user != null) user.getBalance().subtract(amountToCharge);
         allMTNMockUsers.update(user);
         return new Money(amountToCharge);
     }
