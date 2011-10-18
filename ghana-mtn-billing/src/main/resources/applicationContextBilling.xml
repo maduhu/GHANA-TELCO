@@ -14,7 +14,6 @@
     <context:component-scan base-package="org.motechproject.ghana.mtn"/>
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-    <util:properties id="mockMTNProperties" location="classpath:mockMTN.properties"/>
     <util:properties id="billingProperties" location="classpath:billing.properties"/>
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />

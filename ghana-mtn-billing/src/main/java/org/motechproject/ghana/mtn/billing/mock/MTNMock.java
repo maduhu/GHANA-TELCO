@@ -33,8 +33,10 @@ public class MTNMock {
 
     public Money chargeCustomer(String mobileNumber, double amountToCharge) {
         MTNMockUser user = fetchUser(mobileNumber);
-        if (user != null) user.getBalance().subtract(amountToCharge);
-        allMTNMockUsers.update(user);
+        if (user != null) {
+            user.getBalance().subtract(amountToCharge);
+            allMTNMockUsers.update(user);
+        }
         return new Money(amountToCharge);
     }
 
