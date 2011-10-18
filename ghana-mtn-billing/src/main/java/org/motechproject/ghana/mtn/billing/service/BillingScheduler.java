@@ -33,26 +33,26 @@ public class BillingScheduler {
 
     public void startFor(BillingCycleRequest request) {
         String mobileNumber = request.getMobileNumber();
-        String programName = request.programName();
+        String programKey = request.programKey();
         DateTime cycleStartDate = request.getCycleStartDate();
         Date startTime = cycleStartDate.monthOfYear().addToCopy(1).toDate();
         String cronJobExpression = format(cron, cycleStartDate.getDayOfMonth());
 
-        String jobId = jobId(mobileNumber, programName);
+        String jobId = jobId(mobileNumber, programKey);
         MotechEvent motechEvent = new MotechEvent(MONTHLY_BILLING_SCHEDULE_SUBJECT, new SchedulerParamsBuilder()
                 .withJobId(jobId)
                 .withExternalId(mobileNumber)
-                .withProgram(programName)
+                .withProgram(programKey)
                 .params());
 
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startTime, null);
         schedulerService.scheduleJob(schedulableJob);
-        log.info("Billing job scheduled for [" + mobileNumber + "|" + programName + "|" + startTime + "]");
+        log.info("Billing job scheduled for [" + mobileNumber + "|" + programKey + "|" + startTime + "]");
     }
 
     public void stopFor(BillingCycleRequest request) {
         String mobileNumber = request.getMobileNumber();
-        String programName = request.programName();
+        String programName = request.programKey();
         String jobId = jobId(mobileNumber, programName);
 
         schedulerService.unscheduleJob(jobId);

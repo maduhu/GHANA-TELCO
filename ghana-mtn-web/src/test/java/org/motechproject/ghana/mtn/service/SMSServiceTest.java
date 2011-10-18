@@ -49,7 +49,7 @@ public class SMSServiceTest {
         verify(smsProvider).send(mobileNumber, message);
         verify(allProgramMessageAudits).add(captor.capture());
         SMSAudit capturedSMSAudit = captor.getValue();
-        assertEquals(programType.getProgramName(), capturedSMSAudit.getProgramName());
+        assertEquals(programType.getProgramKey(), capturedSMSAudit.getProgramKey());
         assertEquals(mobileNumber, capturedSMSAudit.getSubscriberNumber());
     }
 
@@ -66,7 +66,7 @@ public class SMSServiceTest {
         verify(smsProvider).send(mobileNumber, message);
         verify(allProgramMessageAudits).add(captor.capture());
         SMSAudit capturedSMSAudit = captor.getValue();
-        assertNull(capturedSMSAudit.getProgramName());
+        assertNull(capturedSMSAudit.getProgramKey());
         assertEquals(mobileNumber, capturedSMSAudit.getSubscriberNumber());
     }
 }

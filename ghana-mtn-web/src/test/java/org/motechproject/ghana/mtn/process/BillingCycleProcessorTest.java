@@ -133,7 +133,7 @@ public class BillingCycleProcessorTest {
         Boolean reply = billing.stopExpired(subscription);
 
         assertTrue(reply);
-        assertSMSRequest(mobileNumber, "billing stopped", childCarePregnancyType.getProgramName());
+        assertSMSRequest(mobileNumber, "billing stopped", childCarePregnancyType.getProgramKey());
         assertEquals(SubscriptionStatus.EXPIRED, subscription.getStatus());
     }
 
@@ -153,14 +153,13 @@ public class BillingCycleProcessorTest {
         Boolean reply = billing.stopByUser(subscription);
 
         assertFalse(reply);
-        assertSMSRequest(mobileNumber, "errors message", programType.getProgramName());
+        assertSMSRequest(mobileNumber, "errors message", programType.getProgramKey());
     }
 
     @Test
     public void shouldReturnTrueAndSendBillingSuccessMessageOnStoppingCycle_WhenUserWantsToStop() {
         DateTime now = DateUtil.now();
         String mobileNumber = "123";
-        String program = "Child Care";
         ProgramType programType = childCarePregnancyType;
         Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
                         .withType(programType).build();
@@ -171,7 +170,7 @@ public class BillingCycleProcessorTest {
         Boolean reply = billing.stopByUser(subscription);
 
         assertTrue(reply);
-        assertSMSRequest(mobileNumber, "billing stopped", program);
+        assertSMSRequest(mobileNumber, "billing stopped", childCarePregnancyType.getProgramKey());
         assertEquals(SubscriptionStatus.SUSPENDED, subscription.getStatus());
     }
 
@@ -222,21 +221,21 @@ public class BillingCycleProcessorTest {
         return errors;
     }
 
-    private void setupMocks(DateTime now, String mobileNumber, String program, ProgramType programType, Subscription subscription) {
-        when(programType.getProgramName()).thenReturn(program);
+    private void setupMocks(DateTime now, String mobileNumber, String programKey, ProgramType programType, Subscription subscription) {
+        when(programType.getProgramKey()).thenReturn(programKey);
         when(subscription.subscriberNumber()).thenReturn(mobileNumber);
         when(subscription.billingStartDate()).thenReturn(now);
         when(subscription.getProgramType()).thenReturn(programType);
     }
 
-    private void assertSMSRequest(String mobileNumber, String errorMsg, String program) {
+    private void assertSMSRequest(String mobileNumber, String message, String program) {
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());
         SMSServiceRequest captured = captor.getValue();
 
-        assertEquals(errorMsg, captured.getMessage());
+        assertEquals(message, captured.getMessage());
         assertEquals(mobileNumber, captured.getMobileNumber());
-        assertEquals(program, captured.programName());
+        assertEquals(program, captured.programKey());
     }
 
     private SubscriptionBuilder subscriptionBuilder(String subscriberNumber, DateTime registrationDate, DateTime billingStartDate, ProgramType programType) {

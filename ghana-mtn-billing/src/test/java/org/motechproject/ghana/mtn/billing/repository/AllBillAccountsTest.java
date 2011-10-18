@@ -42,7 +42,7 @@ public class AllBillAccountsTest extends RepositoryTest {
 
         List<BillProgramAccount> programAccounts = billAccount.getProgramAccounts();
         assertThat(programAccounts.size(), is(1));
-        assertThat(programAccounts.get(0).getProgramName(), is(getPregnancyProgramType().getProgramName()));
+        assertThat(programAccounts.get(0).getProgramKey(), is(getPregnancyProgramType().getProgramKey()));
     }
 
     public IProgramType getPregnancyProgramType() {
@@ -50,6 +50,11 @@ public class AllBillAccountsTest extends RepositoryTest {
             @Override
             public String getProgramName() {
                 return "Pregnancy";
+            }
+
+            @Override
+            public String getProgramKey() {
+                return PREGNANCY;
             }
 
             @Override
@@ -79,6 +84,11 @@ public class AllBillAccountsTest extends RepositoryTest {
             @Override
             public String getProgramName() {
                 return "Child Care";
+            }
+
+            @Override
+            public String getProgramKey() {
+                return CHILDCARE;
             }
 
             @Override

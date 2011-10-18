@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.motechproject.ghana.mtn.domain.IProgramType.CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.IProgramType.PREGNANCY;
 
 public class AllProgramTypesTest extends BaseSpringTestContext {
 
@@ -26,10 +28,12 @@ public class AllProgramTypesTest extends BaseSpringTestContext {
                 .withMinWeek(5)
                 .withMaxWeek(35)
                 .withProgramName("Pregnancy")
+                .withProgramKey(PREGNANCY)
                 .withShortCode("P").build();
         ProgramType childCareProgramType = new ProgramTypeBuilder()
                 .withMinWeek(1)
                 .withMaxWeek(52)
+                .withProgramKey(CHILDCARE)
                 .withProgramName("Child Care")
                 .withShortCode("C").build();
 
@@ -41,10 +45,10 @@ public class AllProgramTypesTest extends BaseSpringTestContext {
     @Test
     public void ShouldReturnPregnancyProgramTypeForShortCodeP() {
         ProgramType programType = allProgramTypes.findByCampaignShortCode("P");
-        assertThat(programType.getProgramName(), is("Pregnancy"));
-        assertThat(allProgramTypes.findByCampaignShortCode("p").getProgramName(), is("Pregnancy"));
-        assertThat(allProgramTypes.findByCampaignShortCode("c").getProgramName(), is("Child Care"));
-        assertThat(allProgramTypes.findByCampaignShortCode("C").getProgramName(), is("Child Care"));
+        assertThat(programType.getProgramKey(), is(PREGNANCY));
+        assertThat(allProgramTypes.findByCampaignShortCode("p").getProgramKey(), is(PREGNANCY));
+        assertThat(allProgramTypes.findByCampaignShortCode("c").getProgramKey(), is(CHILDCARE));
+        assertThat(allProgramTypes.findByCampaignShortCode("C").getProgramKey(), is(CHILDCARE));
     }
 
     @After

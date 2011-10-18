@@ -24,7 +24,7 @@ public class BillAccount extends MotechAuditableDataObject {
         if (null == programAccounts)
             programAccounts = new ArrayList<BillProgramAccount>();
 
-        BillProgramAccount programAccount = selectFirst(programAccounts, having(on(BillProgramAccount.class).getProgramName(), org.hamcrest.Matchers.equalTo(programName))) ;
+        BillProgramAccount programAccount = selectFirst(programAccounts, having(on(BillProgramAccount.class).getProgramKey(), org.hamcrest.Matchers.equalTo(programName))) ;
 
         if (programAccount == null) {
             programAccount = new BillProgramAccount(programName, fee);

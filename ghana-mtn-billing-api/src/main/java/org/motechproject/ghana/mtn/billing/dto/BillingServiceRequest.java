@@ -20,8 +20,8 @@ public class BillingServiceRequest {
         return programType;
     }
 
-    public String programName() {
-        return programType.getProgramName();
+    public String programKey() {
+        return programType.getProgramKey();
     }
 
     public Money getProgramFee() {

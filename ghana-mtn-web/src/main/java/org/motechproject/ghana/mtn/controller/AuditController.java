@@ -31,7 +31,7 @@ public class AuditController {
         builder.append("<table>");
         row(builder, header("Subscriber", "Program", "Sent on", "Content"));
         for (SMSAudit messageAudit : messageAudits) {
-            List<? extends Object> dataList = asList(messageAudit.getSubscriberNumber(), messageAudit.getProgramName(), messageAudit.getSentTime().toString(), 
+            List<? extends Object> dataList = asList(messageAudit.getSubscriberNumber(), messageAudit.getProgramKey(), messageAudit.getSentTime().toString(),
                     messageAudit.getContent());
             rowData(builder, dataList);
         }

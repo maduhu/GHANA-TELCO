@@ -18,6 +18,7 @@ import org.motechproject.ghana.mtn.billing.service.BillingServiceImpl;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.EXTERNAL_ID_KEY;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.PROGRAM_KEY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testApplicationContextBilling.xml"})
@@ -66,7 +69,7 @@ public class BillingServiceIntegrationTest {
         List<BillAudit> billAudits = select(allBillAudits.getAll(), having(on(BillAudit.class).getMobileNumber(), equalTo(subscriberNumber)));
 
 
-        String jobId = format("%s.%s.%s", BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT, getPregnancyProgramType().getProgramName(), subscriberNumber);
+        String jobId = format("%s.%s.%s", BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT, getPregnancyProgramType().getProgramKey(), subscriberNumber);
 
         JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
 
@@ -76,7 +79,7 @@ public class BillingServiceIntegrationTest {
         assertThat(billingServiceResponse.getValue().getAmountCharged(), is(getPregnancyProgramType().getFee()));
 
         assertThat(billAccount.getProgramAccounts().size(), is(1));
-        assertThat(billAccount.getProgramAccounts().get(0).getProgramName(), is(getPregnancyProgramType().getProgramName()));
+        assertThat(billAccount.getProgramAccounts().get(0).getProgramKey(), is(getPregnancyProgramType().getProgramKey()));
 
 
         assertThat(billAudits.size(), is(1));
@@ -85,9 +88,10 @@ public class BillingServiceIntegrationTest {
         assertThat(billAudits.get(0).getBillStatus(), is(BillStatus.SUCCESS));
         assertThat(billAudits.get(0).getFailureReason(), is(""));
 
-        assertThat(jobDetail.getJobDataMap().get("ExternalID").toString(), is(subscriberNumber));
-        assertThat(jobDetail.getJobDataMap().get("Program").toString(), is(getPregnancyProgramType().getProgramName()));
-        assertThat(jobDetail.getJobDataMap().get("eventType").toString(), is(BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT));
+        JobDataMap map = jobDetail.getJobDataMap();
+        assertThat(map.get(EXTERNAL_ID_KEY).toString(), is(subscriberNumber));
+        assertThat(map.get(PROGRAM_KEY).toString(), is(getPregnancyProgramType().getProgramKey()));
+        assertThat(map.get("eventType").toString(), is(BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT));
 
         assertThat(cronTrigger.getCronExpression(), is("0 58 23 11 * ?"));
     }
@@ -97,6 +101,11 @@ public class BillingServiceIntegrationTest {
             @Override
             public String getProgramName() {
                 return "Pregnancy";
+            }
+
+            @Override
+            public String getProgramKey() {
+                return PREGNANCY;
             }
 
             @Override
@@ -126,6 +135,11 @@ public class BillingServiceIntegrationTest {
             @Override
             public String getProgramName() {
                 return "Child Care";
+            }
+
+            @Override
+            public String getProgramKey() {
+                return IProgramType.CHILDCARE;
             }
 
             @Override

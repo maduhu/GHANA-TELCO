@@ -9,6 +9,7 @@ public interface IProgramType {
     String CHILDCARE = "CHILDCARE";
 
     String getProgramName();
+    String getProgramKey();
     List<String> getShortCodes();
     Integer getMinWeek();
     Integer getMaxWeek();

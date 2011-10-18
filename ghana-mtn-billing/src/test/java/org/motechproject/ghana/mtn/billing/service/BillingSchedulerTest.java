@@ -42,7 +42,7 @@ public class BillingSchedulerTest {
         Date startDate = cycleStartDate.monthOfYear().addToCopy(1).toDate();
 
         when(request.getMobileNumber()).thenReturn("123");
-        when(request.programName()).thenReturn("program");
+        when(request.programKey()).thenReturn("program");
         when(request.getCycleStartDate()).thenReturn(cycleStartDate);
 
         billingScheduler.startFor(request);
@@ -66,7 +66,7 @@ public class BillingSchedulerTest {
     public void shouldStopScheduledJobs() {
         BillingCycleRequest request = mock(BillingCycleRequest.class);
         when(request.getMobileNumber()).thenReturn("123");
-        when(request.programName()).thenReturn("program");
+        when(request.programKey()).thenReturn("program");
 
         billingScheduler.stopFor(request);
 

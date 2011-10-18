@@ -166,7 +166,7 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldFindSubscriptionByMobileNumberUsingRepository() {
         String subscriberNumber = "123";
-        String program = "program";
+        String program = IProgramType.PREGNANCY;
         Subscription subscription = new Subscription();
         when(allSubscriptions.findBy(subscriberNumber, program)).thenReturn(subscription);
 

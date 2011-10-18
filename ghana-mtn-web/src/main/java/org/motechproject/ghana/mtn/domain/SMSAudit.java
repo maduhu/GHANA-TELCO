@@ -12,16 +12,16 @@ public class SMSAudit extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "SMSAudit";
     private String subscriberNumber;
-    private String programName;
+    private String programKey;
     private DateTime sentTime;
     private String content;
 
     public SMSAudit() {
     }
 
-    public SMSAudit(String subscriberNumber, String programName, DateTime sentTime, String content) {
+    public SMSAudit(String subscriberNumber, String programKey, DateTime sentTime, String content) {
         this.subscriberNumber = subscriberNumber;
-        this.programName = programName;
+        this.programKey = programKey;
         this.sentTime = sentTime;
         this.content = content;
     }
@@ -34,12 +34,12 @@ public class SMSAudit extends MotechAuditableDataObject {
         this.subscriberNumber = subscriberNumber;
     }
 
-    public String getProgramName() {
-        return programName;
+    public String getProgramKey() {
+        return programKey;
     }
 
-    public void setProgramName(String programName) {
-        this.programName = programName;
+    public void setProgramKey(String programKey) {
+        this.programKey = programKey;
     }
 
     public DateTime getSentTime() {

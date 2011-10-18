@@ -24,14 +24,13 @@ public class ProgramMessageEventHandler {
         this.service = service;
     }
 
-    //TODO: Update to use findByKey
     @MotechListener(subjects = {MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT})
     public void sendMessageReminder(MotechEvent event) {
         Map params = event.getParameters();
-        String programName = (String) params.get(EventKeys.CAMPAIGN_NAME_KEY);
+        String programKey = (String) params.get(EventKeys.CAMPAIGN_NAME_KEY);
         String subscriberNumber = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
 
-        Subscription subscription = service.findBy(subscriberNumber, programName);
+        Subscription subscription = service.findBy(subscriberNumber, programKey);
         messenger.process(subscription);
         service.rollOverByEvent(subscription);
     }

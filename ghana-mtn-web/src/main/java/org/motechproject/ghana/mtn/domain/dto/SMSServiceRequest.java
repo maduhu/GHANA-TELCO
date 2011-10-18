@@ -29,7 +29,7 @@ public class SMSServiceRequest {
         return programType;
     }
 
-    public String programName() {
-        return programType != null ? programType.getProgramName() : null;
+    public String programKey() {
+        return programType != null ? programType.getProgramKey() : null;
     }
 }

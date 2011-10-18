@@ -1,6 +1,6 @@
 [
     {
-        "name" : "Pregnancy",
+        "name" : "PREGNANCY",
         "type" : "CRON",
         "messages" : [
             {
@@ -14,7 +14,7 @@
     },
 
     {
-        "name" : "Child Care",
+        "name" : "CHILDCARE",
         "type" : "CRON",
         "messages" : [
             {

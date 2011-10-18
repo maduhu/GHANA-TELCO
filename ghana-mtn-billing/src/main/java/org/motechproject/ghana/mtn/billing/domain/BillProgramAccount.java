@@ -3,23 +3,23 @@ package org.motechproject.ghana.mtn.billing.domain;
 import org.motechproject.ghana.mtn.vo.Money;
 
 public class BillProgramAccount {
-    private String programName;
+    private String programKey;
     private Money fee;
 
     public BillProgramAccount() {
     }
 
-    public BillProgramAccount(String programName, Money fee) {
-        this.programName = programName;
+    public BillProgramAccount(String programKey, Money fee) {
+        this.programKey = programKey;
         this.fee = fee;
     }
 
-    public void setProgramName(String programName) {
-        this.programName = programName;
+    public void setProgramKey(String programKey) {
+        this.programKey = programKey;
     }
 
-    public String getProgramName() {
-        return programName;
+    public String getProgramKey() {
+        return programKey;
     }
 
     public void setFee(Money fee) {

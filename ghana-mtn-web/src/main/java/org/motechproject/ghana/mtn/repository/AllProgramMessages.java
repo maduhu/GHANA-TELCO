@@ -3,8 +3,8 @@ package org.motechproject.ghana.mtn.repository;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +22,15 @@ public class AllProgramMessages extends MotechAuditableRepository<ProgramMessage
     }
 
     public ProgramMessage findBy(ProgramType type, Week week, Day day) {
-        List<ProgramMessage> messages = findByProgramName(type.getProgramName());
+        List<ProgramMessage> messages = findByProgramKey(type.getProgramKey());
         for (ProgramMessage message : messages)
             if (message.isOf(week, day)) return message;
         return null;
     }
 
     @GenerateView
-    public List<ProgramMessage> findByProgramName(String programName) {
-        return queryView("by_programName", programName);
+    public List<ProgramMessage> findByProgramKey(String programKey) {
+        return queryView("by_programKey", programKey);
     }
 
 }

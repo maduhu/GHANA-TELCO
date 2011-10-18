@@ -15,13 +15,11 @@ import org.motechproject.model.MotechEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.String.format;
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.EXTERNAL_ID_KEY;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.PROGRAM_KEY;
+import static org.motechproject.ghana.mtn.domain.IProgramType.PREGNANCY;
 
 public class BillingEventHandlerTest {
 
@@ -46,15 +44,15 @@ public class BillingEventHandlerTest {
     @Test
     public void shouldChargeCustomerForEveryMonthSchedule() {
         String subscriberNumber = "9500012345";
-        String programName = "Child Care";
+        String programKey = PREGNANCY;
         Subscription subscription = mock(Subscription.class);
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(BillingScheduler.EXTERNAL_ID_KEY, subscriberNumber);
-        params.put(BillingScheduler.PROGRAM_KEY, programName);
+        params.put(EXTERNAL_ID_KEY, subscriberNumber);
+        params.put(PROGRAM_KEY, programKey);
         MotechEvent event = new MotechEvent(BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT, params);
 
-        when(allSubscriptions.findBy(subscriberNumber, programName)).thenReturn(subscription);
+        when(allSubscriptions.findBy(subscriberNumber, programKey)).thenReturn(subscription);
 
         eventHandler.chargeCustomer(event);
 

@@ -6,7 +6,6 @@ import org.motechproject.ghana.mtn.billing.domain.BillStatus;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAudits;
 import org.motechproject.ghana.mtn.validation.ValidationError;
-import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,7 @@ public class BillingAuditor {
     public void auditError(BillingServiceRequest billingServiceRequest, ValidationError error) {
         allBillAudits.add(new BillAudit(
                 billingServiceRequest.getMobileNumber(),
-                billingServiceRequest.programName(),
+                billingServiceRequest.programKey(),
                 billingServiceRequest.getProgramType().getFee(),
                 BillStatus.FAILURE,
                 error.name()));
@@ -31,7 +30,7 @@ public class BillingAuditor {
     public void audit(BillingServiceRequest billingServiceRequest) {
         allBillAudits.add(new BillAudit(
                 billingServiceRequest.getMobileNumber(),
-                billingServiceRequest.programName(),
+                billingServiceRequest.programKey(),
                 billingServiceRequest.getProgramType().getFee(),
                 BillStatus.SUCCESS,
                 StringUtils.EMPTY

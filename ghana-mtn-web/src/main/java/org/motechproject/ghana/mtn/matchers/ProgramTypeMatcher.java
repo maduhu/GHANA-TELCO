@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.matchers;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.motechproject.ghana.mtn.domain.ProgramType;
@@ -15,10 +16,13 @@ public class ProgramTypeMatcher extends BaseMatcher<ProgramType> {
     @Override
     public boolean matches(Object o) {
         ProgramType programType = (ProgramType) o;
-        return programType.getProgramName().equals(this.programType.getProgramName())
-                && programType.getShortCodes().equals(this.programType.getShortCodes())
-                && programType.getMinWeek().equals(this.programType.getMinWeek())
-                && programType.getMaxWeek().equals(this.programType.getMaxWeek());
+        return new EqualsBuilder()
+                .append(programType.getProgramName(), this.programType.getProgramName())
+                .append(programType.getProgramKey(), this.programType.getProgramKey())
+                .append(programType.getShortCodes(), this.programType.getShortCodes())
+                .append(programType.getMinWeek(), this.programType.getMinWeek())
+                .append(programType.getMaxWeek(), this.programType.getMaxWeek())
+                .isEquals();
     }
 
     @Override

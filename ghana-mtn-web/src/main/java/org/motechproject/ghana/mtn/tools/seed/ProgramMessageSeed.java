@@ -36,11 +36,11 @@ public class ProgramMessageSeed extends Seed {
 
     private void persistMessagesFor(ProgramType programType) {
         for (int i = programType.getMinWeek(); i <= programType.getMaxWeek(); i++) {
-            String programName = programType.getProgramName();
+            String programKey = programType.getProgramKey();
             Week week = new Week(i);
-            allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
-            allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
-            allSubscriptionMessages.add(new ProgramMessage(programName, DUMMY + week + "-" + Day.FRIDAY.name(), new WeekAndDay(week, Day.FRIDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + Day.FRIDAY.name(), new WeekAndDay(week, Day.FRIDAY)));
         }
     }
 

@@ -26,7 +26,7 @@ public class SMSService {
     public SMSServiceResponse send(SMSServiceRequest request) {
         String mobileNumber = request.getMobileNumber();
         String message = request.getMessage();
-        String program = request.programName();
+        String program = request.programKey();
         DateTime now = DateUtil.now();
 
         smsProvider.send(mobileNumber, message);

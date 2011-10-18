@@ -26,13 +26,12 @@ public class BillingEventHandler {
     }
 
     @MotechListener(subjects = {BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT})
-    //TODO: Update to programKey instead of using programName
     public void chargeCustomer(MotechEvent event) {
         Map params = event.getParameters();
-        String programName = (String) params.get(PROGRAM_KEY);
+        String programKey = (String) params.get(PROGRAM_KEY);
         String subscriberNumber = (String) params.get(EXTERNAL_ID_KEY);
 
-        Subscription subscription = allSubscriptions.findBy(subscriberNumber, programName);
+        Subscription subscription = allSubscriptions.findBy(subscriberNumber, programKey);
         feeCharger.process(subscription);
     }
 

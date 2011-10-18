@@ -21,7 +21,6 @@ public class AllBillAccounts extends MotechAuditableRepository<BillAccount> {
        super(BillAccount.class, db);
    }
 
-    //TODO: Update ProgramKey instead of using ProgramName
     public void updateFor(String mobileNumber, Double currentBalance, IProgramType programType) {
        BillAccount billAccount = findByMobileNumber(mobileNumber);
        if (billAccount == null)
@@ -29,7 +28,7 @@ public class AllBillAccounts extends MotechAuditableRepository<BillAccount> {
 
        billAccount.setMobileNumber(mobileNumber);
        billAccount.setCurrentBalance(new Money(currentBalance));
-       billAccount.setProgramFee(programType.getProgramName(), programType.getFee());
+       billAccount.setProgramFee(programType.getProgramKey(), programType.getFee());
 
        if (null == billAccount.getId())
            add(billAccount);

@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.eventhandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.process.MessengerProcess;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
@@ -32,15 +33,15 @@ public class ProgramMessageEventHandlerTest {
     @Test
     public void shouldUseSubscriptionMessageSenderAfterPickingRightSubscription() {
         String subscriberNumber = "externalId";
-        String programName = "pregnancy";
+        String programKey = IProgramType.PREGNANCY;
         Subscription subscription = mock(Subscription.class);
 
         Map params = new HashMap();
-        params.put(EventKeys.CAMPAIGN_NAME_KEY, programName);
+        params.put(EventKeys.CAMPAIGN_NAME_KEY, programKey);
         params.put(EventKeys.EXTERNAL_ID_KEY, subscriberNumber);
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
 
-        when(service.findBy(subscriberNumber, programName)).thenReturn(subscription);
+        when(service.findBy(subscriberNumber, programKey)).thenReturn(subscription);
 
         programMessageEventHandler.sendMessageReminder(motechEvent);
 

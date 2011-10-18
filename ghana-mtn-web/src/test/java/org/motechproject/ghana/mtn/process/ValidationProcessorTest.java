@@ -9,13 +9,11 @@ import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
-import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.validation.ValidationError;
-import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.util.DateUtil;
 
 import java.util.*;
@@ -24,6 +22,9 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.TestData.childProgramType;
+import static org.motechproject.ghana.mtn.TestData.pregnancyProgramType;
+import static org.motechproject.ghana.mtn.domain.IProgramType.PREGNANCY;
 
 public class ValidationProcessorTest {
 
@@ -37,8 +38,8 @@ public class ValidationProcessorTest {
     @Mock
     private BillingService billingService;
 
-    public final ProgramType childCareProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(53).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
-    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.70D)).withMinWeek(5).withMaxWeek(52).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
+    public final ProgramType childCareProgramType = pregnancyProgramType();
+    public final ProgramType pregnancyProgramType = childProgramType();
 
     @Before
     public void setUp() {
@@ -50,42 +51,43 @@ public class ValidationProcessorTest {
     public void shouldReturnMessageForInvalidSubscription() {
         String mobileNumber = "123";
         String errMsg = "error msg";
-        String program = "program";
+        String programKey = IProgramType.CHILDCARE;
 
         Subscription subscription = mock(Subscription.class);
         ProgramType programType = mock(ProgramType.class);
 
-        setupSubscriptionMock(mobileNumber, program, programType, subscription);
+        setupSubscriptionMock(mobileNumber, programKey, programType, subscription);
         when(subscription.isNotValid()).thenReturn(true);
         when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn(errMsg);
 
         Boolean reply = validation.startFor(subscription);
 
         assertFalse(reply);
-        assertSMSRequest(mobileNumber, errMsg, program);
+        assertSMSRequest(mobileNumber, errMsg, programKey);
     }
 
     @Test
     public void shouldReturnErrorMessageIfActiveSubscriptionIsAlreadyPresent() {
         String mobileNumber = "123";
         String errMsg = "error msg %s";
-        String program = "program";
-
+        String programKey = PREGNANCY;
+        String programName = "Pregnancy";
 
         Subscription subscription = mock(Subscription.class);
         ProgramType programType = mock(ProgramType.class);
         List<Subscription> dbSubscriptions = Arrays.asList(subscription);
 
-        setupSubscriptionMock(mobileNumber, program, programType, subscription);
+        setupSubscriptionMock(mobileNumber, programKey, programType, subscription);
         when(subscription.isNotValid()).thenReturn(false);
-        when(subscription.programName()).thenReturn("program");
+        when(subscription.programKey()).thenReturn(programKey);
+        when(subscription.programName()).thenReturn(programName);
         when(messageBundle.get(MessageBundle.ACTIVE_SUBSCRIPTION_PRESENT)).thenReturn(errMsg);
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber(mobileNumber)).thenReturn(dbSubscriptions);
 
         Boolean reply = validation.startFor(subscription);
 
         assertFalse(reply);
-        assertSMSRequest(mobileNumber, "error msg program", program);
+        assertSMSRequest(mobileNumber, "error msg " + programName, programKey);
     }
 
 
@@ -193,7 +195,7 @@ public class ValidationProcessorTest {
     public void shouldValidateRollOverAndSendErrorMessageWhenUserHasNoSubscription() {
         String subscriberNumber = "9500012345";
         Date deliveryDate = DateUtil.newDate(2011, 10, 10).toDate();
-        when(allSubscriptions.findByKey(subscriberNumber, IProgramType.PREGNANCY)).thenReturn(null);
+        when(allSubscriptions.findBy(subscriberNumber, PREGNANCY)).thenReturn(null);
         String errorMess = "error message";
         when(messageBundle.get(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION)).thenReturn(errorMess);
 
@@ -207,25 +209,25 @@ public class ValidationProcessorTest {
         String subscriberNumber = "9500012345";
         Date deliveryDate = DateUtil.newDate(2011, 10, 10).toDate();
         Subscription subscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
-        when(allSubscriptions.findByKey(subscriberNumber, IProgramType.PREGNANCY)).thenReturn(subscription);
+        when(allSubscriptions.findBy(subscriberNumber, PREGNANCY)).thenReturn(subscription);
 
         Subscription actualSubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
         assertNotNull(actualSubscription);
         verify(smsService, never()).send(Matchers.<SMSServiceRequest>any());
     }
 
-    private void assertSMSRequest(String mobileNumber, String errorMsg, String program) {
+    private void assertSMSRequest(String mobileNumber, String errorMsg, String programKey) {
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());
         SMSServiceRequest captured = captor.getValue();
 
         assertEquals(errorMsg, captured.getMessage());
         assertEquals(mobileNumber, captured.getMobileNumber());
-        assertEquals(program, captured.programName());
+        assertEquals(programKey, captured.programKey());
     }
 
-    private void setupSubscriptionMock(String mobileNumber, String program, ProgramType programType, Subscription subscription) {
-        when(programType.getProgramName()).thenReturn(program);
+    private void setupSubscriptionMock(String mobileNumber, String programKey, ProgramType programType, Subscription subscription) {
+        when(programType.getProgramKey()).thenReturn(programKey);
         when(subscription.subscriberNumber()).thenReturn(mobileNumber);
         when(subscription.getProgramType()).thenReturn(programType);
     }

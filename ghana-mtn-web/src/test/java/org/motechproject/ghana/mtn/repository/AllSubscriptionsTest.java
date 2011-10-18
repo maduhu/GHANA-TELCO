@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.motechproject.ghana.mtn.domain.*;
-import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -101,12 +101,12 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
         Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateStartCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser2);
 
-        Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findBy(user1Mobile, pregnancy.getProgramName());
-        Subscription actualChildCareForUsr1 = allSubscriptions.findBy(user1Mobile, childCare.getProgramName());
+        Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findBy(user1Mobile, pregnancy.getProgramKey());
+        Subscription actualChildCareForUsr1 = allSubscriptions.findBy(user1Mobile, childCare.getProgramKey());
         assertEquals(pregnancyProgramForUser1.getRevision(), actualPregnancyProgramForUsr1.getRevision());
         assertEquals(childCareForUser1.getRevision(), actualChildCareForUsr1.getRevision());
 
-        assertEquals(null, allSubscriptions.findBy(mobileNumber, childCare.getProgramName()));
+        assertEquals(null, allSubscriptions.findBy(mobileNumber, childCare.getProgramKey()));
         remove(asList(pregnancyProgramForUser1, childCareForUser1, pregnancyProgramForUser2));
     }
 
@@ -121,8 +121,8 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
         Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateStartCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser2);
 
-        Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findByKey(user1Mobile, IProgramType.PREGNANCY);
-        Subscription actualChildCareForUsr1 = allSubscriptions.findByKey(user1Mobile, IProgramType.CHILDCARE);
+        Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findBy(user1Mobile, IProgramType.PREGNANCY);
+        Subscription actualChildCareForUsr1 = allSubscriptions.findBy(user1Mobile, IProgramType.CHILDCARE);
         assertEquals(pregnancyProgramForUser1.getRevision(), actualPregnancyProgramForUsr1.getRevision());
         assertEquals(childCareForUser1.getRevision(), actualChildCareForUsr1.getRevision());
 

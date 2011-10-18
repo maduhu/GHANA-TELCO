@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
+import static java.lang.String.format;
 import static org.hamcrest.Matchers.equalTo;
 
 @Component
@@ -41,7 +42,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
             return false;
         }
         if (hasActiveSubscription(subscriberNumber, subscription)) {
-            String content = String.format(messageFor(MessageBundle.ACTIVE_SUBSCRIPTION_PRESENT), subscription.programName());
+            String content = format(messageFor(MessageBundle.ACTIVE_SUBSCRIPTION_PRESENT), subscription.programName());
             sendMessage(subscription, content);
             return false;
         }
@@ -87,7 +88,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
             sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_SPECIFY_PROGRAM));
         } else {
             Subscription subscriptionToStop = programType != null ?
-                (Subscription) selectUnique(subscriptions, having(on(Subscription.class).programName(), equalTo(programType.getProgramName()))) :
+                (Subscription) selectUnique(subscriptions, having(on(Subscription.class).programKey(), equalTo(programType.getProgramKey()))) :
                                     subscriptions.get(0);
             if(subscriptionToStop == null) sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
             return subscriptionToStop;
@@ -96,7 +97,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     }
 
     public Subscription validateForRollOver(String subscriberNumber, Date deliveryDate) {
-        Subscription subscription = allSubscriptions.findByKey(subscriberNumber, IProgramType.PREGNANCY);
+        Subscription subscription = allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY);
         if (null == subscription)
             sendMessage(subscriberNumber, messageFor(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION));
         return subscription;

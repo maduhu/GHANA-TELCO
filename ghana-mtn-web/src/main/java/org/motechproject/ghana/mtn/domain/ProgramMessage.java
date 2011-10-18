@@ -14,25 +14,25 @@ import java.util.Arrays;
 public class ProgramMessage extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "ProgramMessage";
-    private String programName;
+    private String programKey;
     private String content;
     private WeekAndDay weekAndDay;
 
     public ProgramMessage() {
     }
 
-    public ProgramMessage(String programName, String content, WeekAndDay weekAndDay) {
-        this.programName = programName;
+    public ProgramMessage(String programKey, String content, WeekAndDay weekAndDay) {
+        this.programKey = programKey;
         this.content = content;
         this.weekAndDay = weekAndDay;
     }
 
-    public String getProgramName() {
-        return programName;
+    public String getProgramKey() {
+        return programKey;
     }
 
-    public void setProgramName(String programName) {
-        this.programName = programName;
+    public void setProgramKey(String programKey) {
+        this.programKey = programKey;
     }
 
     public String getContent() {
@@ -57,6 +57,6 @@ public class ProgramMessage extends MotechAuditableDataObject {
 
     @Override
     public String toString() {
-        return StringUtils.join(Arrays.asList(programName, weekAndDay.getWeek(), weekAndDay.getDay(), content), "|");
+        return StringUtils.join(Arrays.asList(programKey, weekAndDay.getWeek(), weekAndDay.getDay(), content), "|");
     }
 }
