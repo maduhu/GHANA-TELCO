@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.process;
 
-import org.hamcrest.Matchers;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
@@ -93,5 +93,12 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
             return subscriptionToStop;
         }
         return null;
+    }
+
+    public Subscription validateForRollOver(String subscriberNumber, Date deliveryDate) {
+        Subscription subscription = allSubscriptions.findByKey(subscriberNumber, IProgramType.PREGNANCY);
+        if (null == subscription)
+            sendMessage(subscriberNumber, messageFor(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION));
+        return subscription;
     }
 }

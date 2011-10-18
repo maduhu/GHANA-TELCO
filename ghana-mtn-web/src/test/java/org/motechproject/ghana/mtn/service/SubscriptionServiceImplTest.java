@@ -3,9 +3,11 @@ package org.motechproject.ghana.mtn.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
+import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.process.BillingCycleProcess;
@@ -14,6 +16,8 @@ import org.motechproject.ghana.mtn.process.PersistenceProcess;
 import org.motechproject.ghana.mtn.process.ValidationProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.vo.Money;
+
+import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -33,7 +37,8 @@ public class SubscriptionServiceImplTest {
     @Mock
     private AllSubscriptions allSubscriptions;
 
-    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+    public final ProgramType childCareProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withRollOverProgramType(childCareProgramType).withFee(new Money(0.70D)).withMinWeek(5).withMaxWeek(52).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
     @Before
     public void setUp() {
@@ -93,9 +98,36 @@ public class SubscriptionServiceImplTest {
     }
 
     @Test
+    public void shouldNotInvokeRollOverIfValidationIsNotSuccessful(){
+        Date deliveryDate = null;
+        String subscriberNumber = "1234567890";
+
+        when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(null);
+
+        service = spy(service);
+        service.rollOver(subscriberNumber, deliveryDate);
+
+        verify(service, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
+    }
+
+    @Test
+    public void shouldInvokeRollOverIfValidationIsSuccessful(){
+        Date deliveryDate = null;
+        String subscriberNumber = "1234567890";
+
+        Subscription subscription = new SubscriptionBuilder().withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType).build();
+        when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(subscription);
+
+        service = spy(service);
+        service.rollOver(subscriberNumber, deliveryDate);
+
+        verify(service).rollOver(eq(subscription), Matchers.<Subscription>any());
+    }
+
+    @Test
     public void shouldInvokeAllProcessInvolvedInStopProcessByUser() {
         String subscriberNumber = "9500012345";
-        IProgramType programType = childCarePregnancyType;
+        IProgramType programType = childCareProgramType;
         Subscription subscription = mock(Subscription.class);
 
         when(validation.validateSubscriptionToStop(subscriberNumber, programType)).thenReturn(subscription);
@@ -115,7 +147,7 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldNotInvokeAllStopProcessByUserIfValidationFailsInFindingSubscriptionToStop() {
         String subscriberNumber = "9500012345";
-        IProgramType programType = childCarePregnancyType;
+        IProgramType programType = childCareProgramType;
         Subscription subscription = mock(Subscription.class);
 
         when(validation.validateSubscriptionToStop(subscriberNumber, programType)).thenReturn(null);

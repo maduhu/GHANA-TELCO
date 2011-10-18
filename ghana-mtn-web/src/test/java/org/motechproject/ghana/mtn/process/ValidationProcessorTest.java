@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.process;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
@@ -15,11 +16,9 @@ import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.vo.Money;
+import org.motechproject.util.DateUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
@@ -188,6 +187,31 @@ public class ValidationProcessorTest {
         Subscription actualSubscription = validation.validateSubscriptionToStop(subscriberNumber, childCareProgramType);
         assertNull(actualSubscription);
         assertSMSRequest(subscriberNumber, errorMess, null);
+    }
+
+    @Test
+    public void shouldValidateRollOverAndSendErrorMessageWhenUserHasNoSubscription() {
+        String subscriberNumber = "9500012345";
+        Date deliveryDate = DateUtil.newDate(2011, 10, 10).toDate();
+        when(allSubscriptions.findByKey(subscriberNumber, IProgramType.PREGNANCY)).thenReturn(null);
+        String errorMess = "error message";
+        when(messageBundle.get(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION)).thenReturn(errorMess);
+
+        Subscription actualSubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
+        assertNull(actualSubscription);
+        assertSMSRequest(subscriberNumber, errorMess, null);
+    }
+
+    @Test
+    public void shouldValidateRollOverAndReturnSubscription() {
+        String subscriberNumber = "9500012345";
+        Date deliveryDate = DateUtil.newDate(2011, 10, 10).toDate();
+        Subscription subscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
+        when(allSubscriptions.findByKey(subscriberNumber, IProgramType.PREGNANCY)).thenReturn(subscription);
+
+        Subscription actualSubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
+        assertNotNull(actualSubscription);
+        verify(smsService, never()).send(Matchers.<SMSServiceRequest>any());
     }
 
     private void assertSMSRequest(String mobileNumber, String errorMsg, String program) {

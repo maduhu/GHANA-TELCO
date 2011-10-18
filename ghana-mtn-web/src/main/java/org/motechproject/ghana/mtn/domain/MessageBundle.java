@@ -25,10 +25,11 @@ public class MessageBundle {
     public static final String BILLING_ROLLOVER = "billing.rollover";
 
     public static final String INVALID_MOBILE_NUMBER = "enrollment.invalid.mobile.number";
-    public static final String STOP_NOT_ENROLLED = "stop.not.enrolled";
+    public static final String STOP_NOT_ENROLLED = "not.enrolled";
     public static final String STOP_SPECIFY_PROGRAM = "stop.specify.program";
     public static final String STOP_SUCCESS = "stop.success";
     public static final String STOP_PROGRAM_SUCCESS = "stop.program.success";
+    public static final String ROLLOVER_INVALID_SUBSCRIPTION = STOP_NOT_ENROLLED;
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {

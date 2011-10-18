@@ -46,7 +46,7 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
         return this;
     }
 
-    public ProgramTypeBuilder willRollOverProgramType(ProgramType rollOverProgramType) {
+    public ProgramTypeBuilder withRollOverProgramType(ProgramType rollOverProgramType) {
         this.rollOverProgramType = rollOverProgramType;
         return this;
     }

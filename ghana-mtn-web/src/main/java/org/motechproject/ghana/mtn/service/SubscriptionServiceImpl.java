@@ -74,9 +74,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void rollOver(String fromMobileNumber, Date deliveryDate) {
-        Subscription pregnancySubscription = allSubscriptions.findByKey(fromMobileNumber, IProgramType.PREGNANCY);
-        performRollOver(pregnancySubscription);
+    public void rollOver(String subscriberNumber, Date deliveryDate) {
+        Subscription pregnancySubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
+        if (null != pregnancySubscription)
+            performRollOver(pregnancySubscription);
     }
 
     @Override

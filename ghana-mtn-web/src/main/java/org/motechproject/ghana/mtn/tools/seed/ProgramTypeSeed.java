@@ -29,7 +29,7 @@ public class ProgramTypeSeed extends Seed {
                 .withProgramName("Pregnancy")
                 .withShortCode("P").withShortCode("p")
                 .withMaxWeek(35).withMinWeek(5)
-                .willRollOverProgramType(childCareProgramType)
+                .withRollOverProgramType(childCareProgramType)
                 .withProgramKey(IProgramType.PREGNANCY)
                 .withFee(new Money(0.60D)).build();
 
