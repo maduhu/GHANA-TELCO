@@ -5,21 +5,23 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.ghana.mtn.TestData;
 import org.motechproject.ghana.mtn.domain.*;
-import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.process.BillingCycleProcess;
 import org.motechproject.ghana.mtn.process.CampaignProcess;
 import org.motechproject.ghana.mtn.process.PersistenceProcess;
 import org.motechproject.ghana.mtn.process.ValidationProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
-import org.motechproject.ghana.mtn.vo.Money;
+import org.motechproject.util.DateUtil;
 
 import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -37,8 +39,8 @@ public class SubscriptionServiceImplTest {
     @Mock
     private AllSubscriptions allSubscriptions;
 
-    public final ProgramType childCareProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
-    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withRollOverProgramType(childCareProgramType).withFee(new Money(0.70D)).withMinWeek(5).withMaxWeek(52).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
+    public final ProgramType childCareProgramType = TestData.childProgramType().build();
+    public final ProgramType pregnancyProgramType = TestData.pregnancyProgramType().withRollOverProgramType(childCareProgramType).build();
 
     @Before
     public void setUp() {
@@ -79,22 +81,22 @@ public class SubscriptionServiceImplTest {
     }
 
     @Test
-    public void shouldInvokeAllProcessInvolvedInRollOverProcess() {
-        Subscription source = mock(Subscription.class);
-        Subscription target = mock(Subscription.class);
+    public void shouldInvokeAllProcessInvolvedInRollOverProcessForEvent() {
+        Subscription subscription = spy(new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
+                .withSubscriber(new Subscriber("9850012345")).withType(pregnancyProgramType).withStartWeekAndDay(new WeekAndDay(new Week(36), Day.FRIDAY))
+                .build());
+        when(subscription.isCompleted()).thenReturn(true);
+        when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
+        when(billing.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
+        when(campaign.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
+        when(persistence.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
 
-        when(validation.rollOver(source, target)).thenReturn(true);
-        when(billing.rollOver(source, target)).thenReturn(true);
-        when(campaign.rollOver(source, target)).thenReturn(true);
-        when(persistence.rollOver(source, target)).thenReturn(true);
+        service.rollOverByEvent(subscription);
 
-        service.rollOver(source, target);
-
-        verify(validation).rollOver(source, target);
-        verify(billing).rollOver(source, target);
-        verify(campaign).rollOver(source, target);
-        verify(persistence).rollOver(source, target);
-
+        verify(validation).rollOver(eq(subscription), Matchers.<Subscription>any());
+        verify(billing).rollOver(eq(subscription), Matchers.<Subscription>any());
+        verify(campaign).rollOver(eq(subscription), Matchers.<Subscription>any());
+        verify(persistence).rollOver(eq(subscription), Matchers.<Subscription>any());
     }
 
     @Test
@@ -107,7 +109,10 @@ public class SubscriptionServiceImplTest {
         service = spy(service);
         service.rollOver(subscriberNumber, deliveryDate);
 
-        verify(service, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
+        verify(validation, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
+        verify(billing, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
+        verify(campaign, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
+        verify(persistence, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
     }
 
     @Test
@@ -118,10 +123,18 @@ public class SubscriptionServiceImplTest {
         Subscription subscription = new SubscriptionBuilder().withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType).build();
         when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(subscription);
 
+        when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
+        when(billing.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
+        when(campaign.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
+        when(persistence.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
+
         service = spy(service);
         service.rollOver(subscriberNumber, deliveryDate);
 
-        verify(service).rollOver(eq(subscription), Matchers.<Subscription>any());
+        verify(validation).rollOver(eq(subscription), Matchers.<Subscription>any());
+        verify(billing).rollOver(eq(subscription), Matchers.<Subscription>any());
+        verify(campaign).rollOver(eq(subscription), Matchers.<Subscription>any());
+        verify(persistence).rollOver(eq(subscription), Matchers.<Subscription>any());
     }
 
     @Test

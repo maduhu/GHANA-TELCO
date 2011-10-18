@@ -66,14 +66,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void rollOver(Subscription source, Subscription target) {
-        for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
-            if (process.rollOver(source, target)) continue;
-            break;
-        }
-    }
-
-    @Override
     public void rollOver(String subscriberNumber, Date deliveryDate) {
         Subscription pregnancySubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
         if (null != pregnancySubscription)
@@ -96,7 +88,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
                 DateUtil.now());
 
-        rollOver(subscription, rollOverSubscription);
+        for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
+            if (process.rollOver(subscription, rollOverSubscription)) continue;
+            break;
+        }
     }
 
     @Override

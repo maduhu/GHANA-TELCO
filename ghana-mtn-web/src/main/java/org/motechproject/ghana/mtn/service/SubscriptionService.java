@@ -8,8 +8,7 @@ import java.util.List;
 
 public interface SubscriptionService {
     void start(Subscription subscription);
-    void stopExpired(Subscription subscription);
-    void rollOver(Subscription fromSubscription, Subscription toSubscription);
+    void stopExpired(Subscription subscription);    
     void rollOver(String fromMobileNumber, Date deliveryDate);
     void stopByUser(String fromMobileNumber, IProgramType domain);
     void rollOverByEvent(Subscription subscription);

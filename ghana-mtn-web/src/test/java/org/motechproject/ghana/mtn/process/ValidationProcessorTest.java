@@ -38,8 +38,8 @@ public class ValidationProcessorTest {
     @Mock
     private BillingService billingService;
 
-    public final ProgramType childCareProgramType = pregnancyProgramType();
-    public final ProgramType pregnancyProgramType = childProgramType();
+    public final ProgramType childCareProgramType = pregnancyProgramType().build();
+    public final ProgramType pregnancyProgramType = childProgramType().withRollOverProgramType(childCareProgramType).build();
 
     @Before
     public void setUp() {
