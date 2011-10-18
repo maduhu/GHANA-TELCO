@@ -6,23 +6,27 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
-import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.Subscriber;
-import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
+import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.List;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 
 public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
+
+    @Autowired
+    AllMessageCampaigns allMessageCampaigns;
+
 
     @Before
     public void setUp() {
@@ -58,6 +62,12 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
         SubscriptionRequest subscriptionRequest = createSubscriptionRequest("P25", "1234567890");
         subscriptionController.handle(subscriptionRequest);
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
+    }
+    
+    @Test
+    public void ShouldCheckTheCampaignProgramJsonForKeysDefinedInProgramType() throws IOException {
+        assertNotNull(allMessageCampaigns.get(IProgramType.PREGNANCY));
+        assertNotNull(allMessageCampaigns.get(IProgramType.CHILDCARE));
     }
 
     @After
