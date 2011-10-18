@@ -69,6 +69,7 @@ public class PersistenceProcessorTest {
     public void shouldUpdateSubscriptionStateOfSourceAndTargetSubscription() {
         Subscription source = mock(Subscription.class);
         Subscription target = mock(Subscription.class);
+        when(source.isPaymentDefaulted()).thenReturn(false);
 
         Boolean reply = persistence.rollOver(source, target);
 
