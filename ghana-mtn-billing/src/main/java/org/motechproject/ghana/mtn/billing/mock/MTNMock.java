@@ -1,7 +1,5 @@
 package org.motechproject.ghana.mtn.billing.mock;
 
-import org.apache.commons.collections.set.UnmodifiableSortedSet;
-import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.billing.domain.MTNMockUser;
 import org.motechproject.ghana.mtn.billing.repository.AllMTNMockUsers;
 import org.motechproject.ghana.mtn.vo.Money;
@@ -9,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -39,7 +35,8 @@ public class MTNMock {
 
     public Money chargeCustomer(String mobileNumber, double amountToCharge) {
         MTNMockUser user = fetchUser(mobileNumber);
-        if (user != null) user.getBalance().subtract(amountToCharge);
+        if (user != null) user.getBalance().subtract(amountToCharge);\
+        allMTNMockUsers.update(user);
         return new Money(amountToCharge);
     }
 
