@@ -1,4 +1,3 @@
-
 function http(url, fn) {
     var xmlHttpReq = false;
     var self = this;
@@ -31,21 +30,30 @@ function submitRequest() {
     return false;
 }
 
-function updateEnrollmentResponse(inputString) {
-    //document.getElementById('requestResponse').innerHTML = document.getElementById('requestResponse').innerHTML + "<br/>" + inputString;
-   refreshAudit();
-}
-
 function submitEventRequest() {
     return false;
 }
 
-function refreshAudit(){
+function updateEnrollmentResponse(inputString) {
+    refreshAudit();
+}
+
+function updateAuditResponse(response) {
+    document.getElementById('audit_table').innerHTML = response;
+}
+
+function refreshAudit() {
     var selected_option = document.getElementById('audit_options').value
     http('audits/' + selected_option, updateAuditResponse);
     return false;
 }
 
-function updateAuditResponse(response){
-    document.getElementById('audit_table').innerHTML = response;
+
+function refreshMTNUsers() {
+    http('mock-mtn/users/', updateMTNResponse);
+    return false;
+}
+
+function updateMTNResponse(response) {
+    document.getElementById('mtn_table').innerHTML = response;
 }

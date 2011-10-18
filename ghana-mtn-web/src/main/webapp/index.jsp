@@ -22,7 +22,7 @@
 
 <div id="tabs">
     <ul>
-        <li><a href="#tabs-1">Start</a></li>
+        <li><a href="#tabs-1">Input</a></li>
         <li><a href="#tabs-2">Audits</a></li>
         <li><a href="#tabs-3">MTN</a></li>
         <li><a href="#tabs-4">Event Post</a></li>
@@ -57,7 +57,15 @@
         </div>
     </div>
     <div id="tabs-3">
-
+        <div class="mtn_user_box">
+             <fieldset>
+                <legend>MTN Users</legend>
+                <form id="mtn-form">
+                    <input type="submit" onclick="return refreshMTNUsers(); return false;" value="Refresh"/>
+                </form>
+                <div id="mtn_table"></div>
+            </fieldset>
+        </div>
     </div>
     <div id="tabs-4">
         <div class="send_event_box">
