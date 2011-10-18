@@ -7,9 +7,9 @@ import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
-import org.motechproject.ghana.mtn.parser.RelativeProgramMessageHandler;
+import org.motechproject.ghana.mtn.parser.RelativeProgramMessageParser;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.ghana.mtn.parser.InputMessageParser;
+import org.motechproject.ghana.mtn.parser.CompositeInputMessageParser;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -21,11 +21,11 @@ public class UserMessageParserProcessorTest {
     @Mock
     private SMSService smsService;
     @Mock
-    private InputMessageParser inputParser;
+    private CompositeInputMessageParser inputParser;
     @Mock
     private MessageBundle messageBundle;
     @Mock
-    private RelativeProgramMessageHandler relativeProgramMessageHandler;
+    private RelativeProgramMessageParser relativeProgramMessageHandler;
 
     @Before
     public void setUp() {

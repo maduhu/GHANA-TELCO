@@ -14,7 +14,7 @@ import static ch.lambdaj.Lambda.*;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 @Component
-public class RelativeProgramMessageHandler {
+public class RelativeProgramMessageParser {
 
     private static final String START_OF_PATTERN = "^(";
     private static final String END_OF_PATTERN = ")\\s([\\d]+)\\s(.*)$";
@@ -25,7 +25,7 @@ public class RelativeProgramMessageHandler {
     private AllShortCodes allShortCodes;
 
     @Autowired
-    public RelativeProgramMessageHandler(AllShortCodes allShortCodes) {
+    public RelativeProgramMessageParser(AllShortCodes allShortCodes) {
         this.allShortCodes = allShortCodes;
     }
 

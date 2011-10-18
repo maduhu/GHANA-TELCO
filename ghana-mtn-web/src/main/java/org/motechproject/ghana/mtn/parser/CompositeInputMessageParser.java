@@ -10,13 +10,14 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 @Component
-public class InputMessageParser {
+public class CompositeInputMessageParser {
 
     private List<MessageParser> messageParsers;
 
     @Autowired
-    public InputMessageParser(RegisterProgramMessageParser registerProgramParser,
-                              StopMessageParser stopMessageParser, DeliveryMessageParser deliveryMessageParser) {
+    public CompositeInputMessageParser(RegisterProgramMessageParser registerProgramParser,
+                                       StopMessageParser stopMessageParser,
+                                       DeliveryMessageParser deliveryMessageParser) {
         messageParsers = asList(registerProgramParser, stopMessageParser, deliveryMessageParser);
     }
 

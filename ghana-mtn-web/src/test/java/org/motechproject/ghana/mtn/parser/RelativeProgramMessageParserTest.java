@@ -17,8 +17,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class RelativeProgramMessageHandlerTest {
-    private RelativeProgramMessageHandler relativeRegisterProgramMessageHandler;
+public class RelativeProgramMessageParserTest {
+    private RelativeProgramMessageParser relativeRegisterProgramMessageParser;
     @Mock
     private AllShortCodes mockAllShortCodes;
 
@@ -26,7 +26,7 @@ public class RelativeProgramMessageHandlerTest {
     public void setUp() {
         initMocks(this);
         when(mockAllShortCodes.getAllCodesFor(ShortCode.RELATIVE)).thenReturn(Arrays.asList(new ShortCodeBuilder().withShortCode("R").build()));
-        relativeRegisterProgramMessageHandler = new RelativeProgramMessageHandler(mockAllShortCodes);
+        relativeRegisterProgramMessageParser = new RelativeProgramMessageParser(mockAllShortCodes);
     }
 
     @Test
@@ -35,7 +35,7 @@ public class RelativeProgramMessageHandlerTest {
         String inputMessage = "R " + mobileNumber + " P 12";
         String senderNumber = "0987654321";
 
-        ParsedRequest parsedRequest = relativeRegisterProgramMessageHandler.parse(inputMessage, senderNumber);
+        ParsedRequest parsedRequest = relativeRegisterProgramMessageParser.parse(inputMessage, senderNumber);
 
         assertThat(parsedRequest.getSubscriberNumber(), is(mobileNumber));
     }
@@ -48,7 +48,7 @@ public class RelativeProgramMessageHandlerTest {
 
         when(mockAllShortCodes.getAllCodesFor(ShortCode.RELATIVE)).thenReturn(Arrays.asList(new ShortCodeBuilder().withShortCode("R").build()));
 
-        relativeRegisterProgramMessageHandler.parse(inputMessage, senderNumber);
+        relativeRegisterProgramMessageParser.parse(inputMessage, senderNumber);
     }
 
     @Test(expected = InvalidMobileNumberException.class)
@@ -59,7 +59,7 @@ public class RelativeProgramMessageHandlerTest {
 
         when(mockAllShortCodes.getAllCodesFor(ShortCode.RELATIVE)).thenReturn(Arrays.asList(new ShortCodeBuilder().withShortCode("R").build()));
 
-        relativeRegisterProgramMessageHandler.parse(inputMessage,senderNumber);
+        relativeRegisterProgramMessageParser.parse(inputMessage,senderNumber);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class RelativeProgramMessageHandlerTest {
 
         when(mockAllShortCodes.getAllCodesFor(ShortCode.RELATIVE)).thenReturn(Arrays.asList(new ShortCodeBuilder().withShortCode("R").build()));
 
-        ParsedRequest parsedRequest = relativeRegisterProgramMessageHandler.parse(inputMessage, senderNumber);
+        ParsedRequest parsedRequest = relativeRegisterProgramMessageParser.parse(inputMessage, senderNumber);
 
         assertNull(parsedRequest);
     }

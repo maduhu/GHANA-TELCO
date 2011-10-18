@@ -25,8 +25,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class InputMessageParserTest {
-    InputMessageParser messageParser;
+public class CompositeInputMessageParserTest {
+    CompositeInputMessageParser messageParser;
     @Mock
     private AllProgramTypes allProgramTypes;
     @Mock
@@ -57,7 +57,7 @@ public class InputMessageParserTest {
         
         ReflectionTestUtils.setField(stopMessageParser, "allShortCodes", allShortCodes);
         ReflectionTestUtils.setField(deliveryMessageParser, "allShortCodes", allShortCodes);
-        messageParser = new InputMessageParser(registerProgramMessageParser, stopMessageParser, deliveryMessageParser);
+        messageParser = new CompositeInputMessageParser(registerProgramMessageParser, stopMessageParser, deliveryMessageParser);
     }
 
     @Test
