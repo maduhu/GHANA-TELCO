@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.integration;
 import org.ektorp.DbPath;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.domain.*;
@@ -22,21 +21,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 
-public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
+public class RegistrationIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     AllMessageCampaigns allMessageCampaigns;
-
 
     @Before
     public void setUp() {
         addAndMarkForDeletion(allProgramTypes, pregnancyProgramType);
         addAndMarkForDeletion(allProgramTypes, childCarePregnancyType);
         addAndMarkForDeletion(allShortCodes, shortCode);
+        addAndMarkForDeletion(allMtnMock, mtnMockUser);
     }
 
     @Test
-    @Ignore("fails owing to csv file not found, got to dump the file and have a dummy domain for MTNUser -vijay")
     public void ShouldEnrollSubscriber() throws IOException {
         String shortCode = "P";
         SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "9500012345");
@@ -54,7 +52,6 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
         assertThat(subscribers.size(), is(1));
         assertThat(subscription.getSubscriber(), new SubscriberMatcher(subscribers.get(0)));
-
     }
 
     @Test
@@ -78,5 +75,4 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
         for (BillAccount billAccount : allBillAccounts.getAll()) allBillAccounts.remove(billAccount);
         removeAllQuartzJobs();
     }
-
 }
