@@ -61,6 +61,7 @@ public class AuditController {
         buffer.append("<tr>").append(data).append("</tr>");
         return this;
     }
+
     private AuditController rowData(StringBuilder buffer, List<? extends Object> dataList) {
         buffer.append("<tr>");
         for(Object data : dataList) buffer.append("<td>").append(data).append("</td>");

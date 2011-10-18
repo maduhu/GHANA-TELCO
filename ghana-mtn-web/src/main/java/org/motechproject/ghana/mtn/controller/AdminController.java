@@ -16,12 +16,15 @@ public class AdminController {
     @Autowired
     private CompositeInputMessageParser compositeParser;
     @Autowired
-    private RelativeProgramMessageParser relativeProgramMessageHandler;
+    private RelativeProgramMessageParser relativeProgramMessageParser;
 
     @RequestMapping("/recompile")
     public void console(HttpServletResponse httpServletResponse) throws IOException {
-        relativeProgramMessageHandler.recompilePatterns();
+        relativeProgramMessageParser.recompilePatterns();
         compositeParser.recompilePatterns();
         httpServletResponse.getWriter().append("Recompiled");
     }
+
+
+
 }
