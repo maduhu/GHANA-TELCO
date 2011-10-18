@@ -22,9 +22,10 @@
 
 <div id="tabs">
     <ul>
-        <li><a href="#tabs-1">Enrollment</a></li>
+        <li><a href="#tabs-1">Start</a></li>
         <li><a href="#tabs-2">Audits</a></li>
         <li><a href="#tabs-3">MTN</a></li>
+        <li><a href="#tabs-4">Event Post</a></li>
     </ul>
     <div id="tabs-1">
         <div class="enrollment_box">
@@ -56,6 +57,9 @@
         </div>
     </div>
     <div id="tabs-3">
+
+    </div>
+    <div id="tabs-4">
         <div class="send_event_box">
             <fieldset>
                 <legend>Publish event</legend>
