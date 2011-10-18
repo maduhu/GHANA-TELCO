@@ -63,7 +63,7 @@
                             <td><input id="mtn_user_balance" name="mtnUserBalance" type="text"/></td>
                         </tr>
                         <tr>
-                            <td><input id="update_mtn_user" type="button" value="Update"></td>
+                            <td><input id="update_mtn_user" type="button" value="Add"></td>
                         </tr>
                     </table>
                 </form>

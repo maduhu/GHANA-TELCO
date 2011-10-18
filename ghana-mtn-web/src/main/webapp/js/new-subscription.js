@@ -9,12 +9,15 @@ $.Enrollment = function() {
         });
         return false;
     };
+
     var clearInputs = function(response) {
         $('#smsText').val("");
     };
+
     var bootstrap = function() {
         $('#submit_enrollment').click(hitServer);
     };
+
     $(bootstrap);
 };
 
@@ -28,37 +31,54 @@ $.Audits = function() {
         });
         return false;
     };
+
     var updateAuditsTable = function(response) {
         $('#audit_table').html(response);
     };
+
     var bootstrap = function() {
         $('#tab2').click(hitServer);
         $('#audit_options').change(hitServer);
     };
+
     $(bootstrap);
 };
 
 $.MTNUsers = function() {
     var hitServer = function() {
-        var url = 'mock-mtn/users/';
         $.ajax({
-            url:url,
+            url:'mock-mtn/users/all',
             dataType:'html',
             success:updateUsersTable
         });
         return false;
     };
+
+    var addUser = function() {
+        $.ajax({
+            url:'mock-mtn/users/add',
+            dataType:'html',
+            success:hitServer,
+            data:{mtnUserNumber:$('#mtn_user_no').val(),mtnUserBalance:$('#mtn_user_balance').val()},
+            type: 'POST'
+        });
+        return false;
+    };
+
     var updateUsersTable = function(response) {
         $('#mtn_table_box').html(response);
     };
+
     var bootstrap = function() {
         $('#tab3').click(hitServer);
+        $('#update_mtn_user').click(addUser);
+
     };
     $(bootstrap);
 };
 
 $(document).ready(function() {
-     $("#tabs").tabs();
+    $("#tabs").tabs();
     new $.Enrollment();
     new $.Audits();
     new $.MTNUsers();

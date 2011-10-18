@@ -55,4 +55,8 @@ public class Money {
     public String toString() {
         return value + " " + currency.getCurrencyCode(); 
     }
+
+    public void subtract(Double toSubtract){
+        setValue(getValue() - toSubtract);
+    }
 }
