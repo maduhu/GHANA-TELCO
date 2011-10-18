@@ -79,11 +79,11 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     public Subscription validateSubscriptionToStop(String subscriberNumber, IProgramType programType) {
 
         List<Subscription> subscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
-        boolean isUserWith2ProgrammesNotSpecifyProgramToStop = subscriptions.size() > 1 && programType == null;
+        boolean isUserWith2ProgrammesDidNotSpecifyProgramToStop = subscriptions.size() > 1 && programType == null;
 
         if(subscriptions.size() == 0)  {
             sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
-        } else if (isUserWith2ProgrammesNotSpecifyProgramToStop) {
+        } else if (isUserWith2ProgrammesDidNotSpecifyProgramToStop) {
             sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_SPECIFY_PROGRAM));
         } else {
             Subscription subscriptionToStop = programType != null ?

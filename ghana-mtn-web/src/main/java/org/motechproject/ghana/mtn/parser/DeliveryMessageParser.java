@@ -6,7 +6,6 @@ import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +17,6 @@ import static org.motechproject.ghana.mtn.domain.ShortCode.DELIVERY;
 public class DeliveryMessageParser extends MessageParser {
 
     public static final String DELIVERY_MESSAGE = "^(%s)\\s?(\\s([\\d]{1,2}-[\\d]{1,2}))?$";
-    SimpleDateFormat df = new SimpleDateFormat("dd-mm");
 
     @Autowired
     public DeliveryMessageParser(AllProgramTypes allProgramTypes) {
@@ -28,7 +26,9 @@ public class DeliveryMessageParser extends MessageParser {
     public DeliverySMS parse(String input, String senderMobileNumber) {
         Matcher matcher = pattern().matcher(input.trim());
         if (matcher.find()) {
-            return new DeliverySMS(input, DateUtil.today().toDate());
+            DeliverySMS sms = new DeliverySMS(input, DateUtil.today().toDate());
+            sms.setFromMobileNumber(senderMobileNumber);
+            return sms;
         }
         return null;
     }

@@ -126,7 +126,6 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
         assertEquals(pregnancyProgramForUser1.getRevision(), actualPregnancyProgramForUsr1.getRevision());
         assertEquals(childCareForUser1.getRevision(), actualChildCareForUsr1.getRevision());
 
-        assertEquals(null, allSubscriptions.findBy(mobileNumber, childCare.getProgramName()));
         remove(asList(pregnancyProgramForUser1, childCareForUser1, pregnancyProgramForUser2));
     }
 

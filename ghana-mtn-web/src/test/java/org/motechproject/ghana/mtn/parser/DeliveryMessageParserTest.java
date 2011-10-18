@@ -39,16 +39,19 @@ public class DeliveryMessageParserTest {
         String message = "d ";
         DeliverySMS sms = parser.parse(message, senderMobileNumber);
         assertEquals(message, sms.getMessage());
+        assertEquals(senderMobileNumber, sms.getFromMobileNumber());
         assertEquals(DateUtil.today().toDate(), sms.getDomain());
 
         message = "delivery";
         sms = parser.parse(message, senderMobileNumber);
         assertEquals(message, sms.getMessage());
+        assertEquals(senderMobileNumber, sms.getFromMobileNumber());
         assertEquals(DateUtil.today().toDate(), sms.getDomain());
 
         message = "dd ";
         sms = parser.parse(message, senderMobileNumber);
         assertEquals(message, sms.getMessage());
+        assertEquals(senderMobileNumber, sms.getFromMobileNumber());
         assertEquals(DateUtil.today().toDate(), sms.getDomain());
     }
 }
