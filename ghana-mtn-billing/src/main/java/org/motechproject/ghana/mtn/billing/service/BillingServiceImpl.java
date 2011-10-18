@@ -20,8 +20,9 @@ public class BillingServiceImpl implements BillingService {
     private BillingAuditor auditor;
 
     public static final String BILLING_SCHEDULE_STARTED = "Billing schedule started";
-    public static final String BILLING_SUCCESSFUL = "Billing Successful";
     public static final String BILLING_SCHEDULE_STOPPED = "Billing schedule stopped";
+    public static final String BILLING_SUCCESSFUL = "Billing Successful";
+    public static final String BILLING_ROLLED_OVER = "Billing Rollover Completed";
 
     @Autowired
     public BillingServiceImpl(AllBillAccounts allBillAccounts, BillingScheduler scheduler, BillingAuditor auditor, MTNMock mtnMock) {
@@ -51,9 +52,9 @@ public class BillingServiceImpl implements BillingService {
     public BillingServiceResponse<CustomerBill> chargeProgramFee(BillingServiceRequest request) {
         String mobileNumber = request.getMobileNumber();
         Double fee = request.getProgramFeeValue();
-        Double balance = mtnMock.getBalanceFor(mobileNumber);
         IProgramType programType = request.getProgramType();
 
+        Double balance = mtnMock.getBalanceFor(mobileNumber);
         Money chargedAmount = mtnMock.chargeCustomer(mobileNumber, fee);
         auditor.audit(request);
         allBillAccounts.updateFor(mobileNumber, balance, programType);
@@ -66,6 +67,12 @@ public class BillingServiceImpl implements BillingService {
         if (response.hasErrors()) return response;
         scheduler.startFor(request);
         return new BillingServiceResponse<CustomerBill>(new CustomerBill(BILLING_SCHEDULE_STARTED, response.getValue().getAmountCharged()));
+    }
+
+    @Override
+    public BillingServiceResponse<String> rollOverBilling(BillingCycleRequest request) {
+        scheduler.startFor(request);
+        return new BillingServiceResponse<String>(BILLING_ROLLED_OVER);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.process;
 
+import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
@@ -46,7 +47,14 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
                 toSubscription.subscriberNumber(),
                 toSubscription.getProgramType(),
                 fromSubscription.billingStartDate());
-        return startFor(toSubscription, request, MessageBundle.BILLING_ROLLOVER);
+
+        BillingServiceResponse response = billingService.rollOverBilling(request);
+        if (response.hasErrors()) {
+            sendMessage(toSubscription, messageFor(response.getValidationErrors()));
+            return false;
+        }
+        sendMessage(toSubscription, messageFor(MessageBundle.BILLING_ROLLOVER));
+        return true;
     }
 
     @Override
@@ -59,7 +67,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
     }
 
     private Boolean stopFor(Subscription subscription, BillingCycleRequest request, SubscriptionStatus status, String msgKey) {
-        BillingServiceResponse<CustomerBill> response = billingService.stopBilling(request);
+        BillingServiceResponse response = billingService.stopBilling(request);
         if (response.hasErrors()) {
             sendMessage(subscription, messageFor(response.getValidationErrors()));
             return false;

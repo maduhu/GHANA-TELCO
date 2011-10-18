@@ -21,7 +21,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-@Ignore
+
 public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
 
     @Before
@@ -32,6 +32,7 @@ public class SubscriptionServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Ignore("fails owing to csv file not found, got to dump the file and have a dummy domain for MTNUser -vijay")
     public void ShouldEnrollSubscriber() throws IOException {
         String shortCode = "P";
         SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "9500012345");

@@ -47,7 +47,7 @@ public class BillingScheduler {
 
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startTime, null);
         schedulerService.scheduleJob(schedulableJob);
-        log.info("Billing job scheduled for " + mobileNumber + "|" + programName);
+        log.info("Billing job scheduled for [" + mobileNumber + "|" + programName + "|" + startTime + "]");
     }
 
     public void stopFor(BillingCycleRequest request) {
@@ -56,7 +56,7 @@ public class BillingScheduler {
         String jobId = jobId(mobileNumber, programName);
 
         schedulerService.unscheduleJob(jobId);
-        log.info("Billing job unscheduled for " + mobileNumber + "|" + programName);
+        log.info("Billing job unscheduled for [" + mobileNumber + "|" + programName + "]");
     }
 
     private String jobId(String mobileNumber, String programName) {
