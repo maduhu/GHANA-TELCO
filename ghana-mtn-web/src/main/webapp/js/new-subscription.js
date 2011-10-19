@@ -12,6 +12,7 @@ $.Enrollment = function() {
 
     var clearInputs = function(response) {
         $('#smsText').val("");
+        hitAudit();
     };
 
     var hitAudit = function() {
