@@ -15,8 +15,7 @@
 <div id="tabs">
     <ul>
         <li><a id="tab1" href="#tabs-1">Input</a></li>
-        <li><a id="tab2" href="#tabs-2">Audits</a></li>
-        <li><a id="tab3" href="#tabs-3">MTN</a></li>
+        <li><a id="tab2" href="#tabs-2">MTN</a></li>
     </ul>
     <div id="tabs-1">
         <div class="enrollment_box">
@@ -36,10 +35,9 @@
                 </table>
             </form>
         </div>
-    </div>
-    <div id="tabs-2">
         <div class="audit_box">
             <form id="audit-form">
+                Audits :
                 <select id="audit_options">
                     <option value="sms">SMSAudit</option>
                     <option value="bill">BillAudit</option>
@@ -48,7 +46,7 @@
             <div id="audit_table"></div>
         </div>
     </div>
-    <div id="tabs-3">
+    <div id="tabs-2">
         <div class="mtn_user_box">
             <div id="mtn_table_box"></div>
             <div id="mtn_user_edit">

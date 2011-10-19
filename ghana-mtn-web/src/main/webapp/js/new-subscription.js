@@ -14,15 +14,7 @@ $.Enrollment = function() {
         $('#smsText').val("");
     };
 
-    var bootstrap = function() {
-        $('#submit_enrollment').click(hitServer);
-    };
-
-    $(bootstrap);
-};
-
-$.Audits = function() {
-    var hitServer = function() {
+    var hitAudit = function() {
         var url = 'audits/' + $('#audit_options').val();
         $.ajax({
             url:url,
@@ -36,9 +28,11 @@ $.Audits = function() {
         $('#audit_table').html(response);
     };
 
+
     var bootstrap = function() {
-        $('#tab2').click(hitServer);
-        $('#audit_options').change(hitServer);
+        $('#submit_enrollment').click(hitServer);
+        hitAudit();
+        $('#audit_options').change(hitAudit);
     };
 
     $(bootstrap);
@@ -70,7 +64,7 @@ $.MTNUsers = function() {
     };
 
     var bootstrap = function() {
-        $('#tab3').click(hitServer);
+        $('#tab2').click(hitServer);
         $('#update_mtn_user').click(addUser);
 
     };
@@ -80,6 +74,5 @@ $.MTNUsers = function() {
 $(document).ready(function() {
     $("#tabs").tabs();
     new $.Enrollment();
-    new $.Audits();
     new $.MTNUsers();
 });
