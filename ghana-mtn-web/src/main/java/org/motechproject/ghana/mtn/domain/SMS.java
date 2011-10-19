@@ -7,6 +7,7 @@ public abstract class SMS<T> {
     String message;
     String fromMobileNumber;
     T domain;
+    String referrer;
 
     public SMS(String message, T domain) {
         this.message = message;
@@ -22,6 +23,11 @@ public abstract class SMS<T> {
         return this;
     }
 
+    public SMS setReferrer(String referrer) {
+        this.referrer = referrer;
+        return this;
+    }
+
     public String getFromMobileNumber() {
         return fromMobileNumber;
     }
@@ -31,6 +37,10 @@ public abstract class SMS<T> {
     }
 
     public abstract void process(SMSHandler handler);
+
+    public String getReferrer() {
+        return referrer;
+    }
 }
 
 
