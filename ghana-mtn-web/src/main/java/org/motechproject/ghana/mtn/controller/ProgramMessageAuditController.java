@@ -17,7 +17,7 @@ public class ProgramMessageAuditController {
 
     @RequestMapping("/audits")
     public void showAll(HttpServletResponse response) throws IOException {
-        List<ProgramMessageAudit> messageAudits = allProgramMessageAudits.getAll();
+        List<ProgramMessageAudit> messageAudits = allProgramMessageAudits.sortedByDate();
 
         StringBuilder builder = new StringBuilder();
         builder.append("<table>");
