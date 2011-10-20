@@ -3,10 +3,7 @@ package org.motechproject.ghana.mtn.billing.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
+import org.motechproject.ghana.mtn.billing.dto.*;
 import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -121,12 +118,27 @@ public class BillingServiceImplTest {
 
     @Test
     public void shouldCallSchedulerForRollOverBilling(){
-        BillingCycleRequest request = mock(BillingCycleRequest.class);
+        BillingCycleRollOverRequest request = new BillingCycleRollOverRequest(mock(BillingCycleRequest.class), mock(BillingCycleRequest.class));
 
         BillingServiceResponse response = service.rollOverBilling(request);
 
-        verify(scheduler).startFor(request);
+        verify(scheduler).stopFor(request.getFromRequest());
+        verify(scheduler).startFor(request.getToRequest());
         assertEquals(BillingServiceImpl.BILLING_ROLLED_OVER, response.getValue());
+    }
+
+    @Test
+    public void shouldNotRollOverBillingWhenStopBillingCycleFails(){
+        BillingCycleRollOverRequest request = new BillingCycleRollOverRequest(mock(BillingCycleRequest.class), mock(BillingCycleRequest.class));
+
+        service = spy(service);
+        BillingServiceResponse stopBillingResponse = new BillingServiceResponse();
+        stopBillingResponse.addError(ValidationError.INVALID_CUSTOMER);
+
+        doReturn(stopBillingResponse).when(service).stopBilling(request.getFromRequest());
+        service.rollOverBilling(request);
+
+        verify(scheduler, never()).startFor(request.getToRequest());
     }
 
 }

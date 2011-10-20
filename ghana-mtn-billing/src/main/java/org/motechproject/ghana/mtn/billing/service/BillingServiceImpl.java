@@ -1,9 +1,6 @@
 package org.motechproject.ghana.mtn.billing.service;
 
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
-import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
+import org.motechproject.ghana.mtn.billing.dto.*;
 import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -70,15 +67,18 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
-    public BillingServiceResponse<String> rollOverBilling(BillingCycleRequest request) {
-        scheduler.startFor(request);
-        return new BillingServiceResponse<String>(BILLING_ROLLED_OVER);
-    }
-
-    @Override
     public BillingServiceResponse stopBilling(BillingCycleRequest request) {
         scheduler.stopFor(request);
         return new BillingServiceResponse<String>(BILLING_SCHEDULE_STOPPED);
+    }
+
+    @Override
+    public BillingServiceResponse rollOverBilling(BillingCycleRollOverRequest billingCycleRollOverRequest) {
+        BillingServiceResponse stopBillingResponse = stopBilling(billingCycleRollOverRequest.getFromRequest());
+        if (stopBillingResponse.hasErrors()) return stopBillingResponse;
+
+        scheduler.startFor(billingCycleRollOverRequest.getToRequest());
+        return new BillingServiceResponse<String>(BILLING_ROLLED_OVER);
     }
 
     private BillingServiceResponse responseFor(ValidationError error) {
@@ -86,6 +86,4 @@ public class BillingServiceImpl implements BillingService {
         response.addError(error);
         return response;
     }
-
 }
-

@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRollOverRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
@@ -13,6 +14,7 @@ import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.vo.Money;
@@ -32,6 +34,8 @@ public class BillingCycleProcessorTest {
     @Mock
     private SMSService smsService;
     @Mock
+    private AllSubscriptions allSubscriptions;
+    @Mock
     private MessageBundle messageBundle;
 
     public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
@@ -40,7 +44,7 @@ public class BillingCycleProcessorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        billing = new BillingCycleProcess(billingService, smsService, messageBundle);
+        billing = new BillingCycleProcess(billingService, smsService, messageBundle, allSubscriptions);
     }
 
     @Test
@@ -124,7 +128,7 @@ public class BillingCycleProcessorTest {
         String mobileNumber = "123";
         ProgramType programType = childCarePregnancyType;
         Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
-                        .withType(programType).build();
+                .withType(programType).build();
         BillingServiceResponse successResponse = new BillingServiceResponse();
 
         when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
@@ -144,7 +148,7 @@ public class BillingCycleProcessorTest {
 
         ProgramType programType = childCarePregnancyType;
         Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
-                        .withType(programType).build();
+                .withType(programType).build();
         BillingServiceResponse response = mock(BillingServiceResponse.class);
         List errors = mockBillingServiceResponseWithErrors(response);
         when(messageBundle.get(errors)).thenReturn("errors message");
@@ -162,7 +166,7 @@ public class BillingCycleProcessorTest {
         String mobileNumber = "123";
         ProgramType programType = childCarePregnancyType;
         Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
-                        .withType(programType).build();
+                .withType(programType).build();
         BillingServiceResponse successResponse = new BillingServiceResponse();
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(successResponse);
         when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
@@ -199,19 +203,26 @@ public class BillingCycleProcessorTest {
         when(targetResponse.getValue()).thenReturn(targetBill);
 
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(sourceResponse);
-        when(billingService.rollOverBilling(any(BillingCycleRequest.class))).thenReturn(targetResponse);
+        when(billingService.rollOverBilling(any(BillingCycleRollOverRequest.class))).thenReturn(targetResponse);
 
         when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
         when(messageBundle.get(MessageBundle.BILLING_ROLLOVER)).thenReturn("billing rolled over");
 
         billing.rollOver(sourceSubscription, targetSubscription);
 
-        ArgumentCaptor<BillingCycleRequest> captor = ArgumentCaptor.forClass(BillingCycleRequest.class);
+        ArgumentCaptor<BillingCycleRollOverRequest> captor = ArgumentCaptor.forClass(BillingCycleRollOverRequest.class);
         verify(billingService).rollOverBilling(captor.capture());
-        BillingCycleRequest captured = captor.getValue();
+        BillingCycleRollOverRequest captured = captor.getValue();
 
-        assertEquals(now, captured.getCycleStartDate());
+        assertEquals(now, captured.getFromRequest().getCycleStartDate());
+    }
 
+    @Test
+    public void shouldValidateBillingCycleOnRetainExistingChildCareProgram() {
+//        String subscriberNumber = "9500012345";
+//        Date deliveryDate = DateUtil.newDate(2011, 10, 10).toDate();
+//        Subscription subscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType).build();
+//        billing.retainExistingChildCare(subscription);
     }
 
     private List mockBillingServiceResponseWithErrors(BillingServiceResponse response) {
@@ -240,8 +251,8 @@ public class BillingCycleProcessorTest {
 
     private SubscriptionBuilder subscriptionBuilder(String subscriberNumber, DateTime registrationDate, DateTime billingStartDate, ProgramType programType) {
         return new SubscriptionBuilder().withBillingStartDate(billingStartDate).withRegistrationDate(registrationDate)
-                        .withSubscriber(new Subscriber(subscriberNumber))
-                        .withType(programType);
+                .withSubscriber(new Subscriber(subscriberNumber))
+                .withType(programType);
     }
 
 }

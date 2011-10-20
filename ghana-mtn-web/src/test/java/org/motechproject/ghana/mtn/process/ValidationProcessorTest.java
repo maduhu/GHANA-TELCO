@@ -233,7 +233,7 @@ public class ValidationProcessorTest {
         when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(existingChildcareSubscription);
 
         Boolean actualValidation = validation.rollOver(pregnancySubscription, childcareSubscription);
-        assertFalse(actualValidation);
+        assertTrue(actualValidation);
         assertSMSRequest(subscriberNumber, decisionMessageToRollOver, null);
         assertThat(pregnancySubscription.getStatus(), is(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE));
         verify(allSubscriptions).update(pregnancySubscription);

@@ -105,7 +105,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     public void retainOrRollOver(String subscriberNumber, boolean retainSubscription) {
-
         Subscription subscription = allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE);
         if(retainSubscription) {
             for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {

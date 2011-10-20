@@ -1,24 +1,30 @@
 package org.motechproject.ghana.mtn.process;
 
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
+import org.motechproject.ghana.mtn.billing.dto.BillingCycleRollOverRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
+
 @Component
 public class BillingCycleProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private BillingService billingService;
+    private AllSubscriptions allSubscriptions;
 
     @Autowired
-    public BillingCycleProcess(BillingService billingService, SMSService smsService, MessageBundle messageBundle) {
+    public BillingCycleProcess(BillingService billingService, SMSService smsService, MessageBundle messageBundle, AllSubscriptions allSubscriptions) {
         super(smsService, messageBundle);
         this.billingService = billingService;
+        this.allSubscriptions = allSubscriptions;
     }
 
     @Override
@@ -41,18 +47,26 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        if (!stopExpired(fromSubscription)) return false;
-        BillingCycleRequest request = new BillingCycleRequest(
-                toSubscription.subscriberNumber(),
-                toSubscription.getProgramType(),
-                fromSubscription.billingStartDate());
+        if (WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
+            billingService.stopBilling(new BillingCycleRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), null));
+            return true;
+        }
 
-        BillingServiceResponse response = billingService.rollOverBilling(request);
+        BillingCycleRequest fromRequest = new BillingCycleRequest(fromSubscription.subscriberNumber(),
+                fromSubscription.getProgramType(), fromSubscription.billingStartDate());
+
+        BillingCycleRequest toRequest = new BillingCycleRequest(toSubscription.subscriberNumber(),
+                toSubscription.getProgramType(), fromSubscription.billingStartDate());
+
+        return handleResponse(toSubscription, billingService.rollOverBilling(new BillingCycleRollOverRequest(fromRequest, toRequest)), MessageBundle.BILLING_ROLLOVER);
+    }
+
+    private boolean handleResponse(Subscription toSubscription, BillingServiceResponse response, String successMsg) {
         if (response.hasErrors()) {
             sendMessage(toSubscription, messageFor(response.getValidationErrors()));
             return false;
         }
-        sendMessage(toSubscription, messageFor(MessageBundle.BILLING_ROLLOVER));
+        sendMessage(toSubscription, messageFor(successMsg));
         return true;
     }
 

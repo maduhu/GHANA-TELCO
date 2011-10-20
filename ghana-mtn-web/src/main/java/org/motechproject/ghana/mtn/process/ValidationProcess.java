@@ -79,7 +79,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
         Subscription existingChildCareSubscription = allSubscriptions.findActiveSubscriptionFor(fromSubscription.subscriberNumber(), IProgramType.CHILDCARE);
-        if(existingChildCareSubscription != null) {
+        if (existingChildCareSubscription != null) {
             String retainExistingCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM));
             String rollOverToNewCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM));
 
@@ -88,7 +88,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
 
             fromSubscription.setStatus(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE);
             allSubscriptions.update(fromSubscription);
-           return false;
+            return true;
         }
         return fromSubscription.canRollOff();
     }
@@ -99,7 +99,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     }
 
     private String formatShortCode(List<ShortCode> shortCodes) {
-        return shortCodes.get(0)  != null ? shortCodes.get(0).defaultCode() : "";
+        return shortCodes.get(0) != null ? shortCodes.get(0).defaultCode() : "";
     }
 
     public Subscription validateSubscriptionToStop(String subscriberNumber, IProgramType programType) {
@@ -107,15 +107,15 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
         List<Subscription> subscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
         boolean isUserWith2ProgrammesDidNotSpecifyProgramToStop = subscriptions.size() > 1 && programType == null;
 
-        if(subscriptions.size() == 0)  {
+        if (subscriptions.size() == 0) {
             sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
         } else if (isUserWith2ProgrammesDidNotSpecifyProgramToStop) {
             sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_SPECIFY_PROGRAM));
         } else {
             Subscription subscriptionToStop = programType != null ?
-                (Subscription) selectUnique(subscriptions, having(on(Subscription.class).programKey(), equalTo(programType.getProgramKey()))) :
-                                    subscriptions.get(0);
-            if(subscriptionToStop == null) sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
+                    (Subscription) selectUnique(subscriptions, having(on(Subscription.class).programKey(), equalTo(programType.getProgramKey()))) :
+                    subscriptions.get(0);
+            if (subscriptionToStop == null) sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
             return subscriptionToStop;
         }
         return null;
