@@ -41,7 +41,7 @@ public class ProgramMessageEventHandlerTest {
         params.put(EventKeys.EXTERNAL_ID_KEY, subscriberNumber);
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
 
-        when(service.findBy(subscriberNumber, programKey)).thenReturn(subscription);
+        when(service.findActiveSubscriptionFor(subscriberNumber, programKey)).thenReturn(subscription);
 
         programMessageEventHandler.sendMessageReminder(motechEvent);
 

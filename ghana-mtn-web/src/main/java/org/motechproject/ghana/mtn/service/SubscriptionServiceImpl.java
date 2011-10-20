@@ -95,8 +95,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public Subscription findBy(String subscriberNumber, String programName) {
-        return allSubscriptions.findBy(subscriberNumber, programName);
+    public Subscription findActiveSubscriptionFor(String subscriberNumber, String programName) {
+        return allSubscriptions.findActiveSubscriptionFor(subscriberNumber, programName);
     }
 
     @Override

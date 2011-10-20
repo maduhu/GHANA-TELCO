@@ -26,7 +26,7 @@ public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
     }
 
     @View(name = "find_by_mobile_number_and_program_key", map = "function(doc) { if(doc.status === 'ACTIVE') { emit([doc.subscriber.number, doc.programType.programKey], null) } }")
-    public Subscription findBy(String subscriberNumber, String programKey) {
+    public Subscription findActiveSubscriptionFor(String subscriberNumber, String programKey) {
         List<Subscription> subscriptions = queryView("find_by_mobile_number_and_program_key", ComplexKey.of(subscriberNumber, programKey));
         return subscriptions.size() > 0 ? subscriptions.get(0) : null;
     }

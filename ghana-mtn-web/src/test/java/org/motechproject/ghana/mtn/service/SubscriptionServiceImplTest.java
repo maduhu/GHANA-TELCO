@@ -181,12 +181,12 @@ public class SubscriptionServiceImplTest {
         String subscriberNumber = "123";
         String program = IProgramType.PREGNANCY;
         Subscription subscription = new Subscription();
-        when(allSubscriptions.findBy(subscriberNumber, program)).thenReturn(subscription);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, program)).thenReturn(subscription);
 
-        Subscription returned = service.findBy(subscriberNumber, program);
+        Subscription returned = service.findActiveSubscriptionFor(subscriberNumber, program);
 
         assertEquals(subscription, returned);
-        verify(allSubscriptions).findBy(subscriberNumber, program);
+        verify(allSubscriptions).findActiveSubscriptionFor(subscriberNumber, program);
     }
 
     @Test

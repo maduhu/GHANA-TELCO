@@ -203,7 +203,7 @@ public class ValidationProcessorTest {
     public void shouldValidateRollOverAndSendErrorMessageWhenUserHasNoSubscription() {
         String subscriberNumber = "9500012345";
         Date deliveryDate = DateUtil.newDate(2011, 10, 10).toDate();
-        when(allSubscriptions.findBy(subscriberNumber, PREGNANCY)).thenReturn(null);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, PREGNANCY)).thenReturn(null);
         String errorMess = "error message";
         when(messageBundle.get(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION)).thenReturn(errorMess);
 
@@ -228,7 +228,7 @@ public class ValidationProcessorTest {
 
         Subscription pregnancySubscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
         Subscription childcareSubscription = subscriptionBuilder(subscriberNumber, childCareProgramType).build();
-        when(allSubscriptions.findBy(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(existingChildcareSubscription);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(existingChildcareSubscription);
 
         Boolean actualValidation = validation.rollOver(pregnancySubscription, childcareSubscription);
         assertFalse(actualValidation);
@@ -240,7 +240,7 @@ public class ValidationProcessorTest {
         String subscriberNumber = "9500012345";
         Date deliveryDate = DateUtil.newDate(2011, 10, 10).toDate();
         Subscription subscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
-        when(allSubscriptions.findBy(subscriberNumber, PREGNANCY)).thenReturn(subscription);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, PREGNANCY)).thenReturn(subscription);
 
         Subscription actualSubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
         assertNotNull(actualSubscription);

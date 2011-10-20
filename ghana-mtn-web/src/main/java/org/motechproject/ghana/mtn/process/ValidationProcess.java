@@ -81,7 +81,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        Subscription subscription = allSubscriptions.findBy(fromSubscription.subscriberNumber(), IProgramType.CHILDCARE);
+        Subscription subscription = allSubscriptions.findActiveSubscriptionFor(fromSubscription.subscriberNumber(), IProgramType.CHILDCARE);
         if(subscription != null) {
             String retainExistingCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM));
             String rollOverToNewCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM));
@@ -116,7 +116,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     }
 
     public Subscription validateForRollOver(String subscriberNumber, Date deliveryDate) {
-        Subscription subscription = allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY);
+        Subscription subscription = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.PREGNANCY);
         if (null == subscription)
             sendMessage(subscriberNumber, messageFor(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION));
         return subscription;

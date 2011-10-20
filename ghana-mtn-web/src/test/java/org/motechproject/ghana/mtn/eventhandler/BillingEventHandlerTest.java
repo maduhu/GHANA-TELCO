@@ -52,7 +52,7 @@ public class BillingEventHandlerTest {
         params.put(PROGRAM_KEY, programKey);
         MotechEvent event = new MotechEvent(BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT, params);
 
-        when(allSubscriptions.findBy(subscriberNumber, programKey)).thenReturn(subscription);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, programKey)).thenReturn(subscription);
 
         eventHandler.chargeCustomer(event);
 

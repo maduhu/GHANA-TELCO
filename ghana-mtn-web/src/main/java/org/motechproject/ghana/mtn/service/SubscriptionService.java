@@ -12,6 +12,6 @@ public interface SubscriptionService {
     void rollOver(String fromMobileNumber, Date deliveryDate);
     void stopByUser(String fromMobileNumber, IProgramType domain);
     void rollOverByEvent(Subscription subscription);
-    Subscription findBy(String subscriberNumber, String programName);
+    Subscription findActiveSubscriptionFor(String subscriberNumber, String programName);
     List<Subscription> activeSubscriptions(String subscriberNumber);
 }

@@ -31,7 +31,7 @@ public class BillingEventHandler {
         String programKey = (String) params.get(PROGRAM_KEY);
         String subscriberNumber = (String) params.get(EXTERNAL_ID_KEY);
 
-        Subscription subscription = allSubscriptions.findBy(subscriberNumber, programKey);
+        Subscription subscription = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, programKey);
         feeCharger.process(subscription);
     }
 
