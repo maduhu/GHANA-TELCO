@@ -28,7 +28,7 @@ public class UserMessageParserProcess extends BaseSubscriptionProcess {
         try {
             ParsedRequest parsedRequest = relativeProgramMessageParser.parse(input, senderMobileNumber);
             if (null != parsedRequest)
-                return inputMessageParser.parse(parsedRequest.getInputMessage(), parsedRequest.getSubscriberNumber());
+                return inputMessageParser.parse(parsedRequest.getInputMessage(), parsedRequest.getSubscriberNumber()).setReferrer(senderMobileNumber);
             else
                 return inputMessageParser.parse(input, senderMobileNumber);
         } catch (InvalidMobileNumberException exception) {
