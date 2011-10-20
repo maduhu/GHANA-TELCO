@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.parser;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.ShortCode;
@@ -15,16 +14,14 @@ import static ch.lambdaj.Lambda.*;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 public abstract class MessageParser {
-    
+
+    @Autowired
     protected AllProgramTypes allProgramTypes;
-    protected Pattern pattern;
 
     @Autowired
     protected AllShortCodes allShortCodes;
 
-    public MessageParser(AllProgramTypes allProgramTypes) {
-        this.allProgramTypes = allProgramTypes;
-    }
+    protected Pattern pattern;
 
     public abstract SMS parse(String message, String senderMobileNumber);
 

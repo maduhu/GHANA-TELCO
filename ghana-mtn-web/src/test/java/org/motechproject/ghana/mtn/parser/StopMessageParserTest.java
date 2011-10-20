@@ -37,10 +37,11 @@ public class StopMessageParserTest {
         pregnancy = new ProgramTypeBuilder().withShortCode("p").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
         childCare = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
         when(allProgramTypes.getAll()).thenReturn(asList(pregnancy, childCare));
-        parser = new StopMessageParser(allProgramTypes);
+        parser = new StopMessageParser();
         when(allShortCodes.getAllCodesFor(ShortCode.STOP))
                 .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.STOP).setCodes(asList("stop"))));
         setField(parser, "allShortCodes", allShortCodes);
+        setField(parser, "allProgramTypes", allProgramTypes);
     }
 
     @Test

@@ -1,8 +1,9 @@
 package org.motechproject.ghana.mtn.parser;
 
-import org.motechproject.ghana.mtn.domain.*;
-import org.motechproject.ghana.mtn.repository.AllProgramTypes;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.SMS;
+import org.motechproject.ghana.mtn.domain.StopSMS;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Matcher;
@@ -17,11 +18,6 @@ import static org.motechproject.ghana.mtn.domain.ShortCode.STOP;
 public class StopMessageParser extends MessageParser {
 
     public static final String STOP_PATTERN = "^(%s)\\s?(\\s([%s]))?$";
-
-    @Autowired
-    public StopMessageParser(AllProgramTypes allProgramTypes) {
-        super(allProgramTypes);
-    }
 
     public SMS<IProgramType> parse(String input, String enrolledMobileNumber) {
         Matcher matcher = pattern().matcher(input.trim());

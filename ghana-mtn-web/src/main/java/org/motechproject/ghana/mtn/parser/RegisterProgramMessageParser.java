@@ -6,9 +6,7 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
-import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.motechproject.ghana.mtn.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Matcher;
@@ -21,11 +19,6 @@ public class RegisterProgramMessageParser extends MessageParser {
 
     public static final String START_OF_PATTERN = "^(";
     public static final String END_OF_PATTERN = ")\\s([\\d]{1,2})$";
-
-    @Autowired
-    public RegisterProgramMessageParser(AllProgramTypes allProgramTypes) {
-        super(allProgramTypes);
-    }
 
     public SMS<Subscription> parse(String input, String enrolledMobileNumber) {
         Matcher matcher = pattern().matcher(input);

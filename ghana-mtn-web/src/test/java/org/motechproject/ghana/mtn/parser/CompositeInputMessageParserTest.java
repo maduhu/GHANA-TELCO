@@ -13,7 +13,6 @@ import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.util.DateUtil;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 
@@ -24,6 +23,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class CompositeInputMessageParserTest {
     CompositeInputMessageParser messageParser;
@@ -51,12 +51,15 @@ public class CompositeInputMessageParserTest {
         when(allShortCodes.getAllCodesFor(ShortCode.DELIVERY))
                 .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.DELIVERY).setCodes(asList("dd"))));
 
-        registerProgramMessageParser = new RegisterProgramMessageParser(allProgramTypes);
-        stopMessageParser = new StopMessageParser(allProgramTypes);
-        deliveryMessageParser = new DeliveryMessageParser(allProgramTypes);
-        
-        ReflectionTestUtils.setField(stopMessageParser, "allShortCodes", allShortCodes);
-        ReflectionTestUtils.setField(deliveryMessageParser, "allShortCodes", allShortCodes);
+        registerProgramMessageParser = new RegisterProgramMessageParser();
+        setField(registerProgramMessageParser, "allProgramTypes", allProgramTypes);
+        stopMessageParser = new StopMessageParser();
+        setField(stopMessageParser, "allProgramTypes", allProgramTypes);
+        deliveryMessageParser = new DeliveryMessageParser();
+        setField(deliveryMessageParser, "allProgramTypes", allProgramTypes);
+
+        setField(stopMessageParser, "allShortCodes", allShortCodes);
+        setField(deliveryMessageParser, "allShortCodes", allShortCodes);
         messageParser = new CompositeInputMessageParser(registerProgramMessageParser, stopMessageParser, deliveryMessageParser);
     }
 

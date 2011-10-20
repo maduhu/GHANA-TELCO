@@ -1,9 +1,7 @@
 package org.motechproject.ghana.mtn.parser;
 
 import org.motechproject.ghana.mtn.domain.DeliverySMS;
-import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.motechproject.util.DateUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Matcher;
@@ -17,11 +15,6 @@ import static org.motechproject.ghana.mtn.domain.ShortCode.DELIVERY;
 public class DeliveryMessageParser extends MessageParser {
 
     public static final String DELIVERY_MESSAGE = "^(%s)\\s?(\\s([\\d]{1,2}-[\\d]{1,2}))?$";
-
-    @Autowired
-    public DeliveryMessageParser(AllProgramTypes allProgramTypes) {
-        super(allProgramTypes);
-    }
 
     public DeliverySMS parse(String input, String senderMobileNumber) {
         Matcher matcher = pattern().matcher(input.trim());
