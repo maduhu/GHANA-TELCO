@@ -55,7 +55,7 @@ public class BillingSchedulerTest {
         Map<String, Object> params = motechEvent.getParameters();
 
         assertEquals(MONTHLY_BILLING_SCHEDULE_SUBJECT, motechEvent.getSubject());
-        assertEquals(MONTHLY_BILLING_SCHEDULE_SUBJECT + ".program.123", params.get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals("program.123", params.get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals("123", params.get(BillingScheduler.EXTERNAL_ID_KEY));
         assertEquals("program", params.get(BillingScheduler.PROGRAM_KEY));
         assertEquals(format("0 0 5 %s *", cycleStartDate.getDayOfMonth()), job.getCronExpression());
@@ -70,7 +70,7 @@ public class BillingSchedulerTest {
 
         billingScheduler.stopFor(request);
 
-        verify(schedulerService).unscheduleJob(MONTHLY_BILLING_SCHEDULE_SUBJECT + ".program.123");
+        verify(schedulerService).unscheduleJob(MONTHLY_BILLING_SCHEDULE_SUBJECT, "program.123");
     }
 
     @Test

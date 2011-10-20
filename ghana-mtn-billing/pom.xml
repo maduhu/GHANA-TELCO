@@ -12,9 +12,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <properties>
-        <motech-api-version>0.3-SNAPSHOT</motech-api-version>
-        <couchdb.server>localhost</couchdb.server>
-        <couchdb.port>5984</couchdb.port>
+        <motech-api-version>0.3-SNAPSHOT</motech-api-version>       
     </properties>
     <groupId>org.motechproject</groupId>
     <artifactId>ghana-mtn-billing</artifactId>
@@ -51,11 +49,58 @@
                     </excludes>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>../build/maven.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.6</version>
                 <executions>
+                    <execution>
+                        <id>setup-quartz-schema</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Quartz schema loading: START"/>
+                                <path id="dependencies">
+                                    <fileset file="../build/lib/mysql-connector-java-5.1.13.jar"/>
+                                </path>
+                                <sql driver="${mysql.driver}"
+                                     url="jdbc:mysql://${mysql.server}:${mysql.port}/${mysql.db}?autoReconnect=true"
+                                     userid="${mysql.user}"
+                                     classpathref="dependencies"
+                                     password="${mysql.password}">
+                                    drop database ${mysql.db};
+                                    create database ${mysql.db};
+                                </sql>
+                                <sql driver="${mysql.driver}"
+                                     url="jdbc:mysql://${mysql.server}:${mysql.port}/${mysql.db}?autoReconnect=true"
+                                     userid="${mysql.user}"
+                                     classpathref="dependencies"
+                                     password="${mysql.password}"
+                                     src="../build/sql/tables_mysql_innodb.sql"/>
+                                <echo message="Quartz schema loading: END"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>drop billing-integration-test DB</id>
                         <phase>pre-integration-test</phase>

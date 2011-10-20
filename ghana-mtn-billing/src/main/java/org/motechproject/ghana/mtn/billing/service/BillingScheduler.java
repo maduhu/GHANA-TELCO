@@ -55,11 +55,11 @@ public class BillingScheduler {
         String programName = request.programKey();
         String jobId = jobId(mobileNumber, programName);
 
-        schedulerService.unscheduleJob(jobId);
+        schedulerService.unscheduleJob(MONTHLY_BILLING_SCHEDULE_SUBJECT, jobId);
         log.info("Billing job unscheduled for [" + mobileNumber + "|" + programName + "]");
     }
 
     private String jobId(String mobileNumber, String programName) {
-        return format("%s.%s.%s", MONTHLY_BILLING_SCHEDULE_SUBJECT, programName, mobileNumber);
+        return format("%s.%s", programName, mobileNumber);
     }
 }

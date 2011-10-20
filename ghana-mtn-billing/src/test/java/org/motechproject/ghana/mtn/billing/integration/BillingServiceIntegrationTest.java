@@ -12,7 +12,6 @@ import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAudits;
-import org.motechproject.ghana.mtn.billing.service.BillingScheduler;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.billing.service.BillingServiceImpl;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -34,8 +33,7 @@ import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.EXTERNAL_ID_KEY;
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.PROGRAM_KEY;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testApplicationContextBilling.xml"})
@@ -68,8 +66,7 @@ public class BillingServiceIntegrationTest {
         BillAccount billAccount = allBillAccounts.findByMobileNumber(subscriberNumber);
         List<BillAudit> billAudits = select(allBillAudits.getAll(), having(on(BillAudit.class).getMobileNumber(), equalTo(subscriberNumber)));
 
-
-        String jobId = format("%s.%s.%s", BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT, getPregnancyProgramType().getProgramKey(), subscriberNumber);
+        String jobId = format("%s-%s.%s", MONTHLY_BILLING_SCHEDULE_SUBJECT, getPregnancyProgramType().getProgramKey(), subscriberNumber);
 
         JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
 
@@ -91,7 +88,7 @@ public class BillingServiceIntegrationTest {
         JobDataMap map = jobDetail.getJobDataMap();
         assertThat(map.get(EXTERNAL_ID_KEY).toString(), is(subscriberNumber));
         assertThat(map.get(PROGRAM_KEY).toString(), is(getPregnancyProgramType().getProgramKey()));
-        assertThat(map.get("eventType").toString(), is(BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT));
+        assertThat(map.get("eventType").toString(), is(MONTHLY_BILLING_SCHEDULE_SUBJECT));
 
         assertThat(cronTrigger.getCronExpression(), is("0 0 5 11 * ?"));
     }
