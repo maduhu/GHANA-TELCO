@@ -30,6 +30,7 @@ public class MessageBundle {
     public static final String STOP_SUCCESS = "stop.success";
     public static final String STOP_PROGRAM_SUCCESS = "stop.program.success";
     public static final String ROLLOVER_INVALID_SUBSCRIPTION = STOP_NOT_ENROLLED;
+    public static final String ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY = "rollover.not.possible";
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {

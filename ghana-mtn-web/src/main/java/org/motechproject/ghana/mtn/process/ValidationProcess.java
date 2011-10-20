@@ -5,8 +5,10 @@ import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
+import org.motechproject.ghana.mtn.domain.ShortCode;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
+import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +21,24 @@ import java.util.List;
 import static ch.lambdaj.Lambda.*;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.equalTo;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY;
+import static org.motechproject.ghana.mtn.domain.ShortCode.RETAIN_EXISTING_CHILDCARE_PROGRAM;
+import static org.motechproject.ghana.mtn.domain.ShortCode.USE_ROLLOVER_TO_CHILDCARE_PROGRAM;
 
 @Component
 public class ValidationProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private AllSubscriptions allSubscriptions;
     private BillingService billingService;
+    private AllShortCodes allShortCodes;
 
     @Autowired
     protected ValidationProcess(SMSService smsService, MessageBundle messageBundle,
                                 AllSubscriptions allSubscriptions,
-                                BillingService billingService) {
+                                BillingService billingService, AllShortCodes allShortCodes) {
         super(smsService, messageBundle);
         this.allSubscriptions = allSubscriptions;
         this.billingService = billingService;
+        this.allShortCodes = allShortCodes;
     }
 
     @Override
@@ -74,7 +81,19 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
+        Subscription subscription = allSubscriptions.findBy(fromSubscription.subscriberNumber(), IProgramType.CHILDCARE);
+        if(subscription != null) {
+            String retainExistingCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM));
+            String rollOverToNewCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM));
+            sendMessage(subscription.subscriberNumber(), format(messageFor(ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY),
+                    retainExistingCCProgramShortCode, rollOverToNewCCProgramShortCode));
+           return false;
+        }
         return fromSubscription.canRollOff();
+    }
+
+    private String formatShortCode(List<ShortCode> shortCodes) {
+        return shortCodes.get(0)  != null ? shortCodes.get(0).defaultCode() : "";
     }
 
     public Subscription validateSubscriptionToStop(String subscriberNumber, IProgramType programType) {

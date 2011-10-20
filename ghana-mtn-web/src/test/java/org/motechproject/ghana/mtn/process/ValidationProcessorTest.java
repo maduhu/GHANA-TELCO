@@ -9,8 +9,10 @@ import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.builder.ShortCodeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.validation.ValidationError;
@@ -18,13 +20,17 @@ import org.motechproject.util.DateUtil;
 
 import java.util.*;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.TestData.childProgramType;
 import static org.motechproject.ghana.mtn.TestData.pregnancyProgramType;
+import static org.motechproject.ghana.mtn.domain.IProgramType.CHILDCARE;
 import static org.motechproject.ghana.mtn.domain.IProgramType.PREGNANCY;
+import static org.motechproject.ghana.mtn.domain.ShortCode.RETAIN_EXISTING_CHILDCARE_PROGRAM;
+import static org.motechproject.ghana.mtn.domain.ShortCode.USE_ROLLOVER_TO_CHILDCARE_PROGRAM;
 
 public class ValidationProcessorTest {
 
@@ -37,6 +43,8 @@ public class ValidationProcessorTest {
     private AllSubscriptions allSubscriptions;
     @Mock
     private BillingService billingService;
+    @Mock
+    private AllShortCodes allShortCodes;
 
     public final ProgramType childCareProgramType = pregnancyProgramType().build();
     public final ProgramType pregnancyProgramType = childProgramType().withRollOverProgramType(childCareProgramType).build();
@@ -44,14 +52,14 @@ public class ValidationProcessorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        validation = new ValidationProcess(smsService, messageBundle, allSubscriptions, billingService);
+        validation = new ValidationProcess(smsService, messageBundle, allSubscriptions, billingService, allShortCodes);
     }
 
     @Test
     public void shouldReturnMessageForInvalidSubscription() {
         String mobileNumber = "123";
         String errMsg = "error msg";
-        String programKey = IProgramType.CHILDCARE;
+        String programKey = CHILDCARE;
 
         Subscription subscription = mock(Subscription.class);
         ProgramType programType = mock(ProgramType.class);
@@ -202,6 +210,29 @@ public class ValidationProcessorTest {
         Subscription actualSubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
         assertNull(actualSubscription);
         assertSMSRequest(subscriberNumber, errorMess, null);
+    }
+
+    @Test
+    public void shouldValidateRollOverForChildCareAndSendDecisionMessageWhenUserAlreadyHasExistingChildCare() {
+        String subscriberNumber = "9500012345";
+        ShortCode codeForRetainChildCare = new ShortCodeBuilder().withShortCode("E").build();
+        ShortCode codeForRollOverChildCare = new ShortCodeBuilder().withShortCode("N").build();
+        String decisionMessageToRollOver = format("You can have only one active child care program at a time. Please message \"%s\" to xxxx to retain the existing program and terminate the roll over. \\\n" +
+                "  Please message \"%s\" to xxxx to continue with the roll over an terminate the existing program.", codeForRetainChildCare.defaultCode(), codeForRollOverChildCare.defaultCode());
+
+        when(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM)).thenReturn(asList(codeForRetainChildCare));
+        when(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM)).thenReturn(asList(codeForRollOverChildCare));
+        when(messageBundle.get(MessageBundle.ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY)).thenReturn(decisionMessageToRollOver);
+
+        Subscription existingChildcareSubscription = subscriptionBuilder(subscriberNumber, childCareProgramType).build();
+
+        Subscription pregnancySubscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
+        Subscription childcareSubscription = subscriptionBuilder(subscriberNumber, childCareProgramType).build();
+        when(allSubscriptions.findBy(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(existingChildcareSubscription);
+
+        Boolean actualValidation = validation.rollOver(pregnancySubscription, childcareSubscription);
+        assertFalse(actualValidation);
+        assertSMSRequest(subscriberNumber, decisionMessageToRollOver, null);
     }
 
     @Test

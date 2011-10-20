@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.domain.builder;
 import org.motechproject.ghana.mtn.domain.ShortCode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ShortCodeBuilder extends Builder<ShortCode> {
@@ -14,8 +15,8 @@ public class ShortCodeBuilder extends Builder<ShortCode> {
         this.codes = new ArrayList<String>();
     }
 
-    public ShortCodeBuilder withShortCode(String shortCode) {
-        codes.add(shortCode);
+    public ShortCodeBuilder withShortCode(String... shortCodes) {
+        codes.addAll(Arrays.asList(shortCodes));
         return this;
     }
 

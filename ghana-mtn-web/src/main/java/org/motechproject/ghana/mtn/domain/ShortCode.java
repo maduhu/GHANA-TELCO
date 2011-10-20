@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.domain;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
@@ -13,6 +14,8 @@ public class ShortCode extends MotechAuditableDataObject {
     public static final String RELATIVE = "relative";
     public static final String STOP = "stop";
     public static final String DELIVERY = "delivery";
+    public static final String RETAIN_EXISTING_CHILDCARE_PROGRAM = "retain_existing_childcare";
+    public static final String USE_ROLLOVER_TO_CHILDCARE_PROGRAM = "rollover_to_new_childcare";
 
     private String codeKey;
     private List<String> codes;
@@ -33,5 +36,9 @@ public class ShortCode extends MotechAuditableDataObject {
     public ShortCode setCodes(List<String> codes) {
         this.codes = codes;
         return this;
+    }
+
+    public String defaultCode()  {
+        return CollectionUtils.isNotEmpty(this.codes) ? this.codes.get(0) : ""; 
     }
 }
