@@ -10,12 +10,11 @@ import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.ShortCodeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
-import org.motechproject.ghana.mtn.repository.AllProgramTypes;
-import org.motechproject.ghana.mtn.repository.AllShortCodes;
-import org.motechproject.ghana.mtn.repository.AllSubscribers;
-import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.ghana.mtn.repository.*;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -39,6 +38,8 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     protected AllShortCodes allShortCodes;
     @Autowired
     AllMTNMockUsers allMtnMock;
+    @Autowired
+    protected AllSMSAudits allSMSAudits;
 
     protected ShortCode shortCode = new ShortCodeBuilder().withCodeKey(ShortCode.RELATIVE).withShortCode("R").build();
     public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1).withMaxWeek(52).withProgramKey(IProgramType.CHILDCARE).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
@@ -76,5 +77,10 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
     protected void assertCampaignSchedule(Subscription subscription) {
 
+    }
+
+    protected void assertMessageSentToUser(String message) {
+        List<SMSAudit> smsAudits = allSMSAudits.getAll();
+        assertThat(smsAudits.get(smsAudits.size() - 1).getContent(), is(message));
     }
 }

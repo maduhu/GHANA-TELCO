@@ -62,12 +62,31 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldThrowInvalidNumberMessageWhenTheSubscriberNumberIsNotInMTNFormat() {
+        String mobileNumber = "9510001234";
+        String shortCode = "P";
+        int week = 30;
+        String inputMessage = "R " + mobileNumber + " " + shortCode + " " + week;
+        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(inputMessage, "12345");
+
+        subscriptionController.handle(subscriptionRequest);
+
+        List<Subscription> subscriptions = allSubscriptions.getAll();
+        List<Subscriber> subscribers = allSubscribers.getAll();
+
+        assertThat(subscriptions.size(), is(0));
+        assertThat(subscribers.size(), is(0));
+
+        assertMessageSentToUser("Invalid Phone Number");
+    }
+
+    @Test
     public void ShouldSendFailureResponseForInvalidMessage() throws IOException {
         SubscriptionRequest subscriptionRequest = createSubscriptionRequest("P25", "1234567890");
         subscriptionController.handle(subscriptionRequest);
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
     }
-    
+
     @Test
     public void ShouldCheckTheCampaignProgramJsonForKeysDefinedInProgramType() throws IOException {
         assertNotNull(allMessageCampaigns.get(IProgramType.PREGNANCY));
