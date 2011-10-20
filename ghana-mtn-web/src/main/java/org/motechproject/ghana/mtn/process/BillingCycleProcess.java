@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.process;
 
-import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
@@ -54,6 +53,11 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
             return false;
         }
         sendMessage(toSubscription, messageFor(MessageBundle.BILLING_ROLLOVER));
+        return true;
+    }
+
+    @Override
+    public Boolean retainExistingChildCare(Subscription subscription) {
         return true;
     }
 

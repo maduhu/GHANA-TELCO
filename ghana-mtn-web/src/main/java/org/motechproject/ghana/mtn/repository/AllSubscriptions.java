@@ -6,6 +6,7 @@ import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -28,6 +29,12 @@ public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
     @View(name = "find_by_mobile_number_and_program_key", map = "function(doc) { if(doc.status === 'ACTIVE') { emit([doc.subscriber.number, doc.programType.programKey], null) } }")
     public Subscription findActiveSubscriptionFor(String subscriberNumber, String programKey) {
         List<Subscription> subscriptions = queryView("find_by_mobile_number_and_program_key", ComplexKey.of(subscriberNumber, programKey));
+        return subscriptions.size() > 0 ? subscriptions.get(0) : null;
+    }
+
+    @View(name = "find_by_mobile_number_and_program_key_and_status", map = "function(doc) { emit([doc.subscriber.number, doc.programType.programKey, doc.status], null) }")
+    public Subscription findBy(String subscriberNumber, String programKey, SubscriptionStatus subscriptionStatus) {
+        List<Subscription> subscriptions = queryView("find_by_mobile_number_and_program_key_and_status", ComplexKey.of(subscriberNumber, programKey, subscriptionStatus));
         return subscriptions.size() > 0 ? subscriptions.get(0) : null;
     }
 }

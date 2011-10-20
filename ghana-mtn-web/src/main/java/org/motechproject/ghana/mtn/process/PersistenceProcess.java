@@ -54,5 +54,10 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
         return true;
     }
 
+    @Override
+    public Boolean retainExistingChildCare(Subscription subscription) {
+        return true;
+    }
+
 
 }

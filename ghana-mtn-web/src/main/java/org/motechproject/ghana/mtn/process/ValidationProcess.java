@@ -3,10 +3,7 @@ package org.motechproject.ghana.mtn.process;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
-import org.motechproject.ghana.mtn.domain.IProgramType;
-import org.motechproject.ghana.mtn.domain.MessageBundle;
-import org.motechproject.ghana.mtn.domain.ShortCode;
-import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
@@ -81,15 +78,24 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        Subscription subscription = allSubscriptions.findActiveSubscriptionFor(fromSubscription.subscriberNumber(), IProgramType.CHILDCARE);
-        if(subscription != null) {
+        Subscription existingChildCareSubscription = allSubscriptions.findActiveSubscriptionFor(fromSubscription.subscriberNumber(), IProgramType.CHILDCARE);
+        if(existingChildCareSubscription != null) {
             String retainExistingCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM));
             String rollOverToNewCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM));
-            sendMessage(subscription.subscriberNumber(), format(messageFor(ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY),
+
+            sendMessage(existingChildCareSubscription.subscriberNumber(), format(messageFor(ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY),
                     retainExistingCCProgramShortCode, rollOverToNewCCProgramShortCode));
+
+            fromSubscription.setStatus(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE);
+            allSubscriptions.update(fromSubscription);
            return false;
         }
         return fromSubscription.canRollOff();
+    }
+
+    @Override
+    public Boolean retainExistingChildCare(Subscription subscription) {
+        return true;
     }
 
     private String formatShortCode(List<ShortCode> shortCodes) {

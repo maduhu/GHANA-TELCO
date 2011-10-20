@@ -24,6 +24,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
 
 public class SubscriptionServiceImplTest {
 
@@ -250,7 +251,7 @@ public class SubscriptionServiceImplTest {
 
         service.rollOverByEvent(source);
 
-        SubscriptionMatcher matcher = new SubscriptionMatcher(subscriber, programType, SubscriptionStatus.ACTIVE);
+        SubscriptionMatcher matcher = new SubscriptionMatcher(subscriber, programType, ACTIVE);
         verify(validation).rollOver(eq(source), argThat(matcher));
         verify(billing).rollOver(eq(source), argThat(matcher));
         verify(campaign).rollOver(eq(source), argThat(matcher));
@@ -258,6 +259,28 @@ public class SubscriptionServiceImplTest {
 
     }
 
+    @Test
+    public void shouldRetainExistingChildCareProgramForContinueWithExistingChildCareResponse() {
+        String subscriberNumber = "1235467";
+
+        Subscription subscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(ACTIVE)
+                .withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType).build();
+
+        when(allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(subscription);
+
+        when(validation.retainExistingChildCare(subscription)).thenReturn(true);
+        when(billing.retainExistingChildCare(subscription)).thenReturn(true);
+        when(campaign.retainExistingChildCare(subscription)).thenReturn(true);
+        when(persistence.retainExistingChildCare(subscription)).thenReturn(true);
+
+        service.retainOrRollOver(subscriberNumber, true);
+
+        verify(validation).retainExistingChildCare(subscription);
+        verify(billing).retainExistingChildCare(subscription);
+        verify(campaign).retainExistingChildCare(subscription);
+        verify(persistence).retainExistingChildCare(subscription);
+    }
+    
     private class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
         private Subscriber subscriber;
         private ProgramType programType;

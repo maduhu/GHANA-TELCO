@@ -45,4 +45,9 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
         sendMessage(toSubscription, messageFor(MessageBundle.ENROLLMENT_ROLlOVER));
         return true;
     }
+
+    @Override
+    public Boolean retainExistingChildCare(Subscription subscription) {
+        return true;
+    }
 }

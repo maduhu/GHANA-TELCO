@@ -23,6 +23,8 @@ import java.util.*;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.TestData.childProgramType;
@@ -213,7 +215,7 @@ public class ValidationProcessorTest {
     }
 
     @Test
-    public void shouldValidateRollOverForChildCareAndSendDecisionMessageWhenUserAlreadyHasExistingChildCare() {
+    public void shouldValidateRollOverForChildCareAndSendDecisionMessageAndUpdateStatusWhenUserAlreadyHasExistingChildCare() {
         String subscriberNumber = "9500012345";
         ShortCode codeForRetainChildCare = new ShortCodeBuilder().withShortCode("E").build();
         ShortCode codeForRollOverChildCare = new ShortCodeBuilder().withShortCode("N").build();
@@ -233,6 +235,8 @@ public class ValidationProcessorTest {
         Boolean actualValidation = validation.rollOver(pregnancySubscription, childcareSubscription);
         assertFalse(actualValidation);
         assertSMSRequest(subscriberNumber, decisionMessageToRollOver, null);
+        assertThat(pregnancySubscription.getStatus(), is(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE));
+        verify(allSubscriptions).update(pregnancySubscription);
     }
 
     @Test
