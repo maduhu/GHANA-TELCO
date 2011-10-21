@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import static ch.lambdaj.Lambda.*;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 public abstract class MessageParser {
 
@@ -36,7 +37,7 @@ public abstract class MessageParser {
 
     protected String shortCodePattern(String key) {
         List<ShortCode> shortCodes = allShortCodes.getAllCodesFor(key);
-        List<String> codes = shortCodes.get(0)  != null ? shortCodes.get(0).getCodes() : null;
+        List<String> codes = isEmpty(shortCodes) ? null : shortCodes.get(0).getCodes();
         return isNotEmpty(codes) ? join(codes, "|") : "";
     }
 

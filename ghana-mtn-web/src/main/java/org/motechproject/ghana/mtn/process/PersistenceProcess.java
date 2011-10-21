@@ -60,6 +60,8 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
 
     @Override
     public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
+        pregnancySubscriptionWaitingForRollOver.setStatus(SubscriptionStatus.EXPIRED);
+        allSubscriptions.update(pregnancySubscriptionWaitingForRollOver);
         return true;
     }
 

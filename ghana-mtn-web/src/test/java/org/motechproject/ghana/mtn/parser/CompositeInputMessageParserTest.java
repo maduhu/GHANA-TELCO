@@ -15,6 +15,7 @@ import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.util.DateUtil;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -23,6 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.ShortCode.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class CompositeInputMessageParserTest {
@@ -34,6 +36,7 @@ public class CompositeInputMessageParserTest {
     private RegisterProgramMessageParser registerProgramMessageParser;
     private DeliveryMessageParser deliveryMessageParser;
     private StopMessageParser stopMessageParser;
+    private RetainOrRollOverChildCareMessageParser retainOrRollOverChildCareMessageParser;
 
     ProgramType pregnancy;
     ProgramType childCare;
@@ -46,21 +49,30 @@ public class CompositeInputMessageParserTest {
         pregnancy = new ProgramTypeBuilder().withShortCode("p").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
         childCare = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
         when(allProgramTypes.getAll()).thenReturn(asList(pregnancy, childCare));
-        when(allShortCodes.getAllCodesFor(ShortCode.STOP))
-                .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.STOP).setCodes(asList("stop"))));
-        when(allShortCodes.getAllCodesFor(ShortCode.DELIVERY))
-                .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.DELIVERY).setCodes(asList("dd"))));
+        mockShortCode(ShortCode.STOP, asList("stop"));
+        mockShortCode(DELIVERY, asList("dd"));
+        mockShortCode(RETAIN_EXISTING_CHILDCARE_PROGRAM, asList("e"));
+        mockShortCode(USE_ROLLOVER_TO_CHILDCARE_PROGRAM, asList("n"));
 
         registerProgramMessageParser = new RegisterProgramMessageParser();
-        setField(registerProgramMessageParser, "allProgramTypes", allProgramTypes);
         stopMessageParser = new StopMessageParser();
-        setField(stopMessageParser, "allProgramTypes", allProgramTypes);
         deliveryMessageParser = new DeliveryMessageParser();
+        retainOrRollOverChildCareMessageParser = new RetainOrRollOverChildCareMessageParser();
+        
+        setField(registerProgramMessageParser, "allProgramTypes", allProgramTypes);
+        setField(stopMessageParser, "allProgramTypes", allProgramTypes);
         setField(deliveryMessageParser, "allProgramTypes", allProgramTypes);
 
         setField(stopMessageParser, "allShortCodes", allShortCodes);
         setField(deliveryMessageParser, "allShortCodes", allShortCodes);
-        messageParser = new CompositeInputMessageParser(registerProgramMessageParser, stopMessageParser, deliveryMessageParser);
+        setField(retainOrRollOverChildCareMessageParser, "allShortCodes", allShortCodes);
+        messageParser = new CompositeInputMessageParser(registerProgramMessageParser, stopMessageParser, deliveryMessageParser,
+                        retainOrRollOverChildCareMessageParser);
+    }
+
+    private void mockShortCode(String shortCodeKey, List<String> shortCodes) {
+        when(allShortCodes.getAllCodesFor(shortCodeKey))
+                .thenReturn(asList(new ShortCode().setCodeKey(shortCodeKey).setCodes(shortCodes)));
     }
 
     @Test

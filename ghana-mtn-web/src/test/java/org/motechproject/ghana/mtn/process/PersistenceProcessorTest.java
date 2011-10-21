@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.EXPIRED;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
 public class PersistenceProcessorTest {
@@ -28,7 +29,7 @@ public class PersistenceProcessorTest {
     @Mock
     private AllSubscriptions allSubscriptions;
 
-    public final ProgramType childCareProgramType = TestData.childProgramType().build();
+    public final ProgramType pregnancyProgramType = TestData.pregnancyProgramType().build();
 
     @Before
     public void setUp() {
@@ -57,7 +58,7 @@ public class PersistenceProcessorTest {
         persistence.stopExpired(subscription);
 
         verify(allSubscriptions).update(subscription);
-        verify(subscription).setStatus(SubscriptionStatus.EXPIRED);
+        verify(subscription).setStatus(EXPIRED);
     }
 
     @Test
@@ -88,7 +89,7 @@ public class PersistenceProcessorTest {
 
     @Test
     public void shouldUpdateSubscriptionStateToWaitingForResponseAndTargetSubscriptionShouldNotBeSaved() {
-        Subscription source = new SubscriptionBuilder().withType(childCareProgramType).withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
+        Subscription source = new SubscriptionBuilder().withType(pregnancyProgramType).withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
         Subscription target = mock(Subscription.class);
 
         Boolean reply = persistence.rollOver(source, target);
@@ -98,5 +99,17 @@ public class PersistenceProcessorTest {
         assertThat(source.getStatus(), is(WAITING_FOR_ROLLOVER_RESPONSE));
         verify(allSubscriptions).update(source);
         verify(allSubscriptions, never()).add(target);
+    }
+         
+    @Test
+    public void shouldUpdateSubscriptionOfPregnancyToExpiredStatus_IfUserWantsToRetainExistingChildCareProgram() {
+        Subscription pregnancySubscriptionWaitingForRollOver = new SubscriptionBuilder().withType(pregnancyProgramType).withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
+        Subscription childCare = mock(Subscription.class);
+
+        Boolean reply = persistence.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCare);
+        assertTrue(reply);
+        assertThat(pregnancySubscriptionWaitingForRollOver.getStatus(), is(EXPIRED));
+        verify(allSubscriptions).update(pregnancySubscriptionWaitingForRollOver);
+        verifyNoMoreInteractions(allSubscriptions);
     }
 }

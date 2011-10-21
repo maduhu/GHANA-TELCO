@@ -17,8 +17,9 @@ public class CompositeInputMessageParser {
     @Autowired
     public CompositeInputMessageParser(RegisterProgramMessageParser registerProgramParser,
                                        StopMessageParser stopMessageParser,
-                                       DeliveryMessageParser deliveryMessageParser) {
-        messageParsers = asList(registerProgramParser, stopMessageParser, deliveryMessageParser);
+                                       DeliveryMessageParser deliveryMessageParser,
+                                       RetainOrRollOverChildCareMessageParser retainOrRollOverChildCareMessageParser) {
+        messageParsers = asList(registerProgramParser, stopMessageParser, deliveryMessageParser, retainOrRollOverChildCareMessageParser);
     }
 
     public SMS parse(String message, String senderMobileNumber) {

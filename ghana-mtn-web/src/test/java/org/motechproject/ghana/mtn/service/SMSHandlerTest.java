@@ -60,4 +60,15 @@ public class SMSHandlerTest {
 
         verify(subscriptionService).stopByUser(eq(subscriberNumber), refEq(pregnancyProgramType));
     }
+
+    @Test
+    public void ShouldCallRetainOrRollOverIfSubscriberSendsRetainOrRollOverSMS() {
+        String subscriberNumber = "1234567890";
+
+        RetainOrRollOverChildCareProgramSMS retainOrRollOverSMS = (RetainOrRollOverChildCareProgramSMS) new RetainOrRollOverChildCareProgramSMS(subscriberNumber, true)
+                .setFromMobileNumber(subscriberNumber);
+        handler.retainOrRollOverChildCare(retainOrRollOverSMS);
+
+        verify(subscriptionService).retainOrRollOver(subscriberNumber, true);
+    }
 }

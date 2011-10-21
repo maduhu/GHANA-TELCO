@@ -10,7 +10,7 @@ public class RetainOrRollOverChildCareProgramSMS extends SMS<Boolean> {
 
     @Override
     public void process(SMSHandler handler) {
-//        handler.rollOver(this);
+        handler.retainOrRollOverChildCare(this);
     }
 
     public Boolean retainExistingProgram() {
