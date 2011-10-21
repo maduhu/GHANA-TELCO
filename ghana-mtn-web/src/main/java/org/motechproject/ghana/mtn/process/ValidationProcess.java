@@ -92,9 +92,9 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
         }
         return fromSubscription.canRollOff();
     }
-
+    
     @Override
-    public Boolean retainExistingChildCare(Subscription subscription) {
+    public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
         return true;
     }
 

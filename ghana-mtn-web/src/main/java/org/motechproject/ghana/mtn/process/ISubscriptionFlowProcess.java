@@ -7,5 +7,5 @@ public interface ISubscriptionFlowProcess {
     Boolean stopExpired(Subscription subscription);
     Boolean stopByUser(Subscription subscription);
     Boolean rollOver(Subscription fromSubscription, Subscription toSubscription);
-    Boolean retainExistingChildCare(Subscription subscription);
+    Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription);
 }

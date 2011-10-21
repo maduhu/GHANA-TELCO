@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -80,17 +81,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         performRollOver(subscription);
     }
 
-    private void performRollOver(Subscription subscription) {
-        Subscription rollOverSubscription = new Subscription(
-                subscription.getSubscriber(),
-                subscription.getProgramType().getRollOverProgramType(),
-                subscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE,
-                new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
-                DateUtil.now());
-
-        for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
-            if (process.rollOver(subscription, rollOverSubscription)) continue;
-            break;
+    @Override
+    public void retainOrRollOver(String subscriberNumber, boolean retainSubscription) {
+        Subscription pregnancyProgramWaitingForRollOver = allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE);
+        Subscription existingChildCare = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE);
+        if(retainSubscription) {
+            for (ISubscriptionFlowProcess process : asList(validation, persistence)) {
+                if (!process.retainExistingChildCare(pregnancyProgramWaitingForRollOver, existingChildCare)) break;
+            }
         }
     }
 
@@ -104,12 +102,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
     }
 
-    public void retainOrRollOver(String subscriberNumber, boolean retainSubscription) {
-        Subscription subscription = allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE);
-        if(retainSubscription) {
-            for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
-                if (!process.retainExistingChildCare(subscription)) break;
-            }
+    private void performRollOver(Subscription subscription) {
+        Subscription rollOverSubscription = new Subscription(
+                subscription.getSubscriber(),
+                subscription.getProgramType().getRollOverProgramType(),
+                subscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE,
+                new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
+                DateUtil.now());
+
+        for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
+            if (process.rollOver(subscription, rollOverSubscription)) continue;
+            break;
         }
     }
 }

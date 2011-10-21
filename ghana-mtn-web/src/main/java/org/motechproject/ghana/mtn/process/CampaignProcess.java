@@ -51,7 +51,7 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
     }
 
     @Override
-    public Boolean retainExistingChildCare(Subscription subscription) {
+    public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
         return true;
     }
 }

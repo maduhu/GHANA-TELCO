@@ -25,6 +25,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
 public class SubscriptionServiceImplTest {
 
@@ -263,22 +264,25 @@ public class SubscriptionServiceImplTest {
     public void shouldRetainExistingChildCareProgramForContinueWithExistingChildCareResponse() {
         String subscriberNumber = "1235467";
 
-        Subscription subscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(ACTIVE)
+        Subscription pregnancySubscriptionWaitingForRollOver = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(WAITING_FOR_ROLLOVER_RESPONSE)
                 .withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType).build();
+        Subscription childCareSubscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(ACTIVE)
+                .withSubscriber(new Subscriber(subscriberNumber)).withType(childCareProgramType).build();
 
-        when(allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(subscription);
+        when(allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(pregnancySubscriptionWaitingForRollOver);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(childCareSubscription);
 
-        when(validation.retainExistingChildCare(subscription)).thenReturn(true);
-        when(billing.retainExistingChildCare(subscription)).thenReturn(true);
-        when(campaign.retainExistingChildCare(subscription)).thenReturn(true);
-        when(persistence.retainExistingChildCare(subscription)).thenReturn(true);
+        when(validation.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
+        when(billing.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
+        when(campaign.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
+        when(persistence.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
 
         service.retainOrRollOver(subscriberNumber, true);
 
-        verify(validation).retainExistingChildCare(subscription);
-        verify(billing).retainExistingChildCare(subscription);
-        verify(campaign).retainExistingChildCare(subscription);
-        verify(persistence).retainExistingChildCare(subscription);
+        verify(validation).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(persistence).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(billing, never()).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(campaign, never()).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
     }
     
     private class SubscriptionMatcher extends ArgumentMatcher<Subscription> {

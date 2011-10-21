@@ -59,7 +59,7 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
     }
 
     @Override
-    public Boolean retainExistingChildCare(Subscription subscription) {
+    public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
         return true;
     }
 

@@ -10,8 +10,9 @@ public interface SubscriptionService {
     void start(Subscription subscription);
     void stopExpired(Subscription subscription);    
     void rollOver(String fromMobileNumber, Date deliveryDate);
-    void stopByUser(String fromMobileNumber, IProgramType domain);
     void rollOverByEvent(Subscription subscription);
+    void stopByUser(String fromMobileNumber, IProgramType domain);
+    void retainOrRollOver(String subscriberNumber, boolean retainSubscription);
     Subscription findActiveSubscriptionFor(String subscriberNumber, String programName);
     List<Subscription> activeSubscriptions(String subscriberNumber);
 }
