@@ -169,6 +169,11 @@ public class Subscription extends MotechAuditableDataObject {
         return programType.canRollOff();
     }
 
+    @JsonIgnore
+    public Boolean isPaymentDefaulted() {
+        return SubscriptionStatus.PAYMENT_DEFAULT.equals(status);
+    }
+
     public IProgramType rollOverProgramType() {
         return programType.getRollOverProgramType();
     }

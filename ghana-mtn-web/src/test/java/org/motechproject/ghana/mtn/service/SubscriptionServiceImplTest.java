@@ -4,10 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.IProgramType;
-import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.Subscriber;
-import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
@@ -198,6 +195,7 @@ public class SubscriptionServiceImplTest {
         when(source.currentDay()).thenReturn(Day.SUNDAY);
         when(source.isCompleted()).thenReturn(true);
         when(source.canRollOff()).thenReturn(true);
+        when(source.isPaymentDefaulted()).thenReturn(false);
         when(programType.getRollOverProgramType()).thenReturn(programType);
 
         when(validation.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
@@ -207,7 +205,7 @@ public class SubscriptionServiceImplTest {
 
         service.processAfterEvent(source);
 
-        SubscriptionMatcher matcher = new SubscriptionMatcher(subscriber, programType, week, Day.SUNDAY);
+        SubscriptionMatcher matcher = new SubscriptionMatcher(subscriber, programType, SubscriptionStatus.ACTIVE);
         verify(validation).rollOver(eq(source), argThat(matcher));
         verify(billing).rollOver(eq(source), argThat(matcher));
         verify(campaign).rollOver(eq(source), argThat(matcher));
@@ -218,17 +216,20 @@ public class SubscriptionServiceImplTest {
     private class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
         private Subscriber subscriber;
         private ProgramType programType;
+        private SubscriptionStatus status;
 
-        private SubscriptionMatcher(Subscriber subscriber, ProgramType programType, Week week, Day day) {
+        private SubscriptionMatcher(Subscriber subscriber, ProgramType programType, SubscriptionStatus status) {
             this.subscriber = subscriber;
             this.programType = programType;
+            this.status = status;
         }
 
         @Override
         public boolean matches(Object o) {
             Subscription subscription = (Subscription) o;
             return subscriber.equals(subscription.getSubscriber())
-                    && programType.equals(subscription.getProgramType());
+                    && programType.equals(subscription.getProgramType())
+                    && status.equals(subscription.getStatus());
         }
     }
 

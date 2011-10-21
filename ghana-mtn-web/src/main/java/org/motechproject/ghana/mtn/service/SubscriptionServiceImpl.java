@@ -1,7 +1,6 @@
 package org.motechproject.ghana.mtn.service;
 
 import org.motechproject.ghana.mtn.domain.IProgramType;
-import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.vo.Week;
@@ -77,13 +76,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void processAfterEvent(Subscription subscription) {
         if (!subscription.isCompleted()) return;
         if (!subscription.canRollOff()) stopExpired(subscription);
-        Subscription nextSubscription = new Subscription(
+
+        Subscription rollOverSubscription = new Subscription(
                 subscription.getSubscriber(),
                 subscription.getProgramType().getRollOverProgramType(),
-                SubscriptionStatus.ACTIVE,
+                subscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE,
                 new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
                 DateUtil.now());
-        rollOver(subscription, nextSubscription);
+        rollOver(subscription, rollOverSubscription);
     }
 
     @Override
