@@ -29,8 +29,8 @@ public class DeliveryMessageParserTest {
         initMocks(this);
 
         parser = new DeliveryMessageParser();
-        when(allShortCodes.getAllCodesFor(ShortCode.DELIVERY))
-                .thenReturn(asList(new ShortCode().setCodeKey(ShortCode.DELIVERY).setCodes(asList("delivery", "dd", "d"))));
+        when(allShortCodes.getShortCodeFor(ShortCode.DELIVERY))
+                .thenReturn(new ShortCode().setCodeKey(ShortCode.DELIVERY).setCodes(asList("delivery", "dd", "d")));
         setField(parser, "allShortCodes", allShortCodes);
         setField(parser, "allProgramTypes", allProgramTypes);
     }

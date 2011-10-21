@@ -9,8 +9,6 @@ import org.motechproject.ghana.mtn.exception.InvalidMobileNumberException;
 import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.ghana.mtn.vo.ParsedRequest;
 
-import java.util.Arrays;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -18,6 +16,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RelativeProgramMessageParserTest {
+    public static final ShortCode RELATIVE_SHORTCODE = new ShortCodeBuilder().withShortCode("R").build();
     private RelativeProgramMessageParser relativeRegisterProgramMessageParser;
     @Mock
     private AllShortCodes mockAllShortCodes;
@@ -25,7 +24,7 @@ public class RelativeProgramMessageParserTest {
     @Before
     public void setUp() {
         initMocks(this);
-        when(mockAllShortCodes.getAllCodesFor(ShortCode.RELATIVE)).thenReturn(Arrays.asList(new ShortCodeBuilder().withShortCode("R").build()));
+        when(mockAllShortCodes.getShortCodeFor(ShortCode.RELATIVE)).thenReturn(RELATIVE_SHORTCODE);
         relativeRegisterProgramMessageParser = new RelativeProgramMessageParser(mockAllShortCodes);
     }
 
@@ -46,7 +45,7 @@ public class RelativeProgramMessageParserTest {
         String inputMessage = "R " + mobileNumber + " P 12";
         String senderNumber = "0987654321";
 
-        when(mockAllShortCodes.getAllCodesFor(ShortCode.RELATIVE)).thenReturn(Arrays.asList(new ShortCodeBuilder().withShortCode("R").build()));
+        when(mockAllShortCodes.getShortCodeFor(ShortCode.RELATIVE)).thenReturn(RELATIVE_SHORTCODE);
 
         relativeRegisterProgramMessageParser.parse(inputMessage, senderNumber);
     }
@@ -57,7 +56,7 @@ public class RelativeProgramMessageParserTest {
         String inputMessage = "R " + mobileNumber + " P 12";
         String senderNumber = "0987654321";
 
-        when(mockAllShortCodes.getAllCodesFor(ShortCode.RELATIVE)).thenReturn(Arrays.asList(new ShortCodeBuilder().withShortCode("R").build()));
+        when(mockAllShortCodes.getShortCodeFor(ShortCode.RELATIVE)).thenReturn(RELATIVE_SHORTCODE);
 
         relativeRegisterProgramMessageParser.parse(inputMessage,senderNumber);
     }
@@ -67,7 +66,7 @@ public class RelativeProgramMessageParserTest {
         String inputMessage = " P 12";
         String senderNumber = "0987654321";
 
-        when(mockAllShortCodes.getAllCodesFor(ShortCode.RELATIVE)).thenReturn(Arrays.asList(new ShortCodeBuilder().withShortCode("R").build()));
+        when(mockAllShortCodes.getShortCodeFor(ShortCode.RELATIVE)).thenReturn(RELATIVE_SHORTCODE);
 
         ParsedRequest parsedRequest = relativeRegisterProgramMessageParser.parse(inputMessage, senderNumber);
 

@@ -19,8 +19,9 @@ public class AllShortCodes extends MotechAuditableRepository<ShortCode> {
     }
 
     @View(name = "get_all_short_code_for", map = "function(doc) { emit(doc.codeKey, doc) }")
-    public List<ShortCode> getAllCodesFor(String codeKey) {
+    public ShortCode getShortCodeFor(String codeKey) {
         ViewQuery query = createQuery("get_all_short_code_for").key(codeKey);
-        return db.queryView(query, ShortCode.class);
+        List<ShortCode> shortCodes = db.queryView(query, ShortCode.class);
+        return null != shortCodes ? shortCodes.get(0) : null;
     }
 }

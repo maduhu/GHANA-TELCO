@@ -74,8 +74,8 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
         Subscription existingChildCareSubscription = allSubscriptions.findActiveSubscriptionFor(fromSubscription.subscriberNumber(), IProgramType.CHILDCARE);
         if (existingChildCareSubscription != null) {
-            String retainExistingCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM));
-            String rollOverToNewCCProgramShortCode = formatShortCode(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM));
+            String retainExistingCCProgramShortCode = formatShortCode(allShortCodes.getShortCodeFor(RETAIN_EXISTING_CHILDCARE_PROGRAM));
+            String rollOverToNewCCProgramShortCode = formatShortCode(allShortCodes.getShortCodeFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM));
 
             sendMessage(existingChildCareSubscription.subscriberNumber(), format(messageFor(ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY),
                     retainExistingCCProgramShortCode, rollOverToNewCCProgramShortCode));
@@ -137,7 +137,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
         return !isEmpty(subscriptions);
     }
 
-    private String formatShortCode(List<ShortCode> shortCodes) {
-        return isEmpty(shortCodes) ? "" : shortCodes.get(0).defaultCode();
+    private String formatShortCode(ShortCode shortCode) {
+        return isEmpty(shortCode.getCodes()) ? "" : shortCode.defaultCode();
     }
 }

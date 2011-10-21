@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static ch.lambdaj.Lambda.*;
+import static java.util.Arrays.asList;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 @Component
@@ -50,7 +51,11 @@ public class RelativeProgramMessageParser {
     }
 
     private String getShortCodesForRelativeSubscription() {
-        return joinFrom(flatten(extract(allShortCodes.getAllCodesFor(ShortCode.RELATIVE), on(ShortCode.class).getCodes())), "|").toString();
+        return joinFrom(flatten(extract(allShortCodes.getShortCodeFor(ShortCode.RELATIVE).getCodes(), on(String.class))), "|").toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(joinFrom(flatten(extract(asList("a", "b", "c"), on(String.class))), "|").toString());
     }
 
     public Pattern getPattern() {

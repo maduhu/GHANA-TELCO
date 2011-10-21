@@ -7,12 +7,10 @@ import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 import static ch.lambdaj.Lambda.*;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 public abstract class MessageParser {
 
@@ -36,9 +34,8 @@ public abstract class MessageParser {
     }
 
     protected String shortCodePattern(String key) {
-        List<ShortCode> shortCodes = allShortCodes.getAllCodesFor(key);
-        List<String> codes = isEmpty(shortCodes) ? null : shortCodes.get(0).getCodes();
-        return isNotEmpty(codes) ? join(codes, "|") : "";
+        ShortCode shortCode = allShortCodes.getShortCodeFor(key);
+        return isNotEmpty(shortCode.getCodes()) ? join(shortCode.getCodes(), "|") : "";
     }
 
     public abstract void recompilePatterns();

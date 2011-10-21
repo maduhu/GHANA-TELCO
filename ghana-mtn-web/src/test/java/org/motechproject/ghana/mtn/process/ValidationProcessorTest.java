@@ -225,8 +225,8 @@ public class ValidationProcessorTest {
         String decisionMessageToRollOver = format("You can have only one active child care program at a time. Please message \"%s\" to xxxx to retain the existing program and terminate the roll over. \\\n" +
                 "  Please message \"%s\" to xxxx to continue with the roll over an terminate the existing program.", codeForRetainChildCare.defaultCode(), codeForRollOverChildCare.defaultCode());
 
-        when(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM)).thenReturn(asList(codeForRetainChildCare));
-        when(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM)).thenReturn(asList(codeForRollOverChildCare));
+        when(allShortCodes.getShortCodeFor(RETAIN_EXISTING_CHILDCARE_PROGRAM)).thenReturn(codeForRetainChildCare);
+        when(allShortCodes.getShortCodeFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM)).thenReturn(codeForRollOverChildCare);
         when(messageBundle.get(ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY)).thenReturn(decisionMessageToRollOver);
 
         Subscription existingChildcareSubscription = subscriptionBuilder(subscriberNumber, childCareProgramType).build();
