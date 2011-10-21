@@ -1,11 +1,12 @@
 package org.motechproject.ghana.mtn.domain;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.List;
+
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 @TypeDiscriminator("doc.type === 'ShortCode'")
 public class ShortCode extends MotechAuditableDataObject {
@@ -39,6 +40,6 @@ public class ShortCode extends MotechAuditableDataObject {
     }
 
     public String defaultCode()  {
-        return CollectionUtils.isNotEmpty(this.codes) ? this.codes.get(0) : ""; 
+        return isNotEmpty(this.codes) ? this.codes.get(0) : ""; 
     }
 }

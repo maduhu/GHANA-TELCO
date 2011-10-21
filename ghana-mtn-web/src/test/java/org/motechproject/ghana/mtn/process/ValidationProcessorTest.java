@@ -12,6 +12,8 @@ import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ShortCodeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.exception.InvalidProgramException;
+import org.motechproject.ghana.mtn.matchers.SMSServiceRequestMatcher;
 import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
@@ -31,6 +33,7 @@ import static org.motechproject.ghana.mtn.TestData.childProgramType;
 import static org.motechproject.ghana.mtn.TestData.pregnancyProgramType;
 import static org.motechproject.ghana.mtn.domain.IProgramType.CHILDCARE;
 import static org.motechproject.ghana.mtn.domain.IProgramType.PREGNANCY;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
 import static org.motechproject.ghana.mtn.domain.ShortCode.RETAIN_EXISTING_CHILDCARE_PROGRAM;
 import static org.motechproject.ghana.mtn.domain.ShortCode.USE_ROLLOVER_TO_CHILDCARE_PROGRAM;
 
@@ -68,7 +71,7 @@ public class ValidationProcessorTest {
 
         setupSubscriptionMock(mobileNumber, programKey, programType, subscription);
         when(subscription.isNotValid()).thenReturn(true);
-        when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn(errMsg);
+        when(messageBundle.get(MessageBundle.REQUEST_FAILURE)).thenReturn(errMsg);
 
         Boolean reply = validation.startFor(subscription);
 
@@ -181,20 +184,20 @@ public class ValidationProcessorTest {
         String subscriberNumber = "9500012345";
         String errorMess = "not enrolled error message";
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber)).thenReturn(Collections.<Subscription>emptyList());
-        when(messageBundle.get(MessageBundle.STOP_NOT_ENROLLED)).thenReturn(errorMess);
+        when(messageBundle.get(NOT_ENROLLED)).thenReturn(errorMess);
 
         Subscription actualSubscription = validation.validateSubscriptionToStop(subscriberNumber, childCareProgramType);
         assertNull(actualSubscription);
         assertSMSRequest(subscriberNumber, errorMess, null);
     }
-    
+
     @Test
     public void shouldSendErrorSMSIfUserEnrolledTryToStopProgramWithWrongProgramType() {
         String subscriberNumber = "9500012345";
         String errorMess = "error message";
         Subscription subscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
         when(allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber)).thenReturn(asList(subscription));
-        when(messageBundle.get(MessageBundle.STOP_NOT_ENROLLED)).thenReturn(errorMess);
+        when(messageBundle.get(NOT_ENROLLED)).thenReturn(errorMess);
 
         Subscription actualSubscription = validation.validateSubscriptionToStop(subscriberNumber, childCareProgramType);
         assertNull(actualSubscription);
@@ -224,7 +227,7 @@ public class ValidationProcessorTest {
 
         when(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM)).thenReturn(asList(codeForRetainChildCare));
         when(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM)).thenReturn(asList(codeForRollOverChildCare));
-        when(messageBundle.get(MessageBundle.ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY)).thenReturn(decisionMessageToRollOver);
+        when(messageBundle.get(ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY)).thenReturn(decisionMessageToRollOver);
 
         Subscription existingChildcareSubscription = subscriptionBuilder(subscriberNumber, childCareProgramType).build();
 
@@ -249,6 +252,46 @@ public class ValidationProcessorTest {
         Subscription actualSubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
         assertNotNull(actualSubscription);
         verify(smsService, never()).send(Matchers.<SMSServiceRequest>any());
+    }
+
+    @Test
+    public void shouldReturnTrueIfnPregnancySubscriptionWaitingForRollOver_OrChildCareSubscriptionExists() {
+
+        String subscriberNumber = "9500012345";
+        Subscription pregnancySubscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
+
+        assertTrue(validation.retainExistingChildCare(pregnancySubscription, mock(Subscription.class)));
+        verifyZeroInteractions(smsService);
+    }
+    
+    @Test
+    public void shouldSendErrorMessageWhenPregnancySubscriptionWaitingForRollOver_OrChildCareSubscriptionDoesNotExist() {
+
+        String subscriberNumber = "9500012345";
+        Subscription pregnancySubscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
+        String errorMessage = "error message";
+        when(messageBundle.get(ROLLOVER_NO_PENDING_PREGNANCY_PROGRAM)).thenReturn(errorMessage);
+
+        assertFalse(validation.retainExistingChildCare(pregnancySubscription, null));
+        ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
+        verify(smsService).send(captor.capture());
+
+        assertThat(captor.getValue(), new SMSServiceRequestMatcher(subscriberNumber, errorMessage, null));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenCustomerIsNotEnrolledForPregnancySubscription() {
+
+        String errorMessage = "error message";
+        when(messageBundle.get(NOT_ENROLLED)).thenReturn(errorMessage);
+
+        try {
+            validation.retainExistingChildCare(null, null);
+            throw new AssertionError();
+        } catch (InvalidProgramException e) {
+            assertThat(e.getMessage(), is(errorMessage));
+        }
+        verifyZeroInteractions(smsService);
     }
 
     private void assertSMSRequest(String mobileNumber, String errorMsg, String programKey) {

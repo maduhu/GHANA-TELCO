@@ -4,13 +4,13 @@ import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.exception.InvalidProgramException;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -18,9 +18,10 @@ import java.util.List;
 import static ch.lambdaj.Lambda.*;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.equalTo;
-import static org.motechproject.ghana.mtn.domain.MessageBundle.ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
 import static org.motechproject.ghana.mtn.domain.ShortCode.RETAIN_EXISTING_CHILDCARE_PROGRAM;
 import static org.motechproject.ghana.mtn.domain.ShortCode.USE_ROLLOVER_TO_CHILDCARE_PROGRAM;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
 public class ValidationProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
@@ -42,7 +43,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     public Boolean startFor(Subscription subscription) {
         String subscriberNumber = subscription.subscriberNumber();
         if (subscription.isNotValid()) {
-            sendMessage(subscription, messageFor(MessageBundle.ENROLLMENT_FAILURE));
+            sendMessage(subscription, messageFor(REQUEST_FAILURE));
             return false;
         }
         if (hasActiveSubscription(subscriberNumber, subscription)) {
@@ -57,13 +58,6 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
             return false;
         }
         return true;
-    }
-
-    private boolean hasActiveSubscription(String subscriberNumber, Subscription subscription) {
-        List<Subscription> activeSubscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
-        List<Subscription> subscriptions = select(activeSubscriptions, having(on(Subscription.class).getProgramType(),
-                new ProgramTypeMatcher(subscription.getProgramType())));
-        return !CollectionUtils.isEmpty(subscriptions);
     }
 
     @Override
@@ -92,14 +86,17 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
         }
         return fromSubscription.canRollOff();
     }
-    
+
     @Override
     public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
-        return true;
-    }
 
-    private String formatShortCode(List<ShortCode> shortCodes) {
-        return shortCodes.get(0) != null ? shortCodes.get(0).defaultCode() : "";
+        if (pregnancySubscriptionWaitingForRollOver == null)
+            throw new InvalidProgramException(messageFor(NOT_ENROLLED));
+        if (childCareSubscription == null) {
+            sendMessage(pregnancySubscriptionWaitingForRollOver.subscriberNumber(), messageFor(ROLLOVER_NO_PENDING_PREGNANCY_PROGRAM));
+            return false;
+        }
+        return true;
     }
 
     public Subscription validateSubscriptionToStop(String subscriberNumber, IProgramType programType) {
@@ -108,14 +105,14 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
         boolean isUserWith2ProgrammesDidNotSpecifyProgramToStop = subscriptions.size() > 1 && programType == null;
 
         if (subscriptions.size() == 0) {
-            sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
+            sendMessage(subscriberNumber, messageFor(NOT_ENROLLED));
         } else if (isUserWith2ProgrammesDidNotSpecifyProgramToStop) {
             sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_SPECIFY_PROGRAM));
         } else {
             Subscription subscriptionToStop = programType != null ?
                     (Subscription) selectUnique(subscriptions, having(on(Subscription.class).programKey(), equalTo(programType.getProgramKey()))) :
                     subscriptions.get(0);
-            if (subscriptionToStop == null) sendMessage(subscriberNumber, messageFor(MessageBundle.STOP_NOT_ENROLLED));
+            if (subscriptionToStop == null) sendMessage(subscriberNumber, messageFor(NOT_ENROLLED));
             return subscriptionToStop;
         }
         return null;
@@ -126,5 +123,16 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
         if (null == subscription)
             sendMessage(subscriberNumber, messageFor(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION));
         return subscription;
+    }
+
+    private boolean hasActiveSubscription(String subscriberNumber, Subscription subscription) {
+        List<Subscription> activeSubscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
+        List<Subscription> subscriptions = select(activeSubscriptions, having(on(Subscription.class).getProgramType(),
+                new ProgramTypeMatcher(subscription.getProgramType())));
+        return !isEmpty(subscriptions);
+    }
+
+    private String formatShortCode(List<ShortCode> shortCodes) {
+        return isEmpty(shortCodes) ? "" : shortCodes.get(0).defaultCode();
     }
 }

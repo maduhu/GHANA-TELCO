@@ -85,7 +85,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void retainOrRollOver(String subscriberNumber, boolean retainSubscription) {
         Subscription pregnancyProgramWaitingForRollOver = allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE);
         Subscription existingChildCare = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE);
-        if(retainSubscription) {
+        if (retainSubscription) {
             for (ISubscriptionFlowProcess process : asList(validation, persistence)) {
                 if (!process.retainExistingChildCare(pregnancyProgramWaitingForRollOver, existingChildCare)) break;
             }

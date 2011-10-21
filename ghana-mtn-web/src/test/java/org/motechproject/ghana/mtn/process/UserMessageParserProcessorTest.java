@@ -10,9 +10,9 @@ import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.exception.MessageParseFailException;
+import org.motechproject.ghana.mtn.parser.CompositeInputMessageParser;
 import org.motechproject.ghana.mtn.parser.RelativeProgramMessageParser;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.ghana.mtn.parser.CompositeInputMessageParser;
 import org.motechproject.ghana.mtn.vo.ParsedRequest;
 
 import static org.hamcrest.core.Is.is;
@@ -46,7 +46,7 @@ public class UserMessageParserProcessorTest {
         String input = "P 24";
 
         when(inputParser.parse(input, mobileNumber)).thenThrow(new MessageParseFailException(""));
-        when(messageBundle.get(MessageBundle.ENROLLMENT_FAILURE)).thenReturn(errorMsg);
+        when(messageBundle.get(MessageBundle.REQUEST_FAILURE)).thenReturn(errorMsg);
 
         parserHandle.process(mobileNumber, input);
 

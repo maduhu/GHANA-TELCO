@@ -13,8 +13,8 @@ import java.util.Properties;
 public class MessageBundle {
     private Properties values;
     public static final String PROGRAM_NAME_MARKER = "${p}";
+    public static final String REQUEST_FAILURE = "request.failure";
     public static final String ENROLLMENT_SUCCESS = "enrollment.success";
-    public static final String ENROLLMENT_FAILURE = "enrollment.failure";
     public static final String ENROLLMENT_STOPPED = "enrollment.stopped";
     public static final String ENROLLMENT_ROLlOVER = "enrollment.rollover";
     public static final String ACTIVE_SUBSCRIPTION_PRESENT = "enrollment.active.subscription.present";
@@ -25,12 +25,13 @@ public class MessageBundle {
     public static final String BILLING_ROLLOVER = "billing.rollover";
 
     public static final String INVALID_MOBILE_NUMBER = "enrollment.invalid.mobile.number";
-    public static final String STOP_NOT_ENROLLED = "not.enrolled";
+    public static final String NOT_ENROLLED = "not.enrolled";
     public static final String STOP_SPECIFY_PROGRAM = "stop.specify.program";
     public static final String STOP_SUCCESS = "stop.success";
     public static final String STOP_PROGRAM_SUCCESS = "stop.program.success";
-    public static final String ROLLOVER_INVALID_SUBSCRIPTION = STOP_NOT_ENROLLED;
+    public static final String ROLLOVER_INVALID_SUBSCRIPTION = NOT_ENROLLED;
     public static final String ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY = "rollover.not.possible";
+    public static final String ROLLOVER_NO_PENDING_PREGNANCY_PROGRAM = "rollover.no.pending.pregnancy.program";
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {
