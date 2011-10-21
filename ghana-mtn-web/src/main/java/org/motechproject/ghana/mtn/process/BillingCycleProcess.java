@@ -15,6 +15,7 @@ import org.motechproject.ghana.mtn.service.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static java.lang.String.format;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_ROLLOVER;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_STOPPED;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
@@ -45,7 +46,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
         BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(),
                 subscription.getProgramType(), subscription.billingStartDate());
         subscription.setStatus(SubscriptionStatus.EXPIRED);
-        return stopFor(subscription, request, BILLING_STOPPED);
+        return stopFor(subscription, request, messageFor(BILLING_STOPPED));
     }
 
     @Override
@@ -53,24 +54,21 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
         BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(),
                 subscription.getProgramType(), subscription.billingStartDate());
         subscription.setStatus(SubscriptionStatus.SUSPENDED);
-        return stopFor(subscription, request, BILLING_STOPPED);
+        return stopFor(subscription, request, messageFor(BILLING_STOPPED));
     }
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
 
         if (WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
-            return stopFor(fromSubscription, billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), null), BILLING_STOPPED);
+            return stopFor(fromSubscription, billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), null), messageFor(BILLING_STOPPED));
         }
 
         DateTime billingStartDateFromSubscription = fromSubscription.billingStartDate();
-        BillingCycleRequest fromRequest = billingRequest(fromSubscription.subscriberNumber(),
-                fromSubscription.getProgramType(), billingStartDateFromSubscription);
+        BillingCycleRequest fromRequest = billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), billingStartDateFromSubscription);
+        BillingCycleRequest toRequest = billingRequest(toSubscription.subscriberNumber(), toSubscription.getProgramType(), billingStartDateFromSubscription);
 
-        BillingCycleRequest toRequest = billingRequest(toSubscription.subscriberNumber(),
-                toSubscription.getProgramType(), billingStartDateFromSubscription);
-
-        return handleResponse(toSubscription, billingService.rollOverBilling(new BillingCycleRollOverRequest(fromRequest, toRequest)), BILLING_ROLLOVER);
+        return handleResponse(toSubscription, billingService.rollOverBilling(new BillingCycleRollOverRequest(fromRequest, toRequest)), messageFor(BILLING_ROLLOVER));
     }
 
     @Override
@@ -78,27 +76,22 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
         return true;
     }
 
-    private boolean handleResponse(Subscription subscription, BillingServiceResponse response, String successMsgKey) {
-        if (response.hasErrors()) {
-            sendMessage(subscription, messageFor(response.getValidationErrors()));
-            return false;
-        }
-        sendMessage(subscription, messageFor(successMsgKey));
-        return true;
-    }
-
-    private Boolean stopFor(Subscription subscription, BillingCycleRequest request, String successMsgKey) {
-        return handleResponse(subscription, billingService.stopBilling(request), successMsgKey);
+    private Boolean stopFor(Subscription subscription, BillingCycleRequest request, String successMsg) {
+        return handleResponse(subscription, billingService.stopBilling(request), successMsg);
     }
 
     private Boolean startFor(Subscription subscription, BillingCycleRequest request, String msgKey) {
         BillingServiceResponse<CustomerBill> response = billingService.startBilling(request);
+        String successMsg = response.hasErrors() ? null : format(messageFor(msgKey), response.getValue().amountCharged());
+        return handleResponse(subscription, response, successMsg);
+    }
+
+    private boolean handleResponse(Subscription subscription, BillingServiceResponse response, String successMsg) {
         if (response.hasErrors()) {
             sendMessage(subscription, messageFor(response.getValidationErrors()));
             return false;
         }
-        String content = String.format(messageFor(msgKey), response.getValue().amountCharged());
-        sendMessage(subscription, content);
+        sendMessage(subscription, successMsg);
         return true;
     }
 
