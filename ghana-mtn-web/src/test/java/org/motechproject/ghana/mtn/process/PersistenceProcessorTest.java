@@ -3,17 +3,19 @@ package org.motechproject.ghana.mtn.process;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.MessageBundle;
-import org.motechproject.ghana.mtn.domain.Subscriber;
-import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.TestData;
+import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
 public class PersistenceProcessorTest {
     private PersistenceProcess persistence;
@@ -25,6 +27,8 @@ public class PersistenceProcessorTest {
     private AllSubscribers allSubscribers;
     @Mock
     private AllSubscriptions allSubscriptions;
+
+    public final ProgramType childCareProgramType = TestData.childProgramType().build();
 
     @Before
     public void setUp() {
@@ -80,6 +84,19 @@ public class PersistenceProcessorTest {
 
         verify(allSubscriptions).update(source);
         verify(allSubscriptions).add(target);
+    }
 
+    @Test
+    public void shouldUpdateSubscriptionStateToWaitingForResponseAndTargetSubscriptionShouldNotBeSaved() {
+        Subscription source = new SubscriptionBuilder().withType(childCareProgramType).withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
+        Subscription target = mock(Subscription.class);
+
+        Boolean reply = persistence.rollOver(source, target);
+
+        assertTrue(reply);
+        verify(target, never()).updateStartCycleInfo();
+        assertThat(source.getStatus(), is(WAITING_FOR_ROLLOVER_RESPONSE));
+        verify(allSubscriptions).update(source);
+        verify(allSubscriptions, never()).add(target);
     }
 }

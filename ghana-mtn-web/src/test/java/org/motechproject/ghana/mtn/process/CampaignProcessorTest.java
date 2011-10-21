@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
@@ -91,6 +92,23 @@ public class CampaignProcessorTest {
         verify(campaignService).stopFor(sourceRequest);
         verify(campaignService).startFor(targetRequest);
         assertSMS(message);
+    }
+
+    @Test
+    public void shouldNotStartCampaignWhenSubscriptionIsInWaitingForResponseStatusDuringRollOver() {
+        Subscription source = mock(Subscription.class);
+        Subscription target = mock(Subscription.class);
+        CampaignRequest sourceRequest = mock(CampaignRequest.class);
+
+        when(source.getStatus()).thenReturn(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE);
+        when(source.createCampaignRequest()).thenReturn(sourceRequest);
+
+        Boolean reply = campaign.rollOver(source, target);
+
+        assertTrue(reply);
+        verify(campaignService).stopFor(sourceRequest);
+        verifyNoMoreInteractions(campaignService);
+        verifyZeroInteractions(smsService);
     }
 
     private void assertSMS(String message) {

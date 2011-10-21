@@ -223,8 +223,8 @@ public class BillingCycleProcessorTest {
     public void shouldStopBillingCycleForPregnancyProgramForRollOver_IfThereIsAExistingChildCareProgram() {
         String subscriberNumber = "9500012345";
         DateTime deliveryDate = DateUtil.newDate(2011, 10, 10).toDateTimeAtCurrentTime();
-        Subscription fromSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType).build();
-        fromSubscription.setStatus(WAITING_FOR_ROLLOVER_RESPONSE);
+        Subscription fromSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType)
+                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
         Subscription toSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), childCarePregnancyType).build();
 
         when(billingService.stopBilling(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));

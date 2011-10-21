@@ -7,6 +7,8 @@ import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
+
 @Component
 public class CampaignProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private MessageCampaignService campaignService;
@@ -41,8 +43,10 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
         campaignService.stopFor(fromSubscription.createCampaignRequest());
-        campaignService.startFor(toSubscription.createCampaignRequest());
-        sendMessage(toSubscription, messageFor(MessageBundle.ENROLLMENT_ROLlOVER));
+        if (!WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
+            campaignService.startFor(toSubscription.createCampaignRequest());
+            sendMessage(toSubscription, messageFor(MessageBundle.ENROLLMENT_ROLlOVER));
+        }
         return true;
     }
 

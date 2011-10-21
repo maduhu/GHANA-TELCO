@@ -9,6 +9,8 @@ import org.motechproject.ghana.mtn.service.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
+
 @Component
 public class PersistenceProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private AllSubscribers allSubscribers;
@@ -46,11 +48,13 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
+        if (!WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
+            fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
+            toSubscription.setStatus(fromSubscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE);
+            toSubscription.updateStartCycleInfo();
+            allSubscriptions.add(toSubscription);
+        }
         allSubscriptions.update(fromSubscription);
-        toSubscription.setStatus(fromSubscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE);
-        toSubscription.updateStartCycleInfo();
-        allSubscriptions.add(toSubscription);
         return true;
     }
 

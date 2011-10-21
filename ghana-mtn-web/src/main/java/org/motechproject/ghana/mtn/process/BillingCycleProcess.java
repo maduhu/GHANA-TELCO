@@ -91,11 +91,11 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
             sendMessage(subscription, messageFor(response.getValidationErrors()));
             return false;
         }
-        if(isNotEmpty(successMsg)) sendMessage(subscription, successMsg);
+        if (isNotEmpty(successMsg)) sendMessage(subscription, successMsg);
         return true;
     }
 
     private BillingCycleRequest billingRequest(String subscriberNumber, IProgramType programType, DateTime cycleStartDate) {
-         return new BillingCycleRequest(subscriberNumber, programType, cycleStartDate);
+        return new BillingCycleRequest(subscriberNumber, programType, cycleStartDate);
     }
 }
