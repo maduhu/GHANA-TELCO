@@ -31,8 +31,8 @@ public class RetainOrRollOverChildCareMessageParserTest {
         initMocks(this);
         retainOrRollOverChildCareMessageParser = new RetainOrRollOverChildCareMessageParser();
         setField(retainOrRollOverChildCareMessageParser, "allShortCodes", allShortCodes);
-        when(allShortCodes.getAllCodesFor(RETAIN_EXISTING_CHILDCARE_PROGRAM)).thenReturn(asList(shortCodeBuilder(RETAIN_EXISTING_CHILDCARE_PROGRAM, asList("E", "ee")).build()));
-        when(allShortCodes.getAllCodesFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM)).thenReturn(asList(shortCodeBuilder(USE_ROLLOVER_TO_CHILDCARE_PROGRAM, asList("N", "nn")).build()));
+        when(allShortCodes.getShortCodeFor(RETAIN_EXISTING_CHILDCARE_PROGRAM)).thenReturn(shortCodeBuilder(RETAIN_EXISTING_CHILDCARE_PROGRAM, asList("E", "ee")).build());
+        when(allShortCodes.getShortCodeFor(USE_ROLLOVER_TO_CHILDCARE_PROGRAM)).thenReturn(shortCodeBuilder(USE_ROLLOVER_TO_CHILDCARE_PROGRAM, asList("N", "nn")).build());
     }
 
     @Test

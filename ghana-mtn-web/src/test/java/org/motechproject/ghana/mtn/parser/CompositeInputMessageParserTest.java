@@ -71,8 +71,8 @@ public class CompositeInputMessageParserTest {
     }
 
     private void mockShortCode(String shortCodeKey, List<String> shortCodes) {
-        when(allShortCodes.getAllCodesFor(shortCodeKey))
-                .thenReturn(asList(new ShortCode().setCodeKey(shortCodeKey).setCodes(shortCodes)));
+        when(allShortCodes.getShortCodeFor(shortCodeKey))
+                .thenReturn(new ShortCode().setCodeKey(shortCodeKey).setCodes(shortCodes));
     }
 
     @Test
