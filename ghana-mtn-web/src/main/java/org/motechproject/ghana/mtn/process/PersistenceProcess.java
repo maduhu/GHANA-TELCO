@@ -49,7 +49,8 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
         fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
         allSubscriptions.update(fromSubscription);
         toSubscription.setStatus(SubscriptionStatus.ACTIVE);
-        allSubscriptions.update(toSubscription);
+        toSubscription.updateStartCycleInfo();
+        allSubscriptions.add(toSubscription);
         return true;
     }
 

@@ -27,7 +27,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
                 subscription.subscriberNumber(),
                 subscription.getProgramType(),
                 subscription.billingStartDate());
-        return startFor(subscription, request);
+        return startFor(subscription, request, MessageBundle.BILLING_SUCCESS);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
                 subscription.subscriberNumber(),
                 subscription.getProgramType(),
                 subscription.billingStartDate());
-        return stopFor(subscription, request, SubscriptionStatus.EXPIRED);
+        return stopFor(subscription, request, SubscriptionStatus.EXPIRED, MessageBundle.BILLING_STOPPED);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
                 toSubscription.subscriberNumber(),
                 toSubscription.getProgramType(),
                 fromSubscription.billingStartDate());
-        return startFor(toSubscription, request);
+        return startFor(toSubscription, request, MessageBundle.BILLING_ROLLOVER);
     }
 
     @Override
@@ -55,27 +55,27 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
                 subscription.subscriberNumber(),
                 subscription.getProgramType(),
                 subscription.billingStartDate());
-        return stopFor(subscription, request, SubscriptionStatus.SUSPENDED);
+        return stopFor(subscription, request, SubscriptionStatus.SUSPENDED, MessageBundle.BILLING_STOPPED);
     }
 
-    private Boolean stopFor(Subscription subscription, BillingCycleRequest request, SubscriptionStatus status) {
+    private Boolean stopFor(Subscription subscription, BillingCycleRequest request, SubscriptionStatus status, String msgKey) {
         BillingServiceResponse<CustomerBill> response = billingService.stopBilling(request);
         if (response.hasErrors()) {
             sendMessage(subscription, messageFor(response.getValidationErrors()));
             return false;
         }
         subscription.setStatus(status);
-        sendMessage(subscription, messageFor(MessageBundle.BILLING_STOPPED));
+        sendMessage(subscription, messageFor(msgKey));
         return true;
     }
 
-    private Boolean startFor(Subscription subscription, BillingCycleRequest request) {
+    private Boolean startFor(Subscription subscription, BillingCycleRequest request, String msgKey) {
         BillingServiceResponse<CustomerBill> response = billingService.startBilling(request);
         if (response.hasErrors()) {
             sendMessage(subscription, messageFor(response.getValidationErrors()));
             return false;
         }
-        String content = String.format(messageFor(MessageBundle.BILLING_SUCCESS), response.getValue().amountCharged());
+        String content = String.format(messageFor(msgKey), response.getValue().amountCharged());
         sendMessage(subscription, content);
         return true;
     }

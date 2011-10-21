@@ -202,7 +202,7 @@ public class BillingCycleProcessorTest {
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(sourceResponse);
         when(billingService.startBilling(any(BillingCycleRequest.class))).thenReturn(targetResponse);
         when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
-        when(messageBundle.get(MessageBundle.BILLING_SUCCESS)).thenReturn("billing success");
+        when(messageBundle.get(MessageBundle.BILLING_ROLLOVER)).thenReturn("billing rolled over");
 
         billing.rollOver(sourceSubscription, targetSubscription);
 

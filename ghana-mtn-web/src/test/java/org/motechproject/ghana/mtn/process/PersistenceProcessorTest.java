@@ -66,7 +66,7 @@ public class PersistenceProcessorTest {
     }
 
     @Test
-    public void shouldUpdateSubscriptionStateOfSourceAndTargetSubscription(){
+    public void shouldUpdateSubscriptionStateOfSourceAndTargetSubscription() {
         Subscription source = mock(Subscription.class);
         Subscription target = mock(Subscription.class);
 
@@ -75,8 +75,10 @@ public class PersistenceProcessorTest {
         assertTrue(reply);
         verify(source).setStatus(SubscriptionStatus.ROLLED_OFF);
         verify(target).setStatus(SubscriptionStatus.ACTIVE);
+        verify(target).updateStartCycleInfo();
+
         verify(allSubscriptions).update(source);
-        verify(allSubscriptions).update(target);
+        verify(allSubscriptions).add(target);
 
     }
 }

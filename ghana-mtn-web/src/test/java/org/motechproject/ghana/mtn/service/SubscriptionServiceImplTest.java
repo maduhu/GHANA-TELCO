@@ -172,6 +172,7 @@ public class SubscriptionServiceImplTest {
         when(subscription.isCompleted()).thenReturn(true);
         when(subscription.canRollOff()).thenReturn(false);
         when(subscription.getProgramType()).thenReturn(programType);
+        when(subscription.rollOverProgramType()).thenReturn(programType);
         when(billing.stopExpired(subscription)).thenReturn(true);
         when(campaign.stopExpired(subscription)).thenReturn(true);
         when(persistence.stopExpired(subscription)).thenReturn(true);
@@ -192,6 +193,7 @@ public class SubscriptionServiceImplTest {
 
         when(source.getSubscriber()).thenReturn(subscriber);
         when(source.getProgramType()).thenReturn(programType);
+        when(source.rollOverProgramType()).thenReturn(programType);
         when(source.currentWeek()).thenReturn(week);
         when(source.currentDay()).thenReturn(Day.SUNDAY);
         when(source.isCompleted()).thenReturn(true);
@@ -214,26 +216,19 @@ public class SubscriptionServiceImplTest {
     }
 
     private class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
-
         private Subscriber subscriber;
         private ProgramType programType;
-        private Week week;
-        private Day day;
 
         private SubscriptionMatcher(Subscriber subscriber, ProgramType programType, Week week, Day day) {
             this.subscriber = subscriber;
             this.programType = programType;
-            this.week = week;
-            this.day = day;
         }
 
         @Override
         public boolean matches(Object o) {
             Subscription subscription = (Subscription) o;
             return subscriber.equals(subscription.getSubscriber())
-                    && programType.equals(subscription.getProgramType())
-                    && week.equals(subscription.getStartWeekAndDay().getWeek())
-                    && day.equals(subscription.getStartWeekAndDay().getDay());
+                    && programType.equals(subscription.getProgramType());
         }
     }
 

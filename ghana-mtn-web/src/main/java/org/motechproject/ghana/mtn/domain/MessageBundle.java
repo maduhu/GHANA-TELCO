@@ -17,14 +17,15 @@ public class MessageBundle {
     public static final String ENROLLMENT_FAILURE = "enrollment.failure";
     public static final String ENROLLMENT_STOPPED = "enrollment.stopped";
     public static final String ENROLLMENT_ROLlOVER = "enrollment.rollover";
-
     public static final String ACTIVE_SUBSCRIPTION_PRESENT = "enrollment.active.subscription.present";
+
     public static final String BILLING_SUCCESS = "billing.success";
     public static final String BILLING_FAILURE = "billing.failure";
     public static final String BILLING_STOPPED = "billing.stopped";
-    public static final String INVALID_MOBILE_NUMBER = "enrollment.invalid.mobile.number";
+    public static final String BILLING_ROLLOVER = "billing.rollover";
 
-    public static final String STOP_NOT_ENROLLED = "stop.notenrolled";
+    public static final String INVALID_MOBILE_NUMBER = "enrollment.invalid.mobile.number";
+    public static final String STOP_NOT_ENROLLED = "stop.not.enrolled";
     public static final String STOP_SPECIFY_PROGRAM = "stop.specify.program";
     public static final String STOP_SUCCESS = "stop.success";
     public static final String STOP_PROGRAM_SUCCESS = "stop.program.success";

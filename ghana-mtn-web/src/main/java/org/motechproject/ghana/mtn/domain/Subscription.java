@@ -21,13 +21,10 @@ import static org.motechproject.util.DateUtil.setTimeZone;
 public class Subscription extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "Subscription";
-
     private Subscriber subscriber;
     private ProgramType programType;
-
     private SubscriptionStatus status;
     private WeekAndDay startWeekAndDay;
-
     private WeekAndDay lastMsgSentWeekAndDay;
     private DateTime registrationDate;
     private DateTime billingStartDate;
@@ -172,4 +169,7 @@ public class Subscription extends MotechAuditableDataObject {
         return programType.canRollOff();
     }
 
+    public IProgramType rollOverProgramType() {
+        return programType.getRollOverProgramType();
+    }
 }

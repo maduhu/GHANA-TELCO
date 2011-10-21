@@ -1,11 +1,14 @@
 package org.motechproject.ghana.mtn.service;
 
 import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.process.*;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,7 +81,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscription.getSubscriber(),
                 subscription.getProgramType().getRollOverProgramType(),
                 SubscriptionStatus.ACTIVE,
-                new WeekAndDay(subscription.currentWeek(), subscription.currentDay()),
+                new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
                 DateUtil.now());
         rollOver(subscription, nextSubscription);
     }
