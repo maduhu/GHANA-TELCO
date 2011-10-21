@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRollOverRequest;
@@ -26,6 +27,7 @@ import java.util.List;
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
 public class BillingCycleProcessorTest {
     private BillingCycleProcess billing;
@@ -218,11 +220,20 @@ public class BillingCycleProcessorTest {
     }
 
     @Test
-    public void shouldValidateBillingCycleOnRetainExistingChildCareProgram() {
-//        String subscriberNumber = "9500012345";
-//        Date deliveryDate = DateUtil.newDate(2011, 10, 10).toDate();
-//        Subscription subscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType).build();
-//        billing.retainExistingChildCare(subscription);
+    public void shouldStopBillingCycleForPregnancyProgramForRollOver_IfThereIsAExistingChildCareProgram() {
+        String subscriberNumber = "9500012345";
+        DateTime deliveryDate = DateUtil.newDate(2011, 10, 10).toDateTimeAtCurrentTime();
+        Subscription fromSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType).build();
+        fromSubscription.setStatus(WAITING_FOR_ROLLOVER_RESPONSE);
+        Subscription toSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), childCarePregnancyType).build();
+
+        when(billingService.stopBilling(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
+
+        Boolean actual = billing.rollOver(fromSubscription, toSubscription);
+
+        assertTrue(actual);
+        verify(billingService).stopBilling(Matchers.<BillingCycleRequest>any());
+        verifyZeroInteractions(smsService);
     }
 
     private List mockBillingServiceResponseWithErrors(BillingServiceResponse response) {

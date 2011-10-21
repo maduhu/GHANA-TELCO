@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_ROLLOVER;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_STOPPED;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
@@ -59,9 +60,8 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-
         if (WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
-            return stopFor(fromSubscription, billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), null), messageFor(BILLING_STOPPED));
+            return stopFor(fromSubscription, billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), null), null);
         }
 
         DateTime billingStartDateFromSubscription = fromSubscription.billingStartDate();
@@ -91,7 +91,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
             sendMessage(subscription, messageFor(response.getValidationErrors()));
             return false;
         }
-        sendMessage(subscription, successMsg);
+        if(isNotEmpty(successMsg)) sendMessage(subscription, successMsg);
         return true;
     }
 
