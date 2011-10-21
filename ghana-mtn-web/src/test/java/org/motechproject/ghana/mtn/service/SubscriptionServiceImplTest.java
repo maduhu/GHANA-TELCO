@@ -261,6 +261,31 @@ public class SubscriptionServiceImplTest {
     }
 
     @Test
+    public void shouldRollOverToNewChildCareProgramForUserResponse() {
+        String subscriberNumber = "1235467";
+
+        Subscription pregnancySubscriptionWaitingForRollOver = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(WAITING_FOR_ROLLOVER_RESPONSE)
+                .withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType).build();
+        Subscription childCareSubscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(ACTIVE)
+                .withSubscriber(new Subscriber(subscriberNumber)).withType(childCareProgramType).build();
+
+        when(allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(pregnancySubscriptionWaitingForRollOver);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(childCareSubscription);
+
+        when(validation.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
+        when(billing.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
+        when(campaign.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
+        when(persistence.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
+
+        service.retainOrRollOver(subscriberNumber, false);
+
+        verify(validation).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(billing).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(persistence).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(campaign).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+    }
+    
+    @Test
     public void shouldRetainExistingChildCareProgramForContinueWithExistingChildCareResponse() {
         String subscriberNumber = "1235467";
 
@@ -284,7 +309,7 @@ public class SubscriptionServiceImplTest {
         verify(billing, never()).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
         verify(campaign, never()).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
     }
-    
+
     private class SubscriptionMatcher extends ArgumentMatcher<Subscription> {
         private Subscriber subscriber;
         private ProgramType programType;

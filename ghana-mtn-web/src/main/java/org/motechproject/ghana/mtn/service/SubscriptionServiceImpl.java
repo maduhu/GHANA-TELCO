@@ -89,6 +89,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             for (ISubscriptionFlowProcess process : asList(validation, persistence)) {
                 if (!process.retainExistingChildCare(pregnancyProgramWaitingForRollOver, existingChildCare)) break;
             }
+        } else {
+            for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
+                if (!process.rollOverToNewChildCareProgram(pregnancyProgramWaitingForRollOver, existingChildCare)) break;
+            }
         }
     }
 

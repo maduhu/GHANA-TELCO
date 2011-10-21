@@ -76,6 +76,11 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
         return true;
     }
 
+    @Override
+    public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription existingChildCare) {
+        return true;
+    }
+
     private Boolean stopFor(Subscription subscription, BillingCycleRequest request, String successMsg) {
         return handleResponse(subscription, billingService.stopBilling(request), successMsg);
     }

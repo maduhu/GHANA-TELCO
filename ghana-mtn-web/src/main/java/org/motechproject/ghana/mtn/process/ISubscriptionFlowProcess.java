@@ -8,4 +8,5 @@ public interface ISubscriptionFlowProcess {
     Boolean stopByUser(Subscription subscription);
     Boolean rollOver(Subscription fromSubscription, Subscription toSubscription);
     Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription);
+    Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription existingChildCare);
 }

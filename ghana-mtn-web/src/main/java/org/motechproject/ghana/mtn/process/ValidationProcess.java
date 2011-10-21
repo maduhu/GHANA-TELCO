@@ -99,6 +99,11 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
         return true;
     }
 
+    @Override
+    public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription existingChildCare) {
+        return true;
+    }
+
     public Subscription validateSubscriptionToStop(String subscriberNumber, IProgramType programType) {
 
         List<Subscription> subscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber);
