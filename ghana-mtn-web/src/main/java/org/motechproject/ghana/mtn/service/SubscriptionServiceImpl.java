@@ -76,7 +76,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (!subscription.canRollOff()) stopExpired(subscription);
         Subscription nextSubscription = new Subscription(
                 subscription.getSubscriber(),
-                subscription.getRollOverProgramType(),
+                subscription.getProgramType().getRollOverProgramType(),
                 SubscriptionStatus.ACTIVE,
                 new WeekAndDay(subscription.currentWeek(), subscription.currentDay()),
                 DateUtil.now());

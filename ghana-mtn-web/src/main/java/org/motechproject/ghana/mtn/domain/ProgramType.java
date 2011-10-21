@@ -16,7 +16,7 @@ public class ProgramType extends MotechAuditableDataObject implements IProgramTy
     private Integer minWeek;
     private Integer maxWeek;
     private String programName;
-    private Boolean canRollOff;
+    private ProgramType rollOverProgramType;
     private List<String> shortCodes;
 
     public ProgramType() {
@@ -69,11 +69,15 @@ public class ProgramType extends MotechAuditableDataObject implements IProgramTy
         this.fee = fee;
     }
 
-    public Boolean getCanRollOff() {
-        return canRollOff;
+    public Boolean canRollOff() {
+        return rollOverProgramType != null;
     }
 
-    public void setCanRollOff(Boolean canRollOff) {
-        this.canRollOff = canRollOff;
+    public ProgramType getRollOverProgramType() {
+        return rollOverProgramType;
+    }
+
+    public void setRollOverProgramType(ProgramType rollOverProgramType) {
+        this.rollOverProgramType = rollOverProgramType;
     }
 }

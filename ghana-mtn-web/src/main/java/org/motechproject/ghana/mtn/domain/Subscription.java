@@ -24,7 +24,6 @@ public class Subscription extends MotechAuditableDataObject {
 
     private Subscriber subscriber;
     private ProgramType programType;
-    private ProgramType rollOverProgramType;
 
     private SubscriptionStatus status;
     private WeekAndDay startWeekAndDay;
@@ -170,10 +169,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public Boolean canRollOff() {
-        return programType.getCanRollOff();
+        return programType.canRollOff();
     }
 
-    public ProgramType getRollOverProgramType() {
-        return rollOverProgramType;
-    }
 }

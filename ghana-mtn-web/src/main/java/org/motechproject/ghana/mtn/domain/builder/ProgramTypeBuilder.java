@@ -12,7 +12,7 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
     private Integer minWeek;
     private Integer maxWeek;
     private Money fee;
-    private Boolean canRollOff;
+    private ProgramType rollOverProgramType;
 
     public ProgramTypeBuilder() {
         super(new ProgramType());
@@ -45,8 +45,8 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
         return this;
     }
 
-    public ProgramTypeBuilder willRollOff(boolean rollOff) {
-        this.canRollOff = rollOff;
+    public ProgramTypeBuilder willRollOverProgramType(ProgramType rollOverProgramType) {
+        this.rollOverProgramType = rollOverProgramType;
         return this;
     }
 }

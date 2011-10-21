@@ -188,11 +188,12 @@ public class SubscriptionServiceImplTest {
         Week week = new Week(4);
 
         when(source.getSubscriber()).thenReturn(subscriber);
-        when(source.getRollOverProgramType()).thenReturn(programType);
+        when(source.getProgramType()).thenReturn(programType);
         when(source.currentWeek()).thenReturn(week);
         when(source.currentDay()).thenReturn(Day.SUNDAY);
         when(source.isCompleted()).thenReturn(true);
         when(source.canRollOff()).thenReturn(true);
+        when(programType.getRollOverProgramType()).thenReturn(programType);
 
         when(validation.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
         when(billing.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
