@@ -27,6 +27,7 @@ import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_ROLLOVER;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
 public class BillingCycleProcessorTest {
@@ -285,7 +286,7 @@ public class BillingCycleProcessorTest {
                 .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
         Subscription existingChildCareSubscription = subscriptionBuilder(subscriberNumber, childCareRegistrationDate, DateUtil.now(), childCarePregnancyType).build();
 
-        when(messageBundle.get(BILLING_ROLLOVER)).thenReturn("success");
+        when(messageBundle.get(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING)).thenReturn("success");
         when(billingService.stopBilling(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
         when(billingService.rollOverBilling(Matchers.<BillingCycleRollOverRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
 
@@ -297,6 +298,7 @@ public class BillingCycleProcessorTest {
         assertBillingCycleRequest(subscriberNumber, pregnancyRegistrationDate, pregnancyProgramType, billingRollOverRequestCaptor.getValue().getFromRequest());
         assertBillingCycleRequest(subscriberNumber, pregnancyRegistrationDate, childCarePregnancyType, billingRollOverRequestCaptor.getValue().getToRequest());
         assertSMSRequest(subscriberNumber, "success", newChildCareSubscriptionForRollOver.programKey());
+        verifyNoMoreInteractions(smsService);
     }
 
     private void assertBillingCycleRequest(String subscriberNumber, DateTime deliveryDate, IProgramType programType, BillingCycleRequest billingCycleRequest) {

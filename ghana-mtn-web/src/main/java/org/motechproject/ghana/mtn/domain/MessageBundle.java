@@ -35,6 +35,7 @@ public class MessageBundle {
     public static final String ROLLOVER_NO_PENDING_PREGNANCY_PROGRAM = "rollover.no.pending.pregnancy.program";
     public static final String PENDING_ROLLOVER_RETAIN_CHILDCARE = "pending.rollover.retain.childcare.success";
     public static final String PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE = "pending.rollover.pregnancy.to.childcare.success";
+    public static final String PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING = "pending.rollover.pregnancy.to.childcare.billing";
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {

@@ -17,8 +17,7 @@ import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_ROLLOVER;
-import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_STOPPED;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
 @Component
@@ -44,10 +43,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean stopExpired(Subscription subscription) {
-        BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(),
-                subscription.getProgramType(), subscription.billingStartDate());
-        subscription.setStatus(SubscriptionStatus.EXPIRED);
-        return stopFor(subscription, request, messageFor(BILLING_STOPPED));
+        return stop(subscription, messageFor(BILLING_STOPPED));
     }
 
     @Override
@@ -60,7 +56,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        return WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus()) || performRollOver(fromSubscription, toSubscription);
+        return WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus()) || performRollOver(fromSubscription, toSubscription, messageFor(BILLING_ROLLOVER));
     }
 
     @Override
@@ -71,17 +67,24 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription newChildCareToRollOver, Subscription existingChildCare) {
-        if(!stopExpired(existingChildCare)) return false;
-        performRollOver(pregnancyProgramWaitingForRollOver, newChildCareToRollOver);
+        if(!stop(existingChildCare, null)) return false;
+        performRollOver(pregnancyProgramWaitingForRollOver, newChildCareToRollOver, messageFor(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING));
         return true;
     }
 
-    private Boolean performRollOver(Subscription fromSubscription, Subscription toSubscription) {
+    private Boolean performRollOver(Subscription fromSubscription, Subscription toSubscription, String successMsg) {
         DateTime billingStartDateFromSubscription = fromSubscription.billingStartDate();
         BillingCycleRequest fromRequest = billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), billingStartDateFromSubscription);
         BillingCycleRequest toRequest = billingRequest(toSubscription.subscriberNumber(), toSubscription.getProgramType(), billingStartDateFromSubscription);
 
-        return handleResponse(toSubscription, billingService.rollOverBilling(new BillingCycleRollOverRequest(fromRequest, toRequest)), messageFor(BILLING_ROLLOVER));
+        return handleResponse(toSubscription, billingService.rollOverBilling(new BillingCycleRollOverRequest(fromRequest, toRequest)), successMsg);
+    }
+
+    private Boolean stop(Subscription subscription, String successMsg) {
+        BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(),
+                subscription.getProgramType(), subscription.billingStartDate());
+        subscription.setStatus(SubscriptionStatus.EXPIRED);
+        return stopFor(subscription, request, successMsg);
     }
 
     private Boolean stopFor(Subscription subscription, BillingCycleRequest request, String successMsg) {
