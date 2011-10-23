@@ -49,12 +49,8 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
         if (!WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
-            fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
-            toSubscription.setStatus(fromSubscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE);
-            toSubscription.updateStartCycleInfo();
-            allSubscriptions.add(toSubscription);
-        }
-        allSubscriptions.update(fromSubscription);
+            performRollOver(fromSubscription, toSubscription);
+        } else allSubscriptions.update(fromSubscription);
         return true;
     }
 
@@ -67,6 +63,17 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
 
     @Override
     public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription newChildCareToRollOver, Subscription existingChildCare) {
+        performRollOver(pregnancyProgramWaitingForRollOver, newChildCareToRollOver);
+        existingChildCare.setStatus(SubscriptionStatus.EXPIRED);
+        allSubscriptions.update(existingChildCare);
         return true;
+    }
+
+    private void performRollOver(Subscription fromSubscription, Subscription toSubscription) {
+        fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
+        toSubscription.setStatus(fromSubscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE);
+        toSubscription.updateStartCycleInfo();
+        allSubscriptions.add(toSubscription);
+        allSubscriptions.update(fromSubscription);
     }
 }

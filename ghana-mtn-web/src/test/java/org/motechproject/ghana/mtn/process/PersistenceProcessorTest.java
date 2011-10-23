@@ -112,4 +112,24 @@ public class PersistenceProcessorTest {
         verify(allSubscriptions).update(pregnancySubscriptionWaitingForRollOver);
         verifyNoMoreInteractions(allSubscriptions);
     }
+    
+    @Test
+    public void shouldUpdateExistingChildCareSubscriptionToExpiredStatusAndUpdateRollOverPregnancySubscription_IfUserWantsToStopTheExistingChildCareProgram() {
+        Subscription pregnancySubscriptionWaitingForRollOver = mock(Subscription.class);
+        Subscription newChildCareSubscriptionToRollOver = mock(Subscription.class);
+        Subscription existingChildCareSubscrition = mock(Subscription.class);
+        when(pregnancySubscriptionWaitingForRollOver.isPaymentDefaulted()).thenReturn(false);
+
+        Boolean reply = persistence.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionToRollOver, existingChildCareSubscrition);
+
+        assertTrue(reply);
+        verify(pregnancySubscriptionWaitingForRollOver).setStatus(SubscriptionStatus.ROLLED_OFF);
+        verify(newChildCareSubscriptionToRollOver).setStatus(SubscriptionStatus.ACTIVE);
+        verify(newChildCareSubscriptionToRollOver).updateStartCycleInfo();
+        verify(existingChildCareSubscrition).setStatus(SubscriptionStatus.EXPIRED);
+
+        verify(allSubscriptions).update(pregnancySubscriptionWaitingForRollOver);
+        verify(allSubscriptions).add(newChildCareSubscriptionToRollOver);
+        verify(allSubscriptions).update(existingChildCareSubscrition);
+    }
 }
