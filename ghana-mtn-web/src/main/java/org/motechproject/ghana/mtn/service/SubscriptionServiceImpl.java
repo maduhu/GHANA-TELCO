@@ -91,7 +91,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             }
         } else {
             for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
-                if (!process.rollOverToNewChildCareProgram(pregnancyProgramWaitingForRollOver, existingChildCare)) break;
+                if (!process.rollOverToNewChildCareProgram(pregnancyProgramWaitingForRollOver, rollOverSubscription(pregnancyProgramWaitingForRollOver), existingChildCare)) break;
             }
         }
     }
@@ -107,16 +107,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private void performRollOver(Subscription subscription) {
-        Subscription rollOverSubscription = new Subscription(
-                subscription.getSubscriber(),
-                subscription.getProgramType().getRollOverProgramType(),
-                subscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE,
-                new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
-                DateUtil.now());
+        Subscription rollOverSubscription = rollOverSubscription(subscription);
 
         for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
             if (process.rollOver(subscription, rollOverSubscription)) continue;
             break;
         }
+    }
+
+    Subscription rollOverSubscription(Subscription subscription) {
+        return subscription != null ? new Subscription(
+                subscription.getSubscriber(),
+                subscription.getProgramType().getRollOverProgramType(),
+                subscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE,
+                new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
+                DateUtil.now()) : null;
     }
 }

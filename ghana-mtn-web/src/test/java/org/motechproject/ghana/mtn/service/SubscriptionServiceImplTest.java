@@ -263,36 +263,36 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldRollOverToNewChildCareProgramForUserResponse() {
         String subscriberNumber = "1235467";
+        service = spy(service);
 
-        Subscription pregnancySubscriptionWaitingForRollOver = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(WAITING_FOR_ROLLOVER_RESPONSE)
-                .withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType).build();
-        Subscription childCareSubscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(ACTIVE)
-                .withSubscriber(new Subscriber(subscriberNumber)).withType(childCareProgramType).build();
+        Subscription pregnancySubscriptionWaitingForRollOver = subscriptionB(subscriberNumber, pregnancyProgramType, WAITING_FOR_ROLLOVER_RESPONSE).build();
+        Subscription newChildCareSubscriptionForRollOver = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
+        when(service.rollOverSubscription(pregnancySubscriptionWaitingForRollOver)).thenReturn(newChildCareSubscriptionForRollOver);
+
+        Subscription existingChildCareSubscription = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
 
         when(allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(pregnancySubscriptionWaitingForRollOver);
-        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(childCareSubscription);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(existingChildCareSubscription);
 
-        when(validation.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
-        when(billing.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
-        when(campaign.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
-        when(persistence.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
+        when(validation.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription)).thenReturn(true);
+        when(billing.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription)).thenReturn(true);
+        when(campaign.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription)).thenReturn(true);
+        when(persistence.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription)).thenReturn(true);
 
         service.retainOrRollOver(subscriberNumber, false);
 
-        verify(validation).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
-        verify(billing).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
-        verify(persistence).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
-        verify(campaign).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(validation).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
+        verify(billing).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
+        verify(persistence).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
+        verify(campaign).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
     }
-    
+
     @Test
     public void shouldRetainExistingChildCareProgramForContinueWithExistingChildCareResponse() {
         String subscriberNumber = "1235467";
 
-        Subscription pregnancySubscriptionWaitingForRollOver = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(WAITING_FOR_ROLLOVER_RESPONSE)
-                .withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType).build();
-        Subscription childCareSubscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(ACTIVE)
-                .withSubscriber(new Subscriber(subscriberNumber)).withType(childCareProgramType).build();
+        Subscription pregnancySubscriptionWaitingForRollOver = subscriptionB(subscriberNumber, pregnancyProgramType, WAITING_FOR_ROLLOVER_RESPONSE).build();
+        Subscription childCareSubscription = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
 
         when(allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(pregnancySubscriptionWaitingForRollOver);
         when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(childCareSubscription);
@@ -308,6 +308,11 @@ public class SubscriptionServiceImplTest {
         verify(persistence).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
         verify(billing, never()).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
         verify(campaign, never()).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+    }
+
+    private SubscriptionBuilder subscriptionB(String subscriberNumber, ProgramType programType, SubscriptionStatus status) {
+        return new SubscriptionBuilder().withRegistrationDate(DateUtil.now()).withStatus(status)
+                .withSubscriber(new Subscriber(subscriberNumber)).withType(programType);
     }
 
     private class SubscriptionMatcher extends ArgumentMatcher<Subscription> {

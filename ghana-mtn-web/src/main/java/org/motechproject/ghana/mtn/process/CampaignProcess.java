@@ -42,21 +42,26 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        campaignService.stopFor(fromSubscription.createCampaignRequest());
-        if (!WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
-            campaignService.startFor(toSubscription.createCampaignRequest());
-            sendMessage(toSubscription, messageFor(MessageBundle.ENROLLMENT_ROLlOVER));
-        }
-        return true;
+        return WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus()) || performRollOver(fromSubscription, toSubscription);
     }
 
     @Override
     public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
+        campaignService.stopFor(pregnancySubscriptionWaitingForRollOver.createCampaignRequest());
         return true;
     }
 
     @Override
-    public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription existingChildCare) {
+    public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription newChildCareToRollOver, Subscription existingChildCare) {
+        campaignService.stopFor(existingChildCare.createCampaignRequest());
+        performRollOver(pregnancyProgramWaitingForRollOver, newChildCareToRollOver);
+        return true;
+    }
+
+    private boolean performRollOver(Subscription fromSubscription, Subscription toSubscription) {
+        campaignService.stopFor(fromSubscription.createCampaignRequest());
+        campaignService.startFor(toSubscription.createCampaignRequest());
+        sendMessage(toSubscription, messageFor(MessageBundle.ENROLLMENT_ROLlOVER));
         return true;
     }
 }

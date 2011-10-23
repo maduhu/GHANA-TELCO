@@ -100,8 +100,8 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     }
 
     @Override
-    public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription existingChildCare) {
-        return true;
+    public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription newChildCareToRollOver, Subscription existingChildCare) {
+        return retainExistingChildCare(pregnancyProgramWaitingForRollOver, existingChildCare);
     }
 
     public Subscription validateSubscriptionToStop(String subscriberNumber, IProgramType programType) {

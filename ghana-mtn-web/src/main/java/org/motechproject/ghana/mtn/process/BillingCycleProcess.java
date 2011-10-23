@@ -60,25 +60,28 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        if (WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
-            return stopFor(fromSubscription, billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), null), null);
-        }
+        return WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus()) || performRollOver(fromSubscription, toSubscription);
+    }
 
+    @Override
+    public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
+        return stopFor(pregnancySubscriptionWaitingForRollOver, billingRequest(pregnancySubscriptionWaitingForRollOver.subscriberNumber(),
+                pregnancySubscriptionWaitingForRollOver.getProgramType(), null), null);
+    }
+
+    @Override
+    public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription newChildCareToRollOver, Subscription existingChildCare) {
+        if(!stopExpired(existingChildCare)) return false;
+        performRollOver(pregnancyProgramWaitingForRollOver, newChildCareToRollOver);
+        return true;
+    }
+
+    private Boolean performRollOver(Subscription fromSubscription, Subscription toSubscription) {
         DateTime billingStartDateFromSubscription = fromSubscription.billingStartDate();
         BillingCycleRequest fromRequest = billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), billingStartDateFromSubscription);
         BillingCycleRequest toRequest = billingRequest(toSubscription.subscriberNumber(), toSubscription.getProgramType(), billingStartDateFromSubscription);
 
         return handleResponse(toSubscription, billingService.rollOverBilling(new BillingCycleRollOverRequest(fromRequest, toRequest)), messageFor(BILLING_ROLLOVER));
-    }
-
-    @Override
-    public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
-        return true;
-    }
-
-    @Override
-    public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription existingChildCare) {
-        return true;
     }
 
     private Boolean stopFor(Subscription subscription, BillingCycleRequest request, String successMsg) {

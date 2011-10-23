@@ -280,6 +280,17 @@ public class ValidationProcessorTest {
     }
 
     @Test
+    public void shouldSendErrorMessageForNewChildCare_WhenPregnancySubscriptionWaitingForRollOver_OrChildCareSubscriptionDoesNotExist() {
+
+        validation = spy(validation);
+        Subscription pregnancySubscriptionWaitingForRollOver = mock(Subscription.class);
+        Subscription childCareSubscriptionToRollOver = mock(Subscription.class);
+        Subscription newChildCare = mock(Subscription.class);
+        validation.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, childCareSubscriptionToRollOver, newChildCare);
+        verify(validation).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, newChildCare);
+    }
+
+    @Test
     public void shouldThrowExceptionWhenCustomerIsNotEnrolledForPregnancySubscription() {
 
         String errorMessage = "error message";
