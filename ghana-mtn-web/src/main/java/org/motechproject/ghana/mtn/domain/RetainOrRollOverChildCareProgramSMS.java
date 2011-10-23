@@ -13,7 +13,7 @@ public class RetainOrRollOverChildCareProgramSMS extends SMS<Boolean> {
         handler.retainOrRollOverChildCare(this);
     }
 
-    public Boolean retainExistingProgram() {
+    public Boolean retainExistingChildCareProgram() {
         return getDomain();
     }
 }

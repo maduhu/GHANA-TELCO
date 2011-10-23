@@ -40,16 +40,16 @@ public class RetainOrRollOverChildCareMessageParserTest {
         String enrolledMobileNumber = "9500012345";
 
         RetainOrRollOverChildCareProgramSMS retainOrRollOverChildCareProgramSMS = retainOrRollOverChildCareMessageParser.parse("E ", enrolledMobileNumber);
-        assertTrue(retainOrRollOverChildCareProgramSMS.retainExistingProgram());
+        assertTrue(retainOrRollOverChildCareProgramSMS.retainExistingChildCareProgram());
 
         retainOrRollOverChildCareProgramSMS = retainOrRollOverChildCareMessageParser.parse("eE ", enrolledMobileNumber);
-        assertTrue(retainOrRollOverChildCareProgramSMS.retainExistingProgram());
+        assertTrue(retainOrRollOverChildCareProgramSMS.retainExistingChildCareProgram());
 
         retainOrRollOverChildCareProgramSMS = retainOrRollOverChildCareMessageParser.parse("N", enrolledMobileNumber);
-        assertFalse(retainOrRollOverChildCareProgramSMS.retainExistingProgram());
+        assertFalse(retainOrRollOverChildCareProgramSMS.retainExistingChildCareProgram());
 
         retainOrRollOverChildCareProgramSMS = retainOrRollOverChildCareMessageParser.parse("Nn", enrolledMobileNumber);
-        assertFalse(retainOrRollOverChildCareProgramSMS.retainExistingProgram());
+        assertFalse(retainOrRollOverChildCareProgramSMS.retainExistingChildCareProgram());
     }
 
     @Test

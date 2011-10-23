@@ -12,7 +12,7 @@ public interface SubscriptionService {
     void rollOver(String fromMobileNumber, Date deliveryDate);
     void rollOverByEvent(Subscription subscription);
     void stopByUser(String fromMobileNumber, IProgramType domain);
-    void retainOrRollOver(String subscriberNumber, boolean retainSubscription);
+    void retainOrRollOver(String subscriberNumber, boolean retainExistingChildCareSubscription);
     Subscription findActiveSubscriptionFor(String subscriberNumber, String programName);
     List<Subscription> activeSubscriptions(String subscriberNumber);
 }

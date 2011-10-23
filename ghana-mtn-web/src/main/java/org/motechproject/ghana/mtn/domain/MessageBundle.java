@@ -31,7 +31,10 @@ public class MessageBundle {
     public static final String STOP_PROGRAM_SUCCESS = "stop.program.success";
     public static final String ROLLOVER_INVALID_SUBSCRIPTION = NOT_ENROLLED;
     public static final String ROLLOVER_NOT_POSSIBLE_PROGRAM_EXISTS_ALREADY = "rollover.not.possible";
+
     public static final String ROLLOVER_NO_PENDING_PREGNANCY_PROGRAM = "rollover.no.pending.pregnancy.program";
+    public static final String PENDING_ROLLOVER_RETAIN_CHILDCARE = "pending.rollover.retain.childcare.success";
+    public static final String PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE = "pending.rollover.pregnancy.to.childcare.success";
 
     @Autowired
     public MessageBundle(@Qualifier("bundleProperties") Properties values) {

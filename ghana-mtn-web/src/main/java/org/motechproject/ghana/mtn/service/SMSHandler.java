@@ -30,6 +30,6 @@ public class SMSHandler {
     }
 
     public void retainOrRollOverChildCare(RetainOrRollOverChildCareProgramSMS retainOrRollOverChildCareProgramSMS) {
-        service.retainOrRollOver(retainOrRollOverChildCareProgramSMS.getFromMobileNumber(), retainOrRollOverChildCareProgramSMS.getDomain());
+        service.retainOrRollOver(retainOrRollOverChildCareProgramSMS.getFromMobileNumber(), retainOrRollOverChildCareProgramSMS.retainExistingChildCareProgram());
     }
 }
