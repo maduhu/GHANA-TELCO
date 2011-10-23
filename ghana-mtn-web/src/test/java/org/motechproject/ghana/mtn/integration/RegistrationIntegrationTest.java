@@ -4,7 +4,6 @@ import org.ektorp.DbPath;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
@@ -28,16 +27,17 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
 
     @Before
     public void setUp() {
+        addSeedData();
         addAndMarkForDeletion(allProgramTypes, pregnancyProgramType);
         addAndMarkForDeletion(allProgramTypes, childCarePregnancyType);
-        addAndMarkForDeletion(allShortCodes, shortCode);
+
         addAndMarkForDeletion(allMtnMock, mtnMockUser);
     }
 
     @Test
     public void ShouldEnrollSubscriber() throws IOException {
         String shortCode = "P";
-        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(shortCode + " 25", "9500012345");
+        SubscriptionRequest subscriptionRequest = request(shortCode + " 25", "9500012345");
 
         subscriptionController.handle(subscriptionRequest);
 
@@ -56,7 +56,7 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void ShouldSendFailureResponseForInvalidMessage() throws IOException {
-        SubscriptionRequest subscriptionRequest = createSubscriptionRequest("P25", "1234567890");
+        SubscriptionRequest subscriptionRequest = request("P25", "1234567890");
         subscriptionController.handle(subscriptionRequest);
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
     }
@@ -69,10 +69,6 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
 
     @After
     public void after() {
-        super.after();
-        remove(allSubscriptions.getAll());
-        remove(allSubscribers.getAll());
-        for (BillAccount billAccount : allBillAccounts.getAll()) allBillAccounts.remove(billAccount);
-        removeAllQuartzJobs();
+        super.cleanData();
     }
 }

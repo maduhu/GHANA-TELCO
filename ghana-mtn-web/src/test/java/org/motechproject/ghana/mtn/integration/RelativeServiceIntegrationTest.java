@@ -31,9 +31,9 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
 
     @Before
     public void setUp() {
+        addSeedData();
         addAndMarkForDeletion(allProgramTypes, pregnancyProgramType);
-        addAndMarkForDeletion(allProgramTypes, childCarePregnancyType);
-        addAndMarkForDeletion(allShortCodes, shortCode);
+        addAndMarkForDeletion(allProgramTypes, childCarePregnancyType);        
         addAndMarkForDeletion(allMtnMock, mtnMockUser);
         addAndMarkForDeletion(allMtnMock, validMtnMockUser);
     }
@@ -44,7 +44,7 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
         String shortCode = "P";
         int week = 30;
         String inputMessage = "R " + mobileNumber + " " + shortCode + " " + week;
-        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(inputMessage, "12345");
+        SubscriptionRequest subscriptionRequest = request(inputMessage, "12345");
 
         subscriptionController.handle(subscriptionRequest);
 
@@ -67,7 +67,7 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
         String shortCode = "P";
         int week = 30;
         String inputMessage = "R " + mobileNumber + " " + shortCode + " " + week;
-        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(inputMessage, "12345");
+        SubscriptionRequest subscriptionRequest = request(inputMessage, "12345");
 
         subscriptionController.handle(subscriptionRequest);
 
@@ -82,7 +82,7 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void ShouldSendFailureResponseForInvalidMessage() throws IOException {
-        SubscriptionRequest subscriptionRequest = createSubscriptionRequest("P25", "1234567890");
+        SubscriptionRequest subscriptionRequest = request("P25", "1234567890");
         subscriptionController.handle(subscriptionRequest);
         assertFalse(couchDbInstance.checkIfDbExists(new DbPath(dbConnector.getDatabaseName() + "/Subscription")));
     }
