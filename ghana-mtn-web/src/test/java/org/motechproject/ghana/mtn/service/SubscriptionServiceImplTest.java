@@ -306,8 +306,8 @@ public class SubscriptionServiceImplTest {
 
         verify(validation).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
         verify(persistence).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
-        verify(billing, never()).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
-        verify(campaign, never()).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(billing).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
+        verify(campaign).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
     }
 
     private SubscriptionBuilder subscriptionB(String subscriberNumber, ProgramType programType, SubscriptionStatus status) {

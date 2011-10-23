@@ -7,14 +7,16 @@ import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
+import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.exception.InvalidProgramException;
 import org.motechproject.ghana.mtn.process.UserMessageParserProcess;
 import org.motechproject.ghana.mtn.vo.Money;
 
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.refEq;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -24,6 +26,8 @@ public class SMSHandlerTest {
     private SubscriptionService subscriptionService;
     @Mock
     private UserMessageParserProcess parserHandle;
+    @Mock
+    private SMSService smsService;
     private SMSHandler handler;
 
     public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
@@ -31,7 +35,7 @@ public class SMSHandlerTest {
     @Before
     public void setUp() {
         initMocks(this);
-        handler = new SMSHandler(subscriptionService);
+        handler = new SMSHandler(subscriptionService, smsService);
     }
 
     @Test
@@ -65,10 +69,31 @@ public class SMSHandlerTest {
     public void ShouldCallRetainOrRollOverIfSubscriberSendsRetainOrRollOverSMS() {
         String subscriberNumber = "1234567890";
 
-        RetainOrRollOverChildCareProgramSMS retainOrRollOverSMS = (RetainOrRollOverChildCareProgramSMS) new RetainOrRollOverChildCareProgramSMS(subscriberNumber, true)
+        RetainOrRollOverChildCareProgramSMS retainOrRollOverSMS = (RetainOrRollOverChildCareProgramSMS) new RetainOrRollOverChildCareProgramSMS("e", true)
                 .setFromMobileNumber(subscriberNumber);
         handler.retainOrRollOverChildCare(retainOrRollOverSMS);
-
         verify(subscriptionService).retainOrRollOver(subscriberNumber, true);
+    }
+    
+    @Test
+    public void ShouldSendMessageIfInvalidProgramExceptionHappensInCallRetainOrRollOverSMS() {
+        String subscriberNumber = "1234567890";
+
+        String message = "MEssage to send to user";
+        doThrow(new InvalidProgramException(message)).when(subscriptionService).retainOrRollOver(anyString(), anyBoolean());
+        RetainOrRollOverChildCareProgramSMS retainOrRollOverSMS = (RetainOrRollOverChildCareProgramSMS) new RetainOrRollOverChildCareProgramSMS("e", true)
+                .setFromMobileNumber(subscriberNumber);
+        handler.retainOrRollOverChildCare(retainOrRollOverSMS);
+        assertSMSRequest(subscriberNumber, message, null);
+    }
+
+    private void assertSMSRequest(String mobileNumber, String message, String program) {
+        ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
+        verify(smsService).send(captor.capture());
+        SMSServiceRequest captured = captor.getValue();
+
+        assertEquals(message, captured.getMessage());
+        assertEquals(mobileNumber, captured.getMobileNumber());
+        assertEquals(program, captured.programKey());
     }
 }

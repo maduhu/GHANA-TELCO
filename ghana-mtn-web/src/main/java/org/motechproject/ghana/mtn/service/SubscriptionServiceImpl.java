@@ -86,7 +86,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription pregnancyProgramWaitingForRollOver = allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE);
         Subscription existingChildCare = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE);
         if (retainExistingChildCareSubscription) {
-            for (ISubscriptionFlowProcess process : asList(validation, persistence)) {
+            for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
                 if (!process.retainExistingChildCare(pregnancyProgramWaitingForRollOver, existingChildCare)) break;
             }
         } else {

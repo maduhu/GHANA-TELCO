@@ -255,7 +255,7 @@ public class ValidationProcessorTest {
     }
 
     @Test
-    public void shouldReturnTrueIfnPregnancySubscriptionWaitingForRollOver_OrChildCareSubscriptionExists() {
+    public void shouldReturnTrueIfPregnancySubscriptionWaitingForRollOver_OrChildCareSubscriptionExists() {
 
         String subscriberNumber = "9500012345";
         Subscription pregnancySubscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
@@ -294,7 +294,7 @@ public class ValidationProcessorTest {
     public void shouldThrowExceptionWhenCustomerIsNotEnrolledForPregnancySubscription() {
 
         String errorMessage = "error message";
-        when(messageBundle.get(NOT_ENROLLED)).thenReturn(errorMessage);
+        when(messageBundle.get(ROLLOVER_NO_PENDING_PREGNANCY_PROGRAM)).thenReturn(errorMessage);
 
         try {
             validation.retainExistingChildCare(null, null);

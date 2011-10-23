@@ -1,6 +1,8 @@
 package org.motechproject.ghana.mtn.service;
 
 import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.exception.InvalidProgramException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,10 +10,12 @@ import org.springframework.stereotype.Service;
 public class SMSHandler {
 
     SubscriptionService service;
+    private SMSService smsService;
 
     @Autowired
-    public SMSHandler(SubscriptionService service) {
+    public SMSHandler(SubscriptionService service, SMSService smsService) {
         this.service = service;
+        this.smsService = smsService;
     }
 
     public void register(RegisterProgramSMS sms) {
@@ -30,6 +34,11 @@ public class SMSHandler {
     }
 
     public void retainOrRollOverChildCare(RetainOrRollOverChildCareProgramSMS retainOrRollOverChildCareProgramSMS) {
-        service.retainOrRollOver(retainOrRollOverChildCareProgramSMS.getFromMobileNumber(), retainOrRollOverChildCareProgramSMS.retainExistingChildCareProgram());
+        String subscriberNumber = retainOrRollOverChildCareProgramSMS.getFromMobileNumber();
+        try {
+            service.retainOrRollOver(subscriberNumber, retainOrRollOverChildCareProgramSMS.retainExistingChildCareProgram());
+        } catch( InvalidProgramException ipe) {
+            smsService.send(new SMSServiceRequest(subscriberNumber, ipe.getMessage()));
+        }
     }
 }
