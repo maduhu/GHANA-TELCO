@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -24,7 +25,7 @@ public class AuditController {
 
     @RequestMapping("/audits/sms")
     public void showAllSMSAudits(HttpServletResponse response) throws IOException {
-        List<SMSAudit> messageAudits = allProgramMessageAudits.getAll();
+        List<SMSAudit> messageAudits = reverse(allProgramMessageAudits.getAll());
 
         StringBuilder builder = new StringBuilder();
         builder.append("<div id='server_time'>" + DateUtil.now() + "</div>");
@@ -40,9 +41,14 @@ public class AuditController {
         response.getWriter().write(builder.toString());
     }
 
+    private <T> List<T> reverse(List<T> list) {
+        Collections.reverse(list);
+        return list;
+    }
+
     @RequestMapping("/audits/bill")
     public void showAllBillAudits(HttpServletResponse response) throws IOException {
-        List<BillAudit> billAudits = allBillAudits.getAll();
+        List<BillAudit> billAudits = reverse(allBillAudits.getAll());
 
         StringBuilder builder = new StringBuilder();
         builder.append("<div id='server_time'>" + DateUtil.now() + "</div>");
