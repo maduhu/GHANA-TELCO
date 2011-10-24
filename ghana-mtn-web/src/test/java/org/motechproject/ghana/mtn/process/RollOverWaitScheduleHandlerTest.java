@@ -38,6 +38,6 @@ public class RollOverWaitScheduleHandlerTest {
         verify(scheduledService).scheduleRunOnceJob(captor.capture());
         RunOnceSchedulableJob schedulableJob = captor.getValue();
 
-        assertThat(new DateTime().dayOfMonth().addToCopy(3).toLocalDate(), is(new DateTime(schedulableJob.getStartDate()).toLocalDate()));
+        assertThat(new DateTime().hourOfDay().addToCopy(3).toLocalDate(), is(new DateTime(schedulableJob.getStartDate()).toLocalDate()));
     }
 }
