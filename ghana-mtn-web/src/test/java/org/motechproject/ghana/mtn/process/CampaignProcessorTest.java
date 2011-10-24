@@ -34,10 +34,13 @@ public class CampaignProcessorTest {
     public final ProgramType childCarePregnancyType = TestData.childProgramType().build();
     public final ProgramType pregnancyProgramType = TestData.pregnancyProgramType().build();
     private String subscriberNumber = "9500044123";
+    @Mock
+    private RollOverWaitSchedule rollOverWaitHandler;
+
     @Before
     public void setUp() {
         initMocks(this);
-        campaign = new CampaignProcess(smsService, messageBundle, campaignService);
+        campaign = new CampaignProcess(smsService, messageBundle, campaignService, rollOverWaitHandler);
     }
 
     @Test
@@ -112,6 +115,7 @@ public class CampaignProcessorTest {
         Boolean reply = campaign.rollOver(source, target);
 
         assertTrue(reply);
+        verify(rollOverWaitHandler).startScheduleWaitFor(source);
         verifyZeroInteractions(campaignService, smsService);
     }
     

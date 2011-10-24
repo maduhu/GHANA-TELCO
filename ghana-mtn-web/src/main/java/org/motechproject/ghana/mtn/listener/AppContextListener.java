@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.listener;
 
 import org.motechproject.ghana.mtn.eventhandler.BillingEventHandler;
 import org.motechproject.ghana.mtn.eventhandler.ProgramMessageEventHandler;
+import org.motechproject.ghana.mtn.eventhandler.RollOverWaitScheduleEventHandler;
 import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -27,6 +28,7 @@ public class AppContextListener implements ServletContextListener {
         HashMap<String, Object> beans = new HashMap<String, Object>();
         beans.put(ProgramMessageEventHandler.class.getName(), webApplicationContext.getBean(ProgramMessageEventHandler.class));
         beans.put(BillingEventHandler.class.getName(), webApplicationContext.getBean(BillingEventHandler.class));
+        beans.put(RollOverWaitScheduleEventHandler.class.getName(), webApplicationContext.getBean(RollOverWaitScheduleEventHandler.class));
         return beans;
     }
 

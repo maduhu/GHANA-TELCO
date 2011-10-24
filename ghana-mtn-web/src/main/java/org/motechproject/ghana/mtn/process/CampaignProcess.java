@@ -13,11 +13,13 @@ import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_
 @Component
 public class CampaignProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private MessageCampaignService campaignService;
+    private RollOverWaitSchedule rollOverWaitHandler;
 
     @Autowired
-    public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService) {
+    public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService, RollOverWaitSchedule rollOverWaitHandler) {
         super(smsService, messageBundle);
         this.campaignService = campaignService;
+        this.rollOverWaitHandler = rollOverWaitHandler;
     }
 
     @Override
@@ -43,7 +45,15 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     @Override
     public Boolean rollOver(Subscription fromSubscription, Subscription toSubscription) {
-        return WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus()) || performRollOver(fromSubscription, toSubscription, messageFor(ENROLLMENT_ROLlOVER));
+        if (WAITING_FOR_ROLLOVER_RESPONSE.equals(fromSubscription.getStatus())) {
+            performScheduledWaitUntilUserResponds(fromSubscription);
+            return true;
+        }
+        return performRollOver(fromSubscription, toSubscription, messageFor(ENROLLMENT_ROLlOVER));
+    }
+
+    private void performScheduledWaitUntilUserResponds(Subscription subscription) {
+        rollOverWaitHandler.startScheduleWaitFor(subscription);
     }
 
     @Override

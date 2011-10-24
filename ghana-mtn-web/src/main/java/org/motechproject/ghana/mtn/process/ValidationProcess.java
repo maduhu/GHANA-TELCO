@@ -89,7 +89,6 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
 
     @Override
     public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
-
         if (pregnancySubscriptionWaitingForRollOver == null)
             throw new InvalidProgramException(messageFor(ROLLOVER_NO_PENDING_PREGNANCY_PROGRAM));
         if (childCareSubscription == null) {

@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.eventhandler;
 
-import org.motechproject.ghana.mtn.billing.service.BillingScheduler;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.process.FeeChargerProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
@@ -11,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.EXTERNAL_ID_KEY;
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.PROGRAM_KEY;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
 
 @Service
 public class BillingEventHandler {
@@ -25,7 +23,7 @@ public class BillingEventHandler {
         this.feeCharger = feeCharger;
     }
 
-    @MotechListener(subjects = {BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT})
+    @MotechListener(subjects = {MONTHLY_BILLING_SCHEDULE_SUBJECT})
     public void chargeCustomer(MotechEvent event) {
         Map params = event.getParameters();
         String programKey = (String) params.get(PROGRAM_KEY);
