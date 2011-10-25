@@ -13,9 +13,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.process.RollOverWaitSchedule.ROLLOVER_WAIT_SCHEDULE;
 
-public class RollOverWaitScheduleHandlerTest {
+public class RollOverWaitScheduleTest {
     private RollOverWaitSchedule rollOverWaitScheduleHandler;
     @Mock
     private MotechSchedulerService scheduledService;
@@ -39,5 +41,16 @@ public class RollOverWaitScheduleHandlerTest {
         RunOnceSchedulableJob schedulableJob = captor.getValue();
 
         assertThat(new DateTime().hourOfDay().addToCopy(3).toLocalDate(), is(new DateTime(schedulableJob.getStartDate()).toLocalDate()));
+    }
+
+    @Test
+    public void shouldStopSchedule() {
+        Subscription subscription = mock(Subscription.class);
+        String subscriberNumber = "1234567890";
+        when(subscription.subscriberNumber()).thenReturn(subscriberNumber);
+
+        rollOverWaitScheduleHandler.stopScheduleWaitFor(subscription);
+
+        verify(scheduledService).unscheduleJob(ROLLOVER_WAIT_SCHEDULE, "RollOverWaitSchedule." + subscriberNumber);
     }
 }

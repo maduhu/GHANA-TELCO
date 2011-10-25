@@ -13,13 +13,13 @@ import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_
 @Component
 public class CampaignProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private MessageCampaignService campaignService;
-    private RollOverWaitSchedule rollOverWaitHandler;
+    private RollOverWaitSchedule rollOverWaitSchedule;
 
     @Autowired
-    public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService, RollOverWaitSchedule rollOverWaitHandler) {
+    public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService, RollOverWaitSchedule rollOverWaitSchedule) {
         super(smsService, messageBundle);
         this.campaignService = campaignService;
-        this.rollOverWaitHandler = rollOverWaitHandler;
+        this.rollOverWaitSchedule = rollOverWaitSchedule;
     }
 
     @Override
@@ -52,12 +52,9 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
         return performRollOver(fromSubscription, toSubscription, messageFor(ENROLLMENT_ROLlOVER));
     }
 
-    private void performScheduledWaitUntilUserResponds(Subscription subscription) {
-        rollOverWaitHandler.startScheduleWaitFor(subscription);
-    }
-
     @Override
     public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
+        unScheduleRollOverWait(pregnancySubscriptionWaitingForRollOver);
         campaignService.stopFor(pregnancySubscriptionWaitingForRollOver.createCampaignRequest());
         sendMessage(childCareSubscription.subscriberNumber(), messageFor(PENDING_ROLLOVER_RETAIN_CHILDCARE));
         return true;
@@ -65,6 +62,7 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     @Override
     public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription newChildCareToRollOver, Subscription existingChildCare) {
+        unScheduleRollOverWait(pregnancyProgramWaitingForRollOver);
         campaignService.stopFor(existingChildCare.createCampaignRequest());
         performRollOver(pregnancyProgramWaitingForRollOver, newChildCareToRollOver, messageFor(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE));
         return true;
@@ -75,5 +73,13 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
         campaignService.startFor(toSubscription.createCampaignRequest());
         sendMessage(toSubscription, message);
         return true;
+    }
+
+    private void performScheduledWaitUntilUserResponds(Subscription subscription) {
+        rollOverWaitSchedule.startScheduleWaitFor(subscription);
+    }
+
+    private void unScheduleRollOverWait(Subscription subscription) {
+        rollOverWaitSchedule.stopScheduleWaitFor(subscription);
     }
 }

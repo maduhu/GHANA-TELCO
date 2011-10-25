@@ -106,7 +106,7 @@ public class CampaignProcessorTest {
     }
 
     @Test
-    public void shouldNotStartOrStopCampaign_WhenRollOverSubscriptionIsInWaitingForResponseStatusDuringRollOver() {
+    public void shouldNotStartOrStopCampaign_WhenRollOverSubscriptionIsInWaitingForResponseStatusDuringRollOverAndStartTheWaitForResponseSchedule() {
         Subscription source = mockSubscription(subscriberNumber);
         Subscription target = mockSubscription(subscriberNumber);
 
@@ -120,7 +120,7 @@ public class CampaignProcessorTest {
     }
     
     @Test
-    public void shouldStopCampaignForPregnancyWaitingForRollOverWhenUserWantsToRetainExistingChildCareSubscription() {
+    public void shouldStopCampaignForPregnancyWaitingForRollOverWhenUserWantsToRetainExistingChildCareSubscriptionAndStopTheWaitResponseSchedule() {
         Subscription source = mockSubscription(subscriberNumber);
         Subscription target = mockSubscription(subscriberNumber);
         CampaignRequest sourceRequest = mock(CampaignRequest.class);
@@ -131,6 +131,7 @@ public class CampaignProcessorTest {
         Boolean reply = campaign.retainExistingChildCare(source, target);
 
         assertTrue(reply);
+        verify(rollOverWaitHandler).stopScheduleWaitFor(source);
         verify(campaignService).stopFor(sourceRequest);
         verifyNoMoreInteractions(campaignService);
         assertSMS(subscriberNumber, successMsg);
@@ -138,7 +139,7 @@ public class CampaignProcessorTest {
     }
 
     @Test
-    public void shouldStopCampaignForExistingChildCareProgramAndRollOverPregnancy_WhenUserWantsSelectsPregnancyRollOverWaitingProgram() {
+    public void shouldStopCampaignForExistingChildCareProgramAndRollOverPregnancyAndStopTheScheduledWaitForResponse() {
         String subscriberNumber = "9500012345";
         Subscription pregnancySubscriptionToRollOver = subscriptionBuilder(subscriberNumber, pregnancyProgramType, WAITING_FOR_ROLLOVER_RESPONSE).build();
         Subscription newChildCareSubscriptionForRollOver = subscriptionBuilder(subscriberNumber, childCarePregnancyType, ACTIVE).build();
@@ -150,6 +151,7 @@ public class CampaignProcessorTest {
 
         assertTrue(reply);
         ArgumentCaptor<CampaignRequest> captor = ArgumentCaptor.forClass(CampaignRequest.class);
+        verify(rollOverWaitHandler).stopScheduleWaitFor(pregnancySubscriptionToRollOver);
         verify(campaignService, times(2)).stopFor(captor.capture());
 
         assertEquals(IProgramType.CHILDCARE, captor.getAllValues().get(0).campaignName());

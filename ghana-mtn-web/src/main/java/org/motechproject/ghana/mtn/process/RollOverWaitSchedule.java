@@ -43,6 +43,10 @@ public class RollOverWaitSchedule {
     }
 
     private String jobId(String mobileNumber) {
-        return format("RollOverSchedule.%s", mobileNumber);
+        return format("RollOverWaitSchedule.%s", mobileNumber);
+    }
+
+    public void stopScheduleWaitFor(Subscription subscription) {
+        scheduledService.unscheduleJob(ROLLOVER_WAIT_SCHEDULE, jobId(subscription.subscriberNumber()));
     }
 }
