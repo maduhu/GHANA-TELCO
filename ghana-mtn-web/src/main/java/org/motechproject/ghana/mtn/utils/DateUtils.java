@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.util.DateUtil;
 
+//TODO: Should use DateUtils class which is in the platform as it also takes care of locale
 public class DateUtils {
 
     public DateTime now() {
