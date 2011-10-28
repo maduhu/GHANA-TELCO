@@ -258,11 +258,12 @@ public class BillingCycleProcessorTest {
         String subscriberNumber = "9500012345";
         DateTime pregnancyRegistrationDate = DateUtil.newDate(2011, 10, 10).toDateTimeAtCurrentTime();
         DateTime childCareRegistrationDate = DateUtil.newDate(2010, 12, 13).toDateTimeAtCurrentTime();
+        DateTime childCareBillingDate = childCareRegistrationDate;
         Subscription pregnancySubscriptionToRollOver = subscriptionBuilder(subscriberNumber, pregnancyRegistrationDate, pregnancyRegistrationDate, pregnancyProgramType)
                 .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
         Subscription newChildCareSubscriptionForRollOver = subscriptionBuilder(subscriberNumber, pregnancyRegistrationDate, pregnancyRegistrationDate, childCarePregnancyType)
                 .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
-        Subscription existingChildCareSubscription = subscriptionBuilder(subscriberNumber, childCareRegistrationDate, DateUtil.now(), childCarePregnancyType).build();
+        Subscription existingChildCareSubscription = subscriptionBuilder(subscriberNumber, childCareRegistrationDate, childCareBillingDate, childCarePregnancyType).build();
 
         when(billingService.stopBilling(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
         when(billingService.rollOverBilling(Matchers.<BillingCycleRollOverRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
@@ -317,7 +318,7 @@ public class BillingCycleProcessorTest {
     private void setupMocks(DateTime now, String mobileNumber, String programKey, ProgramType programType, Subscription subscription) {
         when(programType.getProgramKey()).thenReturn(programKey);
         when(subscription.subscriberNumber()).thenReturn(mobileNumber);
-        when(subscription.billingStartDate()).thenReturn(now);
+        when(subscription.getBillingStartDate()).thenReturn(now);
         when(subscription.getProgramType()).thenReturn(programType);
     }
 

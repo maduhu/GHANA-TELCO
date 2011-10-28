@@ -1,7 +1,9 @@
 package org.motechproject.ghana.mtn.service;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -61,6 +63,7 @@ public class SubscriptionServiceImplTest {
 
         service.start(subscription);
 
+        verify(subscription).updateStartCycleInfo();
         verify(validation).startFor(subscription);
         verify(billing).startFor(subscription);
         verify(persistence).startFor(subscription);
@@ -122,7 +125,9 @@ public class SubscriptionServiceImplTest {
         Date deliveryDate = null;
         String subscriberNumber = "1234567890";
 
-        Subscription subscription = new SubscriptionBuilder().withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType).build();
+        DateTime registrationDate = DateUtil.now();
+        Subscription subscription = new SubscriptionBuilder().withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType)
+                .withRegistrationDate(registrationDate).build();
         when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(subscription);
 
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
@@ -133,7 +138,9 @@ public class SubscriptionServiceImplTest {
         service = spy(service);
         service.rollOver(subscriberNumber, deliveryDate);
 
-        verify(validation).rollOver(eq(subscription), Matchers.<Subscription>any());
+        ArgumentCaptor<Subscription> childCareCaptor = ArgumentCaptor.forClass(Subscription.class);
+        verify(validation).rollOver(eq(subscription), childCareCaptor.capture());
+        assertEquals(registrationDate.toLocalDate(), childCareCaptor.getValue().getBillingStartDate().toLocalDate());
         verify(billing).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(campaign).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(persistence).rollOver(eq(subscription), Matchers.<Subscription>any());

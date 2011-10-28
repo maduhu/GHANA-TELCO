@@ -18,7 +18,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.EXPIRED;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
-public class PersistenceProcessorTest {
+public class PersistenceProcessTest {
     private PersistenceProcess persistence;
     @Mock
     private SMSService smsService;
@@ -49,7 +49,6 @@ public class PersistenceProcessorTest {
         verify(allSubscribers).add(subscriber);
         verify(allSubscriptions).add(subscription);
         verify(subscription).setStatus(SubscriptionStatus.ACTIVE);
-        verify(subscription).updateStartCycleInfo();
     }
 
     @Test
@@ -81,7 +80,6 @@ public class PersistenceProcessorTest {
         assertTrue(reply);
         verify(source).setStatus(SubscriptionStatus.ROLLED_OFF);
         verify(target).setStatus(SubscriptionStatus.ACTIVE);
-        verify(target).updateStartCycleInfo();
 
         verify(allSubscriptions).update(source);
         verify(allSubscriptions).add(target);
@@ -95,7 +93,6 @@ public class PersistenceProcessorTest {
         Boolean reply = persistence.rollOver(source, target);
 
         assertTrue(reply);
-        verify(target, never()).updateStartCycleInfo();
         assertThat(source.getStatus(), is(WAITING_FOR_ROLLOVER_RESPONSE));
         verify(allSubscriptions).update(source);
         verify(allSubscriptions, never()).add(target);
@@ -125,7 +122,6 @@ public class PersistenceProcessorTest {
         assertTrue(reply);
         verify(pregnancySubscriptionWaitingForRollOver).setStatus(SubscriptionStatus.ROLLED_OFF);
         verify(newChildCareSubscriptionToRollOver).setStatus(SubscriptionStatus.ACTIVE);
-        verify(newChildCareSubscriptionToRollOver).updateStartCycleInfo();
         verify(existingChildCareSubscrition).setStatus(SubscriptionStatus.EXPIRED);
 
         verify(allSubscriptions).update(pregnancySubscriptionWaitingForRollOver);

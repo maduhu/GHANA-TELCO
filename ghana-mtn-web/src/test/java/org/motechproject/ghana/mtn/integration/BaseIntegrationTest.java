@@ -154,7 +154,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
             assertThat(map.get("eventType").toString(), Matchers.is(MONTHLY_BILLING_SCHEDULE_SUBJECT));
 
             CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
-            assertThat(cronTrigger.getCronExpression(), Matchers.is(format(billingCron, subscription.billingStartDate().getDayOfMonth())));
+            assertThat(cronTrigger.getCronExpression(), Matchers.is(format(billingCron, subscription.getBillingStartDate().getDayOfMonth())));
 
         } catch (SchedulerException e) {
             throw new AssertionError(e);

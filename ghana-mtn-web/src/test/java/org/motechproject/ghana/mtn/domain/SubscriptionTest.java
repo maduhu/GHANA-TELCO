@@ -77,11 +77,11 @@ public class SubscriptionTest {
           Subscription registeredOn_oct31Mon = subscription("9999933333", oct31Mon, new Week(8), programType("Child"));
           Subscription registeredOn_dec31Sat_CycleDateWillBe_jan2Mon = subscription("9999933333", dec31Sat_CycleDateWillBe_jan2Mon, new Week(9), programType("Child"));
 
-          assertEquals(date(2011, 2, 28), registeredOn_feb28Mon.billingStartDate());
-          assertEquals(date(2011, 10, 1), registeredOn_sep30Fri.billingStartDate());
-          assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.billingStartDate());
-          assertEquals(date(2011, 11, 1), registeredOn_oct31Mon.billingStartDate());
-          assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.billingStartDate());
+          assertEquals(date(2011, 2, 28), registeredOn_feb28Mon.updateStartCycleInfo().getBillingStartDate());
+          assertEquals(date(2011, 10, 1), registeredOn_sep30Fri.updateStartCycleInfo().getBillingStartDate());
+          assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.updateStartCycleInfo().getBillingStartDate());
+          assertEquals(date(2011, 11, 1), registeredOn_oct31Mon.updateStartCycleInfo().getBillingStartDate());
+          assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.updateStartCycleInfo().getBillingStartDate());
     }
     
     @Test

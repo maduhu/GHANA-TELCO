@@ -26,7 +26,6 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
     @Override
     public Boolean startFor(Subscription subscription) {
         subscription.setStatus(SubscriptionStatus.ACTIVE);
-        subscription.updateStartCycleInfo();
         allSubscribers.add(subscription.getSubscriber());
         allSubscriptions.add(subscription);
         return true;
@@ -72,7 +71,6 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
     private void performRollOver(Subscription fromSubscription, Subscription toSubscription) {
         fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
         toSubscription.setStatus(fromSubscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE);
-        toSubscription.updateStartCycleInfo();
         allSubscriptions.add(toSubscription);
         allSubscriptions.update(fromSubscription);
     }

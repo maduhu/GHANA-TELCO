@@ -37,7 +37,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
         BillingCycleRequest request = new BillingCycleRequest(
                 subscription.subscriberNumber(),
                 subscription.getProgramType(),
-                subscription.billingStartDate());
+                subscription.getBillingStartDate());
         return startFor(subscription, request, MessageBundle.BILLING_SUCCESS);
     }
 
@@ -49,7 +49,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
     @Override
     public Boolean stopByUser(Subscription subscription) {
         BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(),
-                subscription.getProgramType(), subscription.billingStartDate());
+                subscription.getProgramType(), subscription.getBillingStartDate());
         subscription.setStatus(SubscriptionStatus.SUSPENDED);
         return stopFor(subscription, request, messageFor(BILLING_STOPPED));
     }
@@ -73,7 +73,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
     }
 
     private Boolean performRollOver(Subscription fromSubscription, Subscription toSubscription, String successMsg) {
-        DateTime billingStartDateFromSubscription = fromSubscription.billingStartDate();
+        DateTime billingStartDateFromSubscription = fromSubscription.getBillingStartDate();
         BillingCycleRequest fromRequest = billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), billingStartDateFromSubscription);
         BillingCycleRequest toRequest = billingRequest(toSubscription.subscriberNumber(), toSubscription.getProgramType(), billingStartDateFromSubscription);
 
@@ -82,7 +82,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     private Boolean stop(Subscription subscription, String successMsg) {
         BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(),
-                subscription.getProgramType(), subscription.billingStartDate());
+                subscription.getProgramType(), subscription.getBillingStartDate());
         subscription.setStatus(SubscriptionStatus.EXPIRED);
         return stopFor(subscription, request, successMsg);
     }
