@@ -11,6 +11,7 @@
                 <ref bean="programMessageSeed"/>
                 <ref bean="shortCodeSeed"/>
                 <ref bean="mockMTNUserSeed"/>
+                <ref bean="messageSeed"/>
             </list>
         </constructor-arg>
     </bean>

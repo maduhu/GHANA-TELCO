@@ -1,22 +1,20 @@
 package org.motechproject.ghana.mtn.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.ghana.mtn.repository.AllMessages;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Properties;
 
 @Component
 public class MessageBundle {
-    private Properties values;
     public static final String PROGRAM_NAME_MARKER = "${p}";
     public static final String REQUEST_FAILURE = "request.failure";
     public static final String ENROLLMENT_SUCCESS = "enrollment.success";
     public static final String ENROLLMENT_STOPPED = "enrollment.stopped";
-    public static final String ENROLLMENT_ROLlOVER = "enrollment.rollover";
+    public static final String ENROLLMENT_ROLLOVER = "enrollment.rollover";
     public static final String ACTIVE_SUBSCRIPTION_PRESENT = "enrollment.active.subscription.present";
 
     public static final String BILLING_SUCCESS = "billing.success";
@@ -36,20 +34,21 @@ public class MessageBundle {
     public static final String PENDING_ROLLOVER_RETAIN_CHILDCARE = "pending.rollover.retain.childcare.success";
     public static final String PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE = "pending.rollover.pregnancy.to.childcare.success";
     public static final String PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING = "pending.rollover.pregnancy.to.childcare.billing";
+        
+    private AllMessages allMessages;
 
     @Autowired
-    public MessageBundle(@Qualifier("bundleProperties") Properties values) {
-        this.values = values;
+    public MessageBundle(AllMessages allMessages) {
+        this.allMessages = allMessages;
     }
 
     public String get(String key) {
-        Object value = values.get(key);
-        return value != null ? (String) value : StringUtils.EMPTY;
+        Message message = allMessages.findBy(key);
+        return message != null ? message.getContent() : StringUtils.EMPTY;
     }
 
     public String get(ValidationError error) {
-        Object value = values.get(error.key());
-        return value != null ? (String) value : StringUtils.EMPTY;
+        return get(error.key());
     }
 
     public String get(List<ValidationError> errors) {

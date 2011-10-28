@@ -17,7 +17,6 @@
     <context:component-scan base-package="org.motechproject.ghana.mtn"/>
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-    <util:properties id="bundleProperties" location="classpath:bundle.properties"/>
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
 

@@ -14,6 +14,7 @@ import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.repository.*;
+import org.motechproject.ghana.mtn.tools.seed.MessageSeed;
 import org.motechproject.ghana.mtn.tools.seed.ShortCodeSeed;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechBaseDataObject;
@@ -70,7 +71,11 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     @Autowired
     protected AllMessageCampaigns allMessageCampaigns;
     @Autowired
+    protected AllMessages allMessages;
+    @Autowired
     ShortCodeSeed shortCodeSeed;
+    @Autowired
+    MessageSeed messageSeed;
 
     public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1)
             .withMaxWeek(52).withProgramKey(IProgramType.CHILDCARE).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
@@ -80,11 +85,12 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
     protected void addSeedData() {
         shortCodeSeed.run();
+        messageSeed.run();
     }
 
     protected void cleanData() {
         super.after();
-        remove(allMtnMock, allShortCodes, allProgramTypes, allSubscriptions, allSubscribers, allBillAudits, allBillAccounts);
+        remove(allMtnMock, allShortCodes, allProgramTypes, allMessages, allSubscriptions, allSubscribers, allBillAudits, allBillAccounts);
         removeAllQuartzJobs();
     }
 

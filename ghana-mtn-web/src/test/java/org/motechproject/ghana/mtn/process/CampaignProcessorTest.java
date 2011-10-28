@@ -93,7 +93,7 @@ public class CampaignProcessorTest {
         CampaignRequest sourceRequest = mock(CampaignRequest.class);
         CampaignRequest targetRequest = mock(CampaignRequest.class);
 
-        when(messageBundle.get(MessageBundle.ENROLLMENT_ROLlOVER)).thenReturn(message);
+        when(messageBundle.get(MessageBundle.ENROLLMENT_ROLLOVER)).thenReturn(message);
         when(source.createCampaignRequest()).thenReturn(sourceRequest);
         when(target.createCampaignRequest()).thenReturn(targetRequest);
 

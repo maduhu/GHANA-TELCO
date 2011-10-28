@@ -49,7 +49,7 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
             performScheduledWaitUntilUserResponds(fromSubscription);
             return true;
         }
-        return performRollOver(fromSubscription, toSubscription, messageFor(ENROLLMENT_ROLlOVER));
+        return performRollOver(fromSubscription, toSubscription, messageFor(ENROLLMENT_ROLLOVER));
     }
 
     @Override
