@@ -23,6 +23,7 @@ import org.motechproject.util.DateUtil;
 import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -89,7 +90,7 @@ public class SubscriptionServiceImplTest {
     public void shouldInvokeAllProcessInvolvedInRollOverProcessForEvent() {
         Subscription subscription = spy(new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
                 .withSubscriber(new Subscriber("9850012345")).withType(pregnancyProgramType).withStartWeekAndDay(new WeekAndDay(new Week(36), Day.FRIDAY))
-                .build());
+                .build().updateStartCycleInfo());
         when(subscription.isCompleted()).thenReturn(true);
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(billing.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
@@ -125,9 +126,10 @@ public class SubscriptionServiceImplTest {
         Date deliveryDate = null;
         String subscriberNumber = "1234567890";
 
-        DateTime registrationDate = DateUtil.now();
+        DateTime registrationDate = DateUtil.newDate(2011, 10, 21).toDateTimeAtCurrentTime();
+        DateTime cycleStartDateAsBillingDate = DateUtil.newDate(2011, 10, 24).toDateTimeAtCurrentTime();
         Subscription subscription = new SubscriptionBuilder().withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType)
-                .withRegistrationDate(registrationDate).build();
+                .withRegistrationDate(registrationDate).withBillingStartDate(cycleStartDateAsBillingDate).build();
         when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(subscription);
 
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
@@ -140,7 +142,8 @@ public class SubscriptionServiceImplTest {
 
         ArgumentCaptor<Subscription> childCareCaptor = ArgumentCaptor.forClass(Subscription.class);
         verify(validation).rollOver(eq(subscription), childCareCaptor.capture());
-        assertEquals(registrationDate.toLocalDate(), childCareCaptor.getValue().getBillingStartDate().toLocalDate());
+
+        assertNotNull(childCareCaptor.getValue().getBillingStartDate().toLocalDate());
         verify(billing).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(campaign).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(persistence).rollOver(eq(subscription), Matchers.<Subscription>any());

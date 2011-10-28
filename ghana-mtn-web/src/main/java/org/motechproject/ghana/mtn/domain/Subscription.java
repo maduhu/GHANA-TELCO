@@ -26,7 +26,9 @@ public class Subscription extends MotechAuditableDataObject {
     private SubscriptionStatus status;
     private WeekAndDay startWeekAndDay;
     private WeekAndDay lastMsgSentWeekAndDay;
+
     private DateTime registrationDate;
+    private DateTime cycleStartDate;
     private DateTime billingStartDate;
     private DateUtils dateUtils = new DateUtils();
 
@@ -91,18 +93,42 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public Week currentWeek() {
-        DateTime registeredDateStartDayTime = dateUtils.startOfDay(registrationDate);
+
+        DateTime cycleStartDate = getCycleStartDate();
         DateTime currentDateStartDayTime = dateUtils.startOfDay(dateUtils.now());
-        int daysDiff = new Period(registeredDateStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();
+        if(cycleStartDate.compareTo(currentDateStartDayTime) > 0) return null;
+
+        DateTime cycleStartDateWithStartDayTime = dateUtils.startOfDay(cycleStartDate);
+        int daysDiff = new Period(cycleStartDateWithStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();
 
         if (daysDiff > 0) {
-            int dayOfWeek = registeredDateStartDayTime.get(DateTimeFieldType.dayOfWeek());
+            int dayOfWeek = cycleStartDateWithStartDayTime.get(DateTimeFieldType.dayOfWeek());
             int daysToSaturday = (dayOfWeek == DateTimeConstants.SUNDAY) ? 6 : SATURDAY - dayOfWeek;
             int daysAfterFirstSaturday = daysDiff > daysToSaturday ? daysDiff - daysToSaturday : 0;
             int weeksAfterFirstSaturday = daysAfterFirstSaturday / 7 + (daysAfterFirstSaturday % 7 > 0 ? 1 : 0);
             return startWeekAndDay.getWeek().add(weeksAfterFirstSaturday);
         }
         return startWeekAndDay.getWeek();
+    }
+
+    private DateTime cycleStartDate() {
+        return dateUtils.startOfDay(new ProgramMessageCycle().nearestCycleDate(getRegistrationDate()));
+    }
+
+    private DateTime billingStartDate(DateTime startDateOfCycle) {
+        List<Integer> forDaysToMoveToFirstOfMonth = asList(29, 30, 31);
+        if (forDaysToMoveToFirstOfMonth.contains(startDateOfCycle.getDayOfMonth()))
+            return startDateOfCycle.dayOfMonth().addToCopy(1).withDayOfMonth(1);
+        return startDateOfCycle;
+    }
+
+    public Subscription updateStartCycleInfo() {
+        DateTime startDateOfCycle = cycleStartDate();
+
+        this.getStartWeekAndDay().setDay(dateUtils.day(startDateOfCycle));
+        this.cycleStartDate = startDateOfCycle;
+        this.billingStartDate = billingStartDate(startDateOfCycle);
+        return this;
     }
 
     public Day currentDay() {
@@ -134,24 +160,6 @@ public class Subscription extends MotechAuditableDataObject {
         return lastMsgSentWeekAndDay != null && subscriptionMessage.getWeekAndDay().isBefore(lastMsgSentWeekAndDay);
     }
 
-    private DateTime cycleStartDate() {
-        return dateUtils.startOfDay(new ProgramMessageCycle().nearestCycleDate(registrationDate));
-    }
-
-    private DateTime billingStartDate(DateTime startDateOfCycle) {
-        List<Integer> forDaysToMoveToFirstOfMonth = asList(29, 30, 31);
-        if (forDaysToMoveToFirstOfMonth.contains(startDateOfCycle.getDayOfMonth()))
-            return startDateOfCycle.dayOfMonth().addToCopy(1).withDayOfMonth(1);
-        return startDateOfCycle;
-    }
-
-    public Subscription updateStartCycleInfo() {
-        DateTime startDateOfCycle = cycleStartDate();
-        this.getStartWeekAndDay().setDay(dateUtils.day(startDateOfCycle));
-        this.billingStartDate = billingStartDate(startDateOfCycle);
-        return this;
-    }
-
     public String subscriberNumber() {
         return subscriber.getNumber();
     }
@@ -160,13 +168,23 @@ public class Subscription extends MotechAuditableDataObject {
         return setTimeZone(billingStartDate);
     }
 
+    public DateTime getCycleStartDate() {
+        return setTimeZone(cycleStartDate);
+    }
+
+    public void setCycleStartDate(DateTime cycleStartDate) {
+        this.cycleStartDate = cycleStartDate;
+    }
+
+
     public void setBillingStartDate(DateTime billingStartDate) {
         this.billingStartDate = billingStartDate;
     }
 
     @JsonIgnore
     public Boolean isCompleted() {
-        return currentWeek().getNumber() >= programType.getMaxWeek() && Day.FRIDAY.equals(currentDay());
+        Week week = currentWeek();
+        return week != null && week.getNumber() >= programType.getMaxWeek() && Day.FRIDAY.equals(currentDay());
     }
 
     public Boolean canRollOff() {

@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.process;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
@@ -26,7 +27,8 @@ public class MessengerProcess extends BaseSubscriptionProcess {
     }
 
     public void process(Subscription subscription) {
-        ProgramMessage message = allProgramMessages.findBy(subscription.getProgramType(), subscription.currentWeek(), subscription.currentDay());
+        Week currentWeek = subscription.currentWeek();
+        ProgramMessage message = currentWeek != null ? allProgramMessages.findBy(subscription.getProgramType(), currentWeek, subscription.currentDay()) : null;
         if (message == null) return;
         if (subscription.alreadySent(message)) return;
 

@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.domain;
 
 import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,10 @@ public class ProgramMessageCycle {
     }
 
     public DateTime nearestCycleDate(DateTime fromDate) {
+        return isDayEndOfCycle(fromDate) ?  calculateNextPossible(fromDate.dayOfMonth().addToCopy(1)) : calculateNextPossible(fromDate);
+    }
+
+    private DateTime calculateNextPossible(DateTime fromDate) {
 
         int dayOfWeek = fromDate.getDayOfWeek();
         int noOfDaysToNearestCycleDate  = 0;
@@ -28,5 +33,9 @@ public class ProgramMessageCycle {
             else currentDayOfWeek++;
         }
         return fromDate.dayOfMonth().addToCopy(noOfDaysToNearestCycleDate);
+    }
+
+    public boolean isDayEndOfCycle(DateTime dateTime) {
+        return dateTime.getDayOfWeek() == APPLICABLE_DAYS.get(APPLICABLE_DAYS.size() - 1);
     }
 }

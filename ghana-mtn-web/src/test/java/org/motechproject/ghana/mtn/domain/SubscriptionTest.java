@@ -10,8 +10,7 @@ import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -21,9 +20,34 @@ public class SubscriptionTest {
     @Before
     public void setUp() {
     }
+    
+    @Test
+    public void shouldReturnCurrentRunningWeekAsNull_IfCycleStartDateFallsOnFuture() {
+
+        DateTime satOct8 = date(2011, 10, 8);
+        Subscription registeredOn_satOct8 = subscription("9999933333", satOct8, new Week(10), programType("Pregnancy"));
+
+        mockCurrentDate(date(2011, 2, 5)); // sat
+        assertEquals(date(2011, 10, 10).toLocalDate(), registeredOn_satOct8.getCycleStartDate().toLocalDate());
+        assertNull(registeredOn_satOct8.currentWeek());
+    }
 
     @Test
-    public void shouldReturnCurrentRunningWeekForSubscriptionProgramBasedOnSundayAsStartOfWeek() {
+    public void shouldReturnCurrentRunningWeekAsRegisteredWeek_IfRegisteredOnFridayOrAfter() {
+
+        DateTime friOct14 = date(2011, 10, 14);
+        Subscription registeredOn_satOct14 = subscription("9999933333", friOct14, new Week(10), programType("Pregnancy"));
+
+        mockCurrentDate(date(2011, 10, 15)); // sat
+        assertEquals(date(2011, 10, 17).toLocalDate(), registeredOn_satOct14.getCycleStartDate().toLocalDate());
+        assertNull(registeredOn_satOct14.currentWeek());
+
+        mockCurrentDate(date(2011, 10, 17)); // mon
+        assertWeek(new Week(10), registeredOn_satOct14.currentWeek());
+    }
+    
+    @Test
+    public void shouldReturnCurrentRunningWeekForSubscriptionProgramBased_OnCycleStartDateAndSundayAsStartOfWeek() {
 
         DateTime monJan31 = date(2011, 1, 31);
         DateTime wedFeb2 = date(2011, 2, 2);
@@ -40,24 +64,28 @@ public class SubscriptionTest {
         mockCurrentDate(date(2011, 2, 5)); // sat
         assertWeek(new Week(10), registeredOn_monJan31.currentWeek());
         assertWeek(new Week(6), registeredOn_wedFeb2.currentWeek());
-        assertWeek(new Week(6), registeredOn_satFeb5.currentWeek());
+        assertNull(registeredOn_satFeb5.currentWeek());
+        assertNull(registeredOn_wedFeb24.currentWeek());
 
         mockCurrentDate(date(2011, 2, 6)); // sun
+        Week weekIsNullSinceCycleStartDateIsInFuture = null;
         assertWeek(new Week(11), registeredOn_monJan31.currentWeek());
         assertWeek(new Week(7), registeredOn_wedFeb2.currentWeek());
-        assertWeek(new Week(7), registeredOn_satFeb5.currentWeek());
-        assertWeek(new Week(8), registeredOn_sunFeb6.currentWeek());
+        assertWeek(weekIsNullSinceCycleStartDateIsInFuture, registeredOn_satFeb5.currentWeek());
+        assertWeek(weekIsNullSinceCycleStartDateIsInFuture, registeredOn_sunFeb6.currentWeek());
+        assertWeek(weekIsNullSinceCycleStartDateIsInFuture, registeredOn_wedFeb24.currentWeek());
 
         mockCurrentDate(date(2011, 2, 19)); // sat
         assertWeek(new Week(12), registeredOn_monJan31.currentWeek());
         assertWeek(new Week(8), registeredOn_wedFeb2.currentWeek());
-        assertWeek(new Week(8), registeredOn_satFeb5.currentWeek());
+        assertWeek(new Week(7), registeredOn_satFeb5.currentWeek());
         assertWeek(new Week(9), registeredOn_sunFeb6.currentWeek());
+        assertNull(registeredOn_wedFeb24.currentWeek());
 
         mockCurrentDate(date(2011, 2, 27)); // sun
         assertWeek(new Week(14), registeredOn_monJan31.currentWeek());
         assertWeek(new Week(10), registeredOn_wedFeb2.currentWeek());
-        assertWeek(new Week(10), registeredOn_satFeb5.currentWeek());
+        assertWeek(new Week(9), registeredOn_satFeb5.currentWeek());
         assertWeek(new Week(11), registeredOn_sunFeb6.currentWeek());
         assertWeek(new Week(10), registeredOn_wedFeb24.currentWeek());
     }
@@ -78,7 +106,7 @@ public class SubscriptionTest {
           Subscription registeredOn_dec31Sat_CycleDateWillBe_jan2Mon = subscription("9999933333", dec31Sat_CycleDateWillBe_jan2Mon, new Week(9), programType("Child"));
 
           assertEquals(date(2011, 2, 28), registeredOn_feb28Mon.updateStartCycleInfo().getBillingStartDate());
-          assertEquals(date(2011, 10, 1), registeredOn_sep30Fri.updateStartCycleInfo().getBillingStartDate());
+          assertEquals(date(2011, 10, 3), registeredOn_sep30Fri.updateStartCycleInfo().getBillingStartDate());
           assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.updateStartCycleInfo().getBillingStartDate());
           assertEquals(date(2011, 11, 1), registeredOn_oct31Mon.updateStartCycleInfo().getBillingStartDate());
           assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.updateStartCycleInfo().getBillingStartDate());
@@ -97,7 +125,8 @@ public class SubscriptionTest {
     }
 
     private void assertWeek(Week w1, Week w2) {
-        assertEquals(w1.getNumber(), w2.getNumber());
+        if(w1 == null) assertNull(w2);
+        else assertEquals(w1.getNumber(), w2.getNumber());
     }
 
     private DateUtils mockCurrentDate(DateTime dateTime) {
@@ -110,6 +139,7 @@ public class SubscriptionTest {
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program).build();
         ReflectionTestUtils.setField(subscription, "dateUtils", dateUtils);
+        subscription.updateStartCycleInfo();
         return subscription;
     }
 

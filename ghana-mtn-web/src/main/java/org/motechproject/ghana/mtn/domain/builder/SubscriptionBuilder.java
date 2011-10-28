@@ -1,10 +1,10 @@
 package org.motechproject.ghana.mtn.domain.builder;
 
 import org.joda.time.DateTime;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscriber;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 
 public class SubscriptionBuilder extends Builder<Subscription> {
@@ -14,6 +14,7 @@ public class SubscriptionBuilder extends Builder<Subscription> {
     private WeekAndDay startWeekAndDay;
     private DateTime registrationDate;
     private DateTime billingStartDate;
+    private DateTime cycleStartDate;
 
     public SubscriptionBuilder() {
         super(new Subscription());
@@ -46,6 +47,11 @@ public class SubscriptionBuilder extends Builder<Subscription> {
 
     public SubscriptionBuilder withBillingStartDate(DateTime dateTime) {
         this.billingStartDate = dateTime;
+        return this;
+    }
+
+    public SubscriptionBuilder withCycleStartDate(DateTime cycleStartDate) {
+        this.cycleStartDate = cycleStartDate;
         return this;
     }
 }
