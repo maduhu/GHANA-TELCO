@@ -92,7 +92,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             }
         } else {
             for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
-                if (!process.rollOverToNewChildCareProgram(pregnancyProgramWaitingForRollOver, rollOverSubscription(pregnancyProgramWaitingForRollOver), existingChildCare)) break;
+                if (!process.rollOverToNewChildCareProgram(pregnancyProgramWaitingForRollOver, rollOverSubscriptionFrom(pregnancyProgramWaitingForRollOver), existingChildCare)) break;
             }
         }
     }
@@ -108,7 +108,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private void performRollOver(Subscription subscription) {
-        Subscription rollOverSubscription = rollOverSubscription(subscription);
+        Subscription rollOverSubscription = rollOverSubscriptionFrom(subscription);
 
         for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
             if (process.rollOver(subscription, rollOverSubscription)) continue;
@@ -116,7 +116,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    Subscription rollOverSubscription(Subscription subscription) {
+    Subscription rollOverSubscriptionFrom(Subscription subscription) {
         return subscription != null ? new Subscription(
                 subscription.getSubscriber(),
                 subscription.getProgramType().getRollOverProgramType(),

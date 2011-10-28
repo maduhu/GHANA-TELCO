@@ -274,7 +274,7 @@ public class SubscriptionServiceImplTest {
 
         Subscription pregnancySubscriptionWaitingForRollOver = subscriptionB(subscriberNumber, pregnancyProgramType, WAITING_FOR_ROLLOVER_RESPONSE).build();
         Subscription newChildCareSubscriptionForRollOver = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
-        when(service.rollOverSubscription(pregnancySubscriptionWaitingForRollOver)).thenReturn(newChildCareSubscriptionForRollOver);
+        when(service.rollOverSubscriptionFrom(pregnancySubscriptionWaitingForRollOver)).thenReturn(newChildCareSubscriptionForRollOver);
 
         Subscription existingChildCareSubscription = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
 
