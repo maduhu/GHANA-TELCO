@@ -1,25 +1,25 @@
 package org.motechproject.ghana.mtn.billing.integration;
 
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.billing.domain.BillAudit;
 import org.motechproject.ghana.mtn.billing.domain.BillStatus;
+import org.motechproject.ghana.mtn.billing.domain.MTNMockUser;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
 import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAudits;
+import org.motechproject.ghana.mtn.billing.repository.AllMTNMockUsers;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.billing.service.BillingServiceImpl;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.vo.Money;
-import org.quartz.CronTrigger;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,17 +50,25 @@ public class BillingServiceIntegrationTest {
 
     @Autowired
     SchedulerFactoryBean schedulerFactoryBean;
+    @Autowired
+    private AllMTNMockUsers allMTNMockUsers;
+    private MTNMockUser mtnMockUser = new MTNMockUser("9876543210", new Money(10D));
 
     @Before
     public void setUp() {
-        for(BillAudit billAudit: allBillAudits.getAll())
+        for (BillAudit billAudit : allBillAudits.getAll())
             allBillAudits.remove(billAudit);
+        addNewSubscribers();
+    }
+
+    private void addNewSubscribers() {
+        allMTNMockUsers.add(mtnMockUser);
     }
 
     @Test
     public void ShouldStartABillingSchedule() throws SchedulerException {
         String subscriberNumber = "9876543210";
-        BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, getPregnancyProgramType(), new DateTime(2011,10,11,0,0));
+        BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, getPregnancyProgramType(), new DateTime(2011, 10, 11, 0, 0));
 
         BillingServiceResponse<CustomerBill> billingServiceResponse = billingService.startBilling(billingCycleRequest);
         BillAccount billAccount = allBillAccounts.findByMobileNumber(subscriberNumber);
@@ -70,7 +78,7 @@ public class BillingServiceIntegrationTest {
 
         JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
 
-        CronTrigger cronTrigger = (CronTrigger)schedulerFactoryBean.getScheduler().getTrigger(jobId,"default");
+        CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
 
         assertThat(billingServiceResponse.getValue().getMessage(), is(BillingServiceImpl.BILLING_SCHEDULE_STARTED));
         assertThat(billingServiceResponse.getValue().getAmountCharged(), is(getPregnancyProgramType().getFee()));
@@ -78,10 +86,9 @@ public class BillingServiceIntegrationTest {
         assertThat(billAccount.getProgramAccounts().size(), is(1));
         assertThat(billAccount.getProgramAccounts().get(0).getProgramKey(), is(getPregnancyProgramType().getProgramKey()));
 
-
         assertThat(billAudits.size(), is(1));
-        assertThat(billAudits.get(0).getMobileNumber(),is(subscriberNumber));
-        assertThat(billAudits.get(0).getAmountCharged(),equalTo(getPregnancyProgramType().getFee()));
+        assertThat(billAudits.get(0).getMobileNumber(), is(subscriberNumber));
+        assertThat(billAudits.get(0).getAmountCharged(), equalTo(getPregnancyProgramType().getFee()));
         assertThat(billAudits.get(0).getBillStatus(), is(BillStatus.SUCCESS));
         assertThat(billAudits.get(0).getFailureReason(), is(""));
 
@@ -91,6 +98,26 @@ public class BillingServiceIntegrationTest {
         assertThat(map.get("eventType").toString(), is(MONTHLY_BILLING_SCHEDULE_SUBJECT));
 
         assertThat(cronTrigger.getCronExpression(), is("0 0 5 11 * ?"));
+    }
+
+    @After
+    public void destroy() {
+        allMTNMockUsers.remove(mtnMockUser);
+        removeAllQuartzJobs();
+    }
+
+    private void removeAllQuartzJobs() {
+        try {
+            Scheduler scheduler = schedulerFactoryBean.getScheduler();
+            String[] groupNames = scheduler.getJobGroupNames();
+            for (String group : groupNames) {
+                String[] jobNames = scheduler.getJobNames(group);
+                for (String job : jobNames)
+                    scheduler.deleteJob(job, group);
+            }
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
     }
 
     public IProgramType getPregnancyProgramType() {
