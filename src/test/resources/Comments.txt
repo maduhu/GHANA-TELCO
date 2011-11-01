@@ -1,5 +1,5 @@
-1. Move the code structure one level down and put the current code in a module so that other modules can be added later.
-2. Instead of using builder consider using constructors and factories.
-3. Use DateUtil from the platform as it takes care of locale, and factory can be mocked in Java, helps in writing tests which don't fail.
-4. Avoid System.Out define logger to log to console.
-5. Do not compile the pattern everytime, org.motechproject.ghana.mtn.validation.InputMessageParser.parse, its CPU intensive keep the pattern object static
+(DONE) 1. Move the code structure one level down and put the current code in a module so that other modules can be added later.
+(DONE) 2. Instead of using builder consider using constructors and factories.
+(DONE) 3. Use DateUtil from the platform as it takes care of locale, and factory can be mocked in Java, helps in writing tests which don't fail.
+(DONE) 4. Avoid System.Out define logger to log to console.
+(DONE) 5. Do not compile the pattern everytime, org.motechproject.ghana.mtn.validation.InputMessageParser.parse, its CPU intensive keep the pattern object static
