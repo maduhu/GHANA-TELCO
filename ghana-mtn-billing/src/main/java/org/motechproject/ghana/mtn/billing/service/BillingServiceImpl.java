@@ -1,6 +1,8 @@
 package org.motechproject.ghana.mtn.billing.service;
 
+import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.billing.dto.*;
+import org.motechproject.ghana.mtn.billing.exception.InsufficientFundsException;
 import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -20,6 +22,7 @@ public class BillingServiceImpl implements BillingService {
     public static final String BILLING_SCHEDULE_STOPPED = "Billing schedule stopped";
     public static final String BILLING_SUCCESSFUL = "Billing Successful";
     public static final String BILLING_ROLLED_OVER = "Billing Rollover Completed";
+    private Logger log = Logger.getLogger(BillingServiceImpl.class);
 
     @Autowired
     public BillingServiceImpl(AllBillAccounts allBillAccounts, BillingScheduler scheduler, BillingAuditor auditor, MTNMock mtnMock) {
@@ -52,7 +55,16 @@ public class BillingServiceImpl implements BillingService {
         IProgramType programType = request.getProgramType();
 
         Double balance = mtnMock.getBalanceFor(mobileNumber);
-        Money chargedAmount = mtnMock.chargeCustomer(mobileNumber, fee);
+        Money chargedAmount = null;
+        try {
+            chargedAmount = mtnMock.chargeCustomer(mobileNumber, fee);
+        } catch (InsufficientFundsException e) {
+            log.debug("Insufficient Funds for " + mobileNumber);
+            BillingServiceResponse<CustomerBill> response = new BillingServiceResponse<CustomerBill>();
+            response.addError(ValidationError.INSUFFICIENT_FUNDS);
+            return response;
+        }
+
         auditor.audit(request);
         allBillAccounts.updateFor(mobileNumber, balance, programType);
         return new BillingServiceResponse<CustomerBill>(new CustomerBill(BILLING_SUCCESSFUL, chargedAmount));

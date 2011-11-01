@@ -28,6 +28,7 @@ public class FeeChargerProcess extends BaseSubscriptionProcess {
         BillingServiceResponse<CustomerBill> response = billingService.chargeProgramFee(new BillingServiceRequest(subscriberNumber, subscription.getProgramType()));
         if (response.hasErrors())
             sendMessage(subscription, messageFor(response.getValidationErrors()));
+
         else
             sendMessage(subscription, format(messageFor(MessageBundle.BILLING_SUCCESS), response.getValue().amountChargedWithCurrency()));
     }

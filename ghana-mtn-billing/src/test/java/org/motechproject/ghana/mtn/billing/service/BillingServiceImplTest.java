@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.*;
+import org.motechproject.ghana.mtn.billing.exception.InsufficientFundsException;
 import org.motechproject.ghana.mtn.billing.mock.MTNMock;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -11,8 +12,10 @@ import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.scheduler.MotechSchedulerService;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.billing.service.BillingServiceImpl.BILLING_SUCCESSFUL;
@@ -64,7 +67,7 @@ public class BillingServiceImplTest {
     }
 
     @Test
-    public void shouldContactMTNAndUpdateAccountAndAudit() {
+    public void shouldContactMTNAndUpdateAccountAndAudit() throws InsufficientFundsException {
         BillingServiceRequest request = mock(BillingServiceRequest.class);
         IProgramType programType = mock(IProgramType.class);
 
@@ -87,7 +90,7 @@ public class BillingServiceImplTest {
     }
 
     @Test
-    public void shouldRaiseAScheduleUsingPlatformSchedulerOnProcessRegistration() {
+    public void shouldRaiseAScheduleUsingPlatformSchedulerOnProcessRegistration() throws InsufficientFundsException {
         BillingCycleRequest request = mock(BillingCycleRequest.class);
         IProgramType programType = mock(IProgramType.class);
 
@@ -104,6 +107,18 @@ public class BillingServiceImplTest {
         verify(scheduler).startFor(request);
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STARTED, response.getValue().getMessage());
         assertEquals(charge.getValue(), response.getValue().amountCharged());
+    }
+
+    @Test
+    public void shouldContainValidationErrorsWhenUserDoesNotHaveInsufficientFund() throws InsufficientFundsException {
+        String mobileNumber = "1234567890";
+        IProgramType programType = mock(IProgramType.class);
+
+        when(mtnMock.chargeCustomer(mobileNumber, 2L)).thenThrow(new InsufficientFundsException());
+        when(programType.getFee()).thenReturn(new Money(2D));
+
+        BillingServiceResponse<CustomerBill> response = service.chargeProgramFee(new BillingServiceRequest(mobileNumber, programType));
+        assertThat(response.getValidationErrors().get(0), is(ValidationError.INSUFFICIENT_FUNDS));
     }
 
     @Test

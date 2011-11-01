@@ -1,10 +1,10 @@
 package org.motechproject.ghana.mtn.billing.mock;
 
 import org.motechproject.ghana.mtn.billing.domain.MTNMockUser;
+import org.motechproject.ghana.mtn.billing.exception.InsufficientFundsException;
 import org.motechproject.ghana.mtn.billing.repository.AllMTNMockUsers;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -31,7 +31,9 @@ public class MTNMock {
         return user != null;
     }
 
-    public Money chargeCustomer(String mobileNumber, double amountToCharge) {
+    public Money chargeCustomer(String mobileNumber, double amountToCharge) throws InsufficientFundsException {
+        if (getBalanceFor(mobileNumber) < amountToCharge) throw new InsufficientFundsException();
+
         MTNMockUser user = fetchUser(mobileNumber);
         if (user != null) {
             user.getBalance().subtract(amountToCharge);
