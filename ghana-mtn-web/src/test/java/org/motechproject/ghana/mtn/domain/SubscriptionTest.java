@@ -22,7 +22,7 @@ public class SubscriptionTest {
     @Before
     public void setUp() {
     }
-    
+
     @Test
     public void shouldReturnCurrentRunningWeekAsNull_IfCycleStartDateFallsOnFuture() {
 
@@ -47,7 +47,7 @@ public class SubscriptionTest {
         mockCurrentDate(date(2011, 10, 17)); // mon
         assertWeek(new Week(10), registeredOn_satOct14.currentWeek());
     }
-    
+
     @Test
     public void shouldReturnCurrentRunningWeekForSubscriptionProgramBased_OnCycleStartDateAndSundayAsStartOfWeek() {
         DateTime monJan31 = date(2011, 1, 31);
@@ -104,12 +104,12 @@ public class SubscriptionTest {
         Subscription registeredOn_MonFeb7 = subscription("9999933333", date(2011, 2, 7), new Week(10), programType("Pregnancy"));
 
         int noOfDaysForRemainingWeeks = 25 * 7;
-        int daysToSaturdayForMonJan31 = 5;
-        DateTime endDateForJan31 = date(2011, 1, 31).dayOfMonth().addToCopy(noOfDaysForRemainingWeeks + daysToSaturdayForMonJan31);
+        int daysToSaturdayForMonJan31 = 3;
+        DateTime endDateForJan31 = date(2011, 2, 2).dayOfMonth().addToCopy(noOfDaysForRemainingWeeks + daysToSaturdayForMonJan31);
 
         assertThat(registeredOn_MonJan31.getCycleEndDate(), is(endDateForJan31));
         assertThat(registeredOn_TueFeb1.getCycleEndDate(), is(addDays(date(2011, 2, 2), 3 + noOfDaysForRemainingWeeks)));
-        assertThat(registeredOn_WedFeb2.getCycleEndDate(), is(addDays(date(2011, 2, 2), 3 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_WedFeb2.getCycleEndDate(), is(addDays(date(2011, 2, 4), 1 + noOfDaysForRemainingWeeks)));
         assertThat(registeredOn_ThurFeb3.getCycleEndDate(), is(addDays(date(2011, 2, 4), 1 + noOfDaysForRemainingWeeks)));
         assertThat(registeredOn_FriFeb4.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
         assertThat(registeredOn_SatFeb5.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
@@ -123,25 +123,27 @@ public class SubscriptionTest {
 
     @Test
     public void shouldReturnStartBillingDateAsFirstOfNextMonthIfBillingCycleDateEndsOn29or30or31OfMonth() {
-          DateTime feb28Mon = date(2011, 2, 28);
-          DateTime sep30Fri = date(2011, 9, 30);
-          DateTime oct1Sat_CycleDateWillBe_oct3Mon = date(2011, 10, 1);
-          DateTime oct31Mon = date(2011, 10, 31);
-          DateTime dec31Sat_CycleDateWillBe_jan2Mon = date(2011, 12, 31);
+        DateTime feb28Mon = date(2011, 2, 28);
+        DateTime sep30Fri = date(2011, 9, 30);
+        DateTime oct1Sat_CycleDateWillBe_oct3Mon = date(2011, 10, 1);
+        DateTime oct31Mon = date(2011, 10, 31);
+        DateTime dec31Sat_CycleDateWillBe_jan2Mon = date(2011, 12, 31);
 
-          Subscription registeredOn_feb28Mon = subscription("9999933333", feb28Mon, new Week(10), programType("Pregnancy"));
-          Subscription registeredOn_sep30Fri = subscription("9999933333", sep30Fri, new Week(6), programType("Pregnancy"));
-          Subscription registeredOn_oct1Sat_CycleDateWillBe_oct3Mon = subscription("9999933333", oct1Sat_CycleDateWillBe_oct3Mon, new Week(6), programType("Child"));
-          Subscription registeredOn_oct31Mon = subscription("9999933333", oct31Mon, new Week(8), programType("Child"));
-          Subscription registeredOn_dec31Sat_CycleDateWillBe_jan2Mon = subscription("9999933333", dec31Sat_CycleDateWillBe_jan2Mon, new Week(9), programType("Child"));
+        String mobileNumber = "9999933333";
+        ProgramType pregnancyProgram = programType("Pregnancy");
+        Subscription registeredOn_feb28Mon = subscription(mobileNumber, feb28Mon, new Week(10), pregnancyProgram);
+        Subscription registeredOn_sep30Fri = subscription(mobileNumber, sep30Fri, new Week(6), pregnancyProgram);
+        Subscription registeredOn_oct1Sat_CycleDateWillBe_oct3Mon = subscription(mobileNumber, oct1Sat_CycleDateWillBe_oct3Mon, new Week(6), programType("Child"));
+        Subscription registeredOn_oct31Mon = subscription(mobileNumber, oct31Mon, new Week(8), programType("Child"));
+        Subscription registeredOn_dec31Sat_CycleDateWillBe_jan2Mon = subscription(mobileNumber, dec31Sat_CycleDateWillBe_jan2Mon, new Week(9), programType("Child"));
 
-          assertEquals(date(2011, 2, 28), registeredOn_feb28Mon.updateCycleInfo().getBillingStartDate());
-          assertEquals(date(2011, 10, 3), registeredOn_sep30Fri.updateCycleInfo().getBillingStartDate());
-          assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.updateCycleInfo().getBillingStartDate());
-          assertEquals(date(2011, 11, 1), registeredOn_oct31Mon.updateCycleInfo().getBillingStartDate());
-          assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.updateCycleInfo().getBillingStartDate());
+        assertEquals(date(2011, 3, 2), registeredOn_feb28Mon.updateCycleInfo().getBillingStartDate());
+        assertEquals(date(2011, 10, 3), registeredOn_sep30Fri.updateCycleInfo().getBillingStartDate());
+        assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.updateCycleInfo().getBillingStartDate());
+        assertEquals(date(2011, 11, 2), registeredOn_oct31Mon.updateCycleInfo().getBillingStartDate());
+        assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.updateCycleInfo().getBillingStartDate());
     }
-    
+
     @Test
     public void shouldReturnCurrentDay() {
         Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), programType("Pregnancy"));
@@ -158,7 +160,7 @@ public class SubscriptionTest {
     }
 
     private void assertWeek(Week w1, Week w2) {
-        if(w1 == null) assertNull(w2);
+        if (w1 == null) assertNull(w2);
         else assertEquals(w1.getNumber(), w2.getNumber());
     }
 
@@ -176,11 +178,11 @@ public class SubscriptionTest {
         return subscription;
     }
 
-     @Test
+    @Test
     public void shouldCheckIfMessageAlreadySent() {
         Subscription sub1 = new Subscription();
         assertFalse(sub1.alreadySent(new ProgramMessage()));
-     }
+    }
 
     private DateTime date(int year, int month, int date) {
         return new DateTime(year, month, date, 0, 0);

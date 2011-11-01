@@ -20,7 +20,7 @@ public class ProgramMessageCycleTest {
         assertEquals(new DateTime(2012, 2, 27, 0, 1), new ProgramMessageCycle().nearestCycleDate(friFeb242012));
         assertEquals(new DateTime(2012, 2, 27, 0, 2), new ProgramMessageCycle().nearestCycleDate(satFeb252012));
         assertEquals(new DateTime(2012, 2, 27, 10, 0), new ProgramMessageCycle().nearestCycleDate(sunFeb262012));
-        assertEquals(new DateTime(2012, 2, 27, 0, 10), new ProgramMessageCycle().nearestCycleDate(monFeb272012));
+        assertEquals(new DateTime(2012, 2, 29, 0, 10), new ProgramMessageCycle().nearestCycleDate(monFeb272012));
     }
     
     @Test
@@ -43,20 +43,20 @@ public class ProgramMessageCycleTest {
 
         assertEquals(new DateTime(2011, 10, 3, 0, 0), new ProgramMessageCycle().nearestCycleDate(oct1Sat));
         assertEquals(new DateTime(2011, 10, 3, 2, 0), new ProgramMessageCycle().nearestCycleDate(oct2Sun));
-        assertEquals(new DateTime(2011, 10, 3, 0, 0), new ProgramMessageCycle().nearestCycleDate(oct3Mon));
+        assertEquals(new DateTime(2011, 10, 5, 0, 0), new ProgramMessageCycle().nearestCycleDate(oct3Mon));
         assertEquals(new DateTime(2011, 10, 5, 5, 0), new ProgramMessageCycle().nearestCycleDate(oct4Tue));
-        assertEquals(new DateTime(2011, 10, 5, 6, 0), new ProgramMessageCycle().nearestCycleDate(oct5Wed));
+        assertEquals(new DateTime(2011, 10, 7, 6, 0), new ProgramMessageCycle().nearestCycleDate(oct5Wed));
         assertEquals(new DateTime(2011, 10, 7, 3, 0), new ProgramMessageCycle().nearestCycleDate(oct6Thu));
 
         DateTime fridayToMonOct10 = new DateTime(2011, 10, 10, 0, 1);
         assertEquals(fridayToMonOct10, new ProgramMessageCycle().nearestCycleDate(oct7Fri));
         assertEquals(new DateTime(2011, 10, 10, 0, 3), new ProgramMessageCycle().nearestCycleDate(oct8Sat));
         assertEquals(new DateTime(2011, 10, 10, 0, 4), new ProgramMessageCycle().nearestCycleDate(oct9Sun));
-        assertEquals(new DateTime(2011, 10, 10, 5, 5), new ProgramMessageCycle().nearestCycleDate(oct10Mon));
+        assertEquals(new DateTime(2011, 10, 12, 5, 5), new ProgramMessageCycle().nearestCycleDate(oct10Mon));
         assertEquals(new DateTime(2011, 10, 12, 0, 6), new ProgramMessageCycle().nearestCycleDate(oct11Tue));
-        assertEquals(new DateTime(2011, 10, 12, 0, 6), new ProgramMessageCycle().nearestCycleDate(oct12Wed));
-
+        assertEquals(new DateTime(2011, 10, 14, 0, 6), new ProgramMessageCycle().nearestCycleDate(oct12Wed));
         assertEquals(new DateTime(2011, 10, 14, 0, 6), new ProgramMessageCycle().nearestCycleDate(oct13Thu));
+
         DateTime fridayToMonOct17 = new DateTime(2011, 10, 17, 0, 6);
         assertEquals(fridayToMonOct17, new ProgramMessageCycle().nearestCycleDate(oct14Fri));
     }
