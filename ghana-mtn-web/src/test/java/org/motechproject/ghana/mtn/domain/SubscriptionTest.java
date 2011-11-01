@@ -11,6 +11,8 @@ import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static junit.framework.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +50,6 @@ public class SubscriptionTest {
     
     @Test
     public void shouldReturnCurrentRunningWeekForSubscriptionProgramBased_OnCycleStartDateAndSundayAsStartOfWeek() {
-
         DateTime monJan31 = date(2011, 1, 31);
         DateTime wedFeb2 = date(2011, 2, 2);
         DateTime satFeb5 = date(2011, 2, 5);
@@ -91,8 +92,37 @@ public class SubscriptionTest {
     }
 
     @Test
-    public void shouldReturnStartBillingDateAsFirstOfNextMonthIfBillingCycleDateEndsOn29or30or31OfMonth() {
+    public void shouldComputeEndDate_BasedOnCycleStartDate() {
 
+        Subscription registeredOn_MonJan31 = subscription("9999933333", date(2011, 1, 31), new Week(10), programType("Pregnancy"));
+        Subscription registeredOn_TueFeb1 = subscription("9999933333", date(2011, 2, 1), new Week(10), programType("Pregnancy"));
+        Subscription registeredOn_WedFeb2 = subscription("9999933333", date(2011, 2, 2), new Week(10), programType("Pregnancy"));
+        Subscription registeredOn_ThurFeb3 = subscription("9999933333", date(2011, 2, 3), new Week(10), programType("Pregnancy"));
+        Subscription registeredOn_FriFeb4 = subscription("9999933333", date(2011, 2, 4), new Week(10), programType("Pregnancy"));
+        Subscription registeredOn_SatFeb5 = subscription("9999933333", date(2011, 2, 5), new Week(10), programType("Pregnancy"));
+        Subscription registeredOn_SunFeb6 = subscription("9999933333", date(2011, 2, 6), new Week(10), programType("Pregnancy"));
+        Subscription registeredOn_MonFeb7 = subscription("9999933333", date(2011, 2, 7), new Week(10), programType("Pregnancy"));
+
+        int noOfDaysForRemainingWeeks = 25 * 7;
+        int daysToSaturdayForMonJan31 = 5;
+        DateTime endDateForJan31 = date(2011, 1, 31).dayOfMonth().addToCopy(noOfDaysForRemainingWeeks + daysToSaturdayForMonJan31);
+
+        assertThat(registeredOn_MonJan31.getCycleEndDate(), is(endDateForJan31));
+        assertThat(registeredOn_TueFeb1.getCycleEndDate(), is(addDays(date(2011, 2, 2), 3 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_WedFeb2.getCycleEndDate(), is(addDays(date(2011, 2, 2), 3 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_ThurFeb3.getCycleEndDate(), is(addDays(date(2011, 2, 4), 1 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_FriFeb4.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_SatFeb5.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_SunFeb6.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_MonFeb7.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
+    }
+
+    private DateTime addDays(DateTime date, int days) {
+        return date.dayOfYear().addToCopy(days);
+    }
+
+    @Test
+    public void shouldReturnStartBillingDateAsFirstOfNextMonthIfBillingCycleDateEndsOn29or30or31OfMonth() {
           DateTime feb28Mon = date(2011, 2, 28);
           DateTime sep30Fri = date(2011, 9, 30);
           DateTime oct1Sat_CycleDateWillBe_oct3Mon = date(2011, 10, 1);
@@ -105,11 +135,11 @@ public class SubscriptionTest {
           Subscription registeredOn_oct31Mon = subscription("9999933333", oct31Mon, new Week(8), programType("Child"));
           Subscription registeredOn_dec31Sat_CycleDateWillBe_jan2Mon = subscription("9999933333", dec31Sat_CycleDateWillBe_jan2Mon, new Week(9), programType("Child"));
 
-          assertEquals(date(2011, 2, 28), registeredOn_feb28Mon.updateStartCycleInfo().getBillingStartDate());
-          assertEquals(date(2011, 10, 3), registeredOn_sep30Fri.updateStartCycleInfo().getBillingStartDate());
-          assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.updateStartCycleInfo().getBillingStartDate());
-          assertEquals(date(2011, 11, 1), registeredOn_oct31Mon.updateStartCycleInfo().getBillingStartDate());
-          assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.updateStartCycleInfo().getBillingStartDate());
+          assertEquals(date(2011, 2, 28), registeredOn_feb28Mon.updateCycleInfo().getBillingStartDate());
+          assertEquals(date(2011, 10, 3), registeredOn_sep30Fri.updateCycleInfo().getBillingStartDate());
+          assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.updateCycleInfo().getBillingStartDate());
+          assertEquals(date(2011, 11, 1), registeredOn_oct31Mon.updateCycleInfo().getBillingStartDate());
+          assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.updateCycleInfo().getBillingStartDate());
     }
     
     @Test
@@ -121,7 +151,10 @@ public class SubscriptionTest {
     }
 
     private ProgramType programType(String programName) {
-        return new ProgramType().setProgramName(programName);
+        ProgramType programType = new ProgramType().setProgramName(programName);
+        programType.setMinWeek(5);
+        programType.setMaxWeek(35);
+        return programType;
     }
 
     private void assertWeek(Week w1, Week w2) {
@@ -139,7 +172,7 @@ public class SubscriptionTest {
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program).build();
         ReflectionTestUtils.setField(subscription, "dateUtils", dateUtils);
-        subscription.updateStartCycleInfo();
+        subscription.updateCycleInfo();
         return subscription;
     }
 

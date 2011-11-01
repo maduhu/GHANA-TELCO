@@ -25,12 +25,15 @@ public class Subscription extends MotechAuditableDataObject {
     private ProgramType programType;
     private SubscriptionStatus status;
     private WeekAndDay startWeekAndDay;
+    @JsonProperty("lastMsgSentWeekAndDay")
     private WeekAndDay lastMsgSentWeekAndDay;
 
     private DateTime registrationDate;
     private DateTime cycleStartDate;
     private DateTime billingStartDate;
     private DateUtils dateUtils = new DateUtils();
+    @JsonProperty("cycleEndDate")
+    private DateTime cycleEndDate;
 
     public Subscription() {
     }
@@ -102,13 +105,17 @@ public class Subscription extends MotechAuditableDataObject {
         int daysDiff = new Period(cycleStartDateWithStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();
 
         if (daysDiff > 0) {
-            int dayOfWeek = cycleStartDateWithStartDayTime.get(DateTimeFieldType.dayOfWeek());
-            int daysToSaturday = (dayOfWeek == DateTimeConstants.SUNDAY) ? 6 : SATURDAY - dayOfWeek;
+            int daysToSaturday = daysToSaturday(cycleStartDateWithStartDayTime);
             int daysAfterFirstSaturday = daysDiff > daysToSaturday ? daysDiff - daysToSaturday : 0;
             int weeksAfterFirstSaturday = daysAfterFirstSaturday / 7 + (daysAfterFirstSaturday % 7 > 0 ? 1 : 0);
             return startWeekAndDay.getWeek().add(weeksAfterFirstSaturday);
         }
         return startWeekAndDay.getWeek();
+    }
+
+    private int daysToSaturday(DateTime cycleStartDateWithStartDayTime) {
+        int dayOfWeek = cycleStartDateWithStartDayTime.get(DateTimeFieldType.dayOfWeek());
+        return (dayOfWeek == DateTimeConstants.SUNDAY) ? 6 : SATURDAY - dayOfWeek;
     }
 
     private DateTime cycleStartDate() {
@@ -122,13 +129,23 @@ public class Subscription extends MotechAuditableDataObject {
         return startDateOfCycle;
     }
 
-    public Subscription updateStartCycleInfo() {
-        DateTime startDateOfCycle = cycleStartDate();
+    public Subscription updateCycleInfo() {
+        updateStartCycle();
+        updateCycleEndDate();
+        return this;
+    }
 
+    private void updateStartCycle() {
+        DateTime startDateOfCycle = cycleStartDate();
         this.getStartWeekAndDay().setDay(dateUtils.day(startDateOfCycle));
         this.cycleStartDate = startDateOfCycle;
         this.billingStartDate = billingStartDate(startDateOfCycle);
-        return this;
+    }
+
+    private void updateCycleEndDate() {
+        int daysToFirstSaturday = daysToSaturday(this.cycleStartDate);
+        Integer weeksRemaining = programType.getMaxWeek() - startWeekAndDay.getWeek().getNumber();
+        this.cycleEndDate = this.cycleStartDate.dayOfMonth().addToCopy(daysToFirstSaturday + weeksRemaining * 7);
     }
 
     public Day currentDay() {
@@ -146,14 +163,6 @@ public class Subscription extends MotechAuditableDataObject {
 
     public void updateLastMessageSent() {
         lastMsgSentWeekAndDay = new WeekAndDay(currentWeek(), currentDay());
-    }
-
-    public WeekAndDay getLastMsgSentWeekAndDay() {
-        return lastMsgSentWeekAndDay;
-    }
-
-    public void setLastMsgSentWeekAndDay(WeekAndDay lastMsgSentWeekAndDay) {
-        this.lastMsgSentWeekAndDay = lastMsgSentWeekAndDay;
     }
 
     public boolean alreadySent(ProgramMessage subscriptionMessage) {
@@ -196,7 +205,11 @@ public class Subscription extends MotechAuditableDataObject {
         return SubscriptionStatus.PAYMENT_DEFAULT.equals(status);
     }
 
-    public IProgramType rollOverProgramType() {
+    public ProgramType rollOverProgramType() {
         return programType.getRollOverProgramType();
+    }
+
+    public DateTime getCycleEndDate() {
+        return cycleEndDate;
     }
 }

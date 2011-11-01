@@ -64,7 +64,7 @@ public class SubscriptionServiceImplTest {
 
         service.start(subscription);
 
-        verify(subscription).updateStartCycleInfo();
+        verify(subscription).updateCycleInfo();
         verify(validation).startFor(subscription);
         verify(billing).startFor(subscription);
         verify(persistence).startFor(subscription);
@@ -90,7 +90,7 @@ public class SubscriptionServiceImplTest {
     public void shouldInvokeAllProcessInvolvedInRollOverProcessForEvent() {
         Subscription subscription = spy(new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
                 .withSubscriber(new Subscriber("9850012345")).withType(pregnancyProgramType).withStartWeekAndDay(new WeekAndDay(new Week(36), Day.FRIDAY))
-                .build().updateStartCycleInfo());
+                .build().updateCycleInfo());
         when(subscription.isCompleted()).thenReturn(true);
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(billing.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
@@ -223,6 +223,7 @@ public class SubscriptionServiceImplTest {
         Subscription subscription = mock(Subscription.class);
         ProgramType programType = mock(ProgramType.class);
 
+        when(programType.getMaxWeek()).thenReturn(35);
         when(subscription.isCompleted()).thenReturn(true);
         when(subscription.canRollOff()).thenReturn(false);
         when(subscription.getProgramType()).thenReturn(programType);

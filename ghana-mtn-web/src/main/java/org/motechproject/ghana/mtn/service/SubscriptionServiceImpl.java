@@ -41,7 +41,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void start(Subscription subscription) {
-        subscription.updateStartCycleInfo();
+        subscription.updateCycleInfo();
         for (ISubscriptionFlowProcess process : asList(validation, billing, persistence, campaign)) {
             if (process.startFor(subscription)) continue;
             break;
@@ -119,9 +119,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     Subscription rollOverSubscriptionFrom(Subscription subscription) {
         return subscription != null ? new Subscription(
                 subscription.getSubscriber(),
-                subscription.getProgramType().getRollOverProgramType(),
+                subscription.rollOverProgramType(),
                 subscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE,
                 new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
-                DateUtil.now()).updateStartCycleInfo() : null;
+                DateUtil.now()).updateCycleInfo() : null;
     }
 }

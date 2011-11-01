@@ -59,7 +59,7 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
                 .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(new Subscriber(mobileNumber))
                 .withType(pregnancy).build();
-        subscription.updateStartCycleInfo();
+        subscription.updateCycleInfo();
         allSubscriptions.add(subscription);
     }
 
@@ -79,7 +79,7 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
                 .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(subscriber1)
                 .withType(programType).build();
-        subscription.updateStartCycleInfo();
+        subscription.updateCycleInfo();
         allSubscriptions.add(subscription);
 
         List<Subscription> subscriptions = allSubscriptions.getAllActiveSubscriptionsForSubscriber(mobileNumber);
@@ -94,12 +94,12 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
     @Test
     public void shouldFetchSubscriptionBasedOnMobileNumberAndEnrolledProgram() {
         String user1Mobile = "9999933333";
-        Subscription pregnancyProgramForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build().updateStartCycleInfo();
-        Subscription childCareForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 3, 0, 0), new Week(7), childCare).build().updateStartCycleInfo();
+        Subscription pregnancyProgramForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build().updateCycleInfo();
+        Subscription childCareForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 3, 0, 0), new Week(7), childCare).build().updateCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser1);
         allSubscriptions.add(childCareForUser1);
 
-        Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateStartCycleInfo();
+        Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser2);
 
         Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findActiveSubscriptionFor(user1Mobile, pregnancy.getProgramKey());
@@ -113,12 +113,12 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
     @Test
     public void shouldFetchSubscriptionBasedOnMobileNumberAndEnrolledProgramKey() {
         String user1Mobile = "9999933333";
-        Subscription pregnancyProgramForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build().updateStartCycleInfo();
-        Subscription childCareForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 3, 0, 0), new Week(7), childCare).build().updateStartCycleInfo();
+        Subscription pregnancyProgramForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).build().updateCycleInfo();
+        Subscription childCareForUser1 = subscription(user1Mobile, new DateTime(2012, 2, 3, 0, 0), new Week(7), childCare).build().updateCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser1);
         allSubscriptions.add(childCareForUser1);
 
-        Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateStartCycleInfo();
+        Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser2);
 
         Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findActiveSubscriptionFor(user1Mobile, IProgramType.PREGNANCY);
@@ -134,7 +134,7 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
         String subscriberNumber = "9999933333";
         String programKey = IProgramType.PREGNANCY;
 
-        Subscription pregnancySubscription = subscription(subscriberNumber, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build().updateStartCycleInfo();
+        Subscription pregnancySubscription = subscription(subscriberNumber, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build().updateCycleInfo();
         allSubscriptions.add(pregnancySubscription);
 
         Subscription subscription = allSubscriptions.findBy(subscriberNumber, programKey, WAITING_FOR_ROLLOVER_RESPONSE);
