@@ -8,4 +8,5 @@ public interface BillingService {
     BillingServiceResponse rollOverBilling(BillingCycleRollOverRequest billingCycleRollOverRequest);
     BillingServiceResponse<CustomerBill> chargeProgramFee(BillingServiceRequest billingServiceRequest);
     BillingServiceResponse checkIfUserHasFunds(BillingServiceRequest billingServiceRequest);
+    BillingServiceResponse startDefaultedBillingSchedule(DefaultedBillingRequest defaultedBillingRequest);
 }

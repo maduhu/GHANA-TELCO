@@ -7,7 +7,7 @@ import org.motechproject.ghana.mtn.billing.service.BillingScheduler;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.process.FeeChargerProcess;
+import org.motechproject.ghana.mtn.process.BillingServiceMediator;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.model.MotechEvent;
@@ -33,7 +33,7 @@ public class BillingEventHandlerTest {
     @Mock
     private MessageBundle messageBundle;
     @Mock
-    private FeeChargerProcess feeCharger;
+    private BillingServiceMediator feeCharger;
 
     @Before
     public void setUp() {
@@ -56,6 +56,6 @@ public class BillingEventHandlerTest {
 
         eventHandler.chargeCustomer(event);
 
-        verify(feeCharger).process(subscription);
+        verify(feeCharger).chargeFeeAndHandleResponse(subscription);
     }
 }
