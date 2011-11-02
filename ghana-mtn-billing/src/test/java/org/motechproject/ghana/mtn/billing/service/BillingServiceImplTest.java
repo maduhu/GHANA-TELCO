@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.billing.service;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -11,11 +12,11 @@ import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.billing.service.BillingServiceImpl.BILLING_SUCCESSFUL;
@@ -156,4 +157,16 @@ public class BillingServiceImplTest {
         verify(scheduler, never()).startFor(request.getToRequest());
     }
 
+    @Test
+    public void shouldStartDefaultBillingSchedule() {
+        String mobileNumber = "1234567890";
+        IProgramType programType = mock(IProgramType.class);
+        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber,
+                programType, DateTime.now(), new WallTime(7, WallTimeUnit.Day), DateTime.now().dayOfMonth().addToCopy(1));
+
+        BillingServiceResponse response = service.startDefaultedBillingSchedule(request);
+
+        assertThat(response.hasErrors(), is(false));
+        verify(scheduler).startDefaultedBillingSchedule(request);
+    }
 }

@@ -2,9 +2,12 @@ package org.motechproject.ghana.mtn.billing.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
+import org.motechproject.ghana.mtn.billing.dto.DefaultedBillingRequest;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,9 +21,10 @@ import static java.lang.String.format;
 public class BillingScheduler {
     private static final Logger log = Logger.getLogger(BillingScheduler.class);
     public static final String MONTHLY_BILLING_SCHEDULE_SUBJECT = "org.motechproject.ghana.mtn.service.billingschedule";
+    public static final String DEFAULTED_DAILY_SCHEDULE = "org.motechproject.ghana.mtn.service.defaultedBillingDailySchedule";
     public final static String PROGRAM_KEY = "Program";
-    public final static String EXTERNAL_ID_KEY = "ExternalID";
 
+    public final static String EXTERNAL_ID_KEY = "ExternalID";
     private MotechSchedulerService schedulerService;
     private String cron;
 
@@ -57,6 +61,27 @@ public class BillingScheduler {
 
         schedulerService.unscheduleJob(MONTHLY_BILLING_SCHEDULE_SUBJECT, jobId);
         log.info("Billing job unscheduled for [" + mobileNumber + "|" + programName + "]");
+    }
+
+    public void startDefaultedBillingSchedule(DefaultedBillingRequest request) {
+        String mobileNumber = request.getMobileNumber();
+        String programKey = request.programKey();
+        Date startTime = request.getCycleStartDate().toDate();
+
+        MotechEvent motechEvent = new MotechEvent(DEFAULTED_DAILY_SCHEDULE, new SchedulerParamsBuilder()
+                .withJobId(jobId(mobileNumber, programKey))
+                .withExternalId(mobileNumber)
+                .withProgram(programKey)
+                .params());
+
+        RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob(motechEvent,
+                startTime, request.getCycleEndDate().toDate(), getRepeatingIntervalForPeriod(request.getFrequency().asPeriod()));
+        schedulerService.scheduleRepeatingJob(repeatingSchedulableJob);
+        log.info("Defaulted Billing job scheduled for [" + mobileNumber + "|" + programKey + "|" + startTime + "]");
+    }
+
+    private int getRepeatingIntervalForPeriod(Period period) {
+        return period.toStandardSeconds().getSeconds() * 1000;
     }
 
     private String jobId(String mobileNumber, String programName) {

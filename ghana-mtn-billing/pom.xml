@@ -111,7 +111,7 @@
                                     <arg value="-S"/>
                                     <arg value="-X"/>
                                     <arg value="DELETE"/>
-                                    <arg value="http://${couchdb.server}:${couchdb.port}/ghana-mtn-billing-test"/>
+                                    <arg value="http://${couchdb.server}:${couchdb.port}/ghana-mtn-billing-integration-test"/>
                                 </exec>
                             </target>
                         </configuration>

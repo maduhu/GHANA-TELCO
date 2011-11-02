@@ -6,10 +6,15 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
+import org.motechproject.ghana.mtn.billing.dto.DefaultedBillingRequest;
+import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.util.DateUtil;
+import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 import org.quartz.CronExpression;
 
 import java.text.ParseException;
@@ -18,10 +23,13 @@ import java.util.Date;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
+import static org.motechproject.scheduler.MotechSchedulerService.JOB_ID_KEY;
 
 public class BillingSchedulerTest {
 
@@ -55,7 +63,7 @@ public class BillingSchedulerTest {
         Map<String, Object> params = motechEvent.getParameters();
 
         assertEquals(MONTHLY_BILLING_SCHEDULE_SUBJECT, motechEvent.getSubject());
-        assertEquals("program.123", params.get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals("program.123", params.get(JOB_ID_KEY));
         assertEquals("123", params.get(BillingScheduler.EXTERNAL_ID_KEY));
         assertEquals("program", params.get(BillingScheduler.PROGRAM_KEY));
         assertEquals(format("0 0 5 %s *", cycleStartDate.getDayOfMonth()), job.getCronExpression());
@@ -84,6 +92,32 @@ public class BillingSchedulerTest {
         assertEquals(date(2011, 8, 7, 5, 0), cronExpression.getNextValidTimeAfter(date(2011, 7, 7, 10, 0)));
         assertEquals(date(2011, 10, 7, 5, 0), cronExpression.getNextValidTimeAfter(date(2011, 9, 9, 10, 0)));
 
+    }
+
+    @Test
+    public void shouldStartDefaultedBillingSchedule() {
+        IProgramType programType = mock(IProgramType.class);
+        DateTime now = DateTime.now();
+        DateTime cycleEndDate = now.dayOfMonth().addToCopy(1);
+        String mobileNumber = "123456890";
+        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber, programType, now, new WallTime(7, WallTimeUnit.Day), cycleEndDate);
+
+        when(programType.getProgramKey()).thenReturn("programKey");
+        billingScheduler.startDefaultedBillingSchedule(request);
+
+        ArgumentCaptor<RepeatingSchedulableJob> captor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService).scheduleRepeatingJob(captor.capture());
+
+        RepeatingSchedulableJob scheduledJob = captor.getValue();
+        Map<String, Object> parameters = scheduledJob.getMotechEvent().getParameters();
+
+        assertThat(scheduledJob.getStartTime(), is(now.toDate()));
+        assertThat(scheduledJob.getEndTime(), is(cycleEndDate.toDate()));
+        assertThat(scheduledJob.getMotechEvent().getSubject(), is(DEFAULTED_DAILY_SCHEDULE));
+
+        assertThat((String) parameters.get(EXTERNAL_ID_KEY), is(mobileNumber));
+        assertThat((String) parameters.get(PROGRAM_KEY), is(programType.getProgramKey()));
+        assertThat((String) parameters.get(JOB_ID_KEY), is(programType.getProgramKey() + "." + mobileNumber));
     }
 
     private Date date(int year, int month, int day, int hour, int min) {

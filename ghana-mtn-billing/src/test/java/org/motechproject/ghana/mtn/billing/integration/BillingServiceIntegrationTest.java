@@ -102,7 +102,7 @@ public class BillingServiceIntegrationTest {
 
     @After
     public void destroy() {
-        allMTNMockUsers.remove(mtnMockUser);
+        allMTNMockUsers.remove(allMTNMockUsers.get(mtnMockUser.getId()));
         removeAllQuartzJobs();
     }
 

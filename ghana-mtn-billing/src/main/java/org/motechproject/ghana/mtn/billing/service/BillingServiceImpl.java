@@ -98,4 +98,9 @@ public class BillingServiceImpl implements BillingService {
         response.addError(error);
         return response;
     }
+
+    public BillingServiceResponse startDefaultedBillingSchedule(DefaultedBillingRequest request) {
+        scheduler.startDefaultedBillingSchedule(request);
+        return new BillingServiceResponse();
+    }
 }
