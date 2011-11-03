@@ -71,8 +71,9 @@ public class Subscription extends MotechAuditableDataObject {
         return status;
     }
 
-    public void setStatus(SubscriptionStatus status) {
+    public Subscription setStatus(SubscriptionStatus status) {
         this.status = status;
+        return this;
     }
 
     public WeekAndDay getStartWeekAndDay() {

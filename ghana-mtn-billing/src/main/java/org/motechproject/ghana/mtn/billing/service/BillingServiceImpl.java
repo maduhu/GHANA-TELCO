@@ -93,6 +93,12 @@ public class BillingServiceImpl implements BillingService {
         return new BillingServiceResponse<String>(BILLING_ROLLED_OVER);
     }
 
+    @Override
+    public BillingServiceResponse stopDefaultedBillingSchedule(DefaultedBillingRequest defaultedBillingRequest) {
+        scheduler.stop(defaultedBillingRequest);
+        return new BillingServiceResponse<String>(BILLING_SCHEDULE_STOPPED);
+    }
+
     private BillingServiceResponse responseFor(ValidationError error) {
         BillingServiceResponse response = new BillingServiceResponse();
         response.addError(error);

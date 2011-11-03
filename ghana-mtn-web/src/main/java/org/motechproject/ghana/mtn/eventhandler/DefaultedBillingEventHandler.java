@@ -9,8 +9,6 @@ import org.motechproject.server.event.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.PAYMENT_DEFAULT;
 
@@ -29,23 +27,29 @@ public class DefaultedBillingEventHandler {
 
     @MotechListener(subjects = {DEFAULTED_DAILY_SCHEDULE})
     public void checkDaily(MotechEvent event) {
-        chargeFeeForDefaultedSubscription(event, DEFAULTED_DAILY_SCHEDULE);
+        String programKey = (String) event.getParameters().get(PROGRAM_KEY);
+        String subscriberNumber = (String) event.getParameters().get(EXTERNAL_ID_KEY);
+        Subscription defaultedSubscription = defaultedSubscription(subscriberNumber, programKey);
+
+        if(defaultedSubscription != null )
+            billingServiceMediator.chargeFeeForDefaultedSubscriptionDaily(defaultedSubscription);
+        else
+            log.warn("DefaultBillingSchedule-" + DEFAULTED_DAILY_SCHEDULE + " : SN-" + subscriberNumber + " |ProgramKey-" + programKey);
     }
 
     @MotechListener(subjects = {DEFAULTED_WEEKLY_SCHEDULE})
     public void checkWeekly(MotechEvent event) {
-        chargeFeeForDefaultedSubscription(event, DEFAULTED_WEEKLY_SCHEDULE);
+        String programKey = (String) event.getParameters().get(PROGRAM_KEY);
+        String subscriberNumber = (String) event.getParameters().get(EXTERNAL_ID_KEY);
+        Subscription defaultedSubscription = defaultedSubscription(subscriberNumber, programKey);
+
+        if(defaultedSubscription != null )
+            billingServiceMediator.chargeFeeForDefaultedSubscriptionWeekly(defaultedSubscription);
+        else
+            log.warn("DefaultBillingSchedlule-" + DEFAULTED_WEEKLY_SCHEDULE + " : SN-" + subscriberNumber + " |ProgramKey-" + programKey);
     }
 
-    private void chargeFeeForDefaultedSubscription(MotechEvent event, String subject) {
-        Map params = event.getParameters();
-        String programKey = (String) params.get(PROGRAM_KEY);
-        String subscriberNumber = (String) params.get(EXTERNAL_ID_KEY);
-
-        Subscription defaultedSubscription = allSubscriptions.findBy(subscriberNumber, programKey, PAYMENT_DEFAULT);
-        if(defaultedSubscription != null )
-            billingServiceMediator.chargeFeeForDefaultedSubscription(defaultedSubscription);
-        else
-            log.warn("DefaultBillingSchedule-" + subject + " : SN-" + subscriberNumber + " |ProgramKey-" + programKey);
+    private Subscription defaultedSubscription(String subscriberNumber, String programKey) {
+        return allSubscriptions.findBy(subscriberNumber, programKey, PAYMENT_DEFAULT);
     }
 }

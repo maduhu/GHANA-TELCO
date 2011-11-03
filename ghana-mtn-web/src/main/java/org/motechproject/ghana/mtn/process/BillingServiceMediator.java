@@ -12,14 +12,17 @@ import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.utils.DateUtils;
-import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_SUCCESS;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
+import static org.motechproject.ghana.mtn.validation.ValidationError.INSUFFICIENT_FUNDS;
+import static org.motechproject.valueobjects.WallTimeUnit.Day;
+import static org.motechproject.valueobjects.WallTimeUnit.Week;
 
 @Component
 public class BillingServiceMediator extends BaseSubscriptionProcess {
@@ -42,15 +45,27 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
             createDefaultedDailyAndWeeklyBillingSchedule(subscription, response);
             updateSubscriptionStatus(subscription);
         } else {
-            sendMessage(subscription, format(messageFor(MessageBundle.BILLING_SUCCESS), response.getValue().amountChargedWithCurrency()));
+            sendMessage(subscription, format(messageFor(BILLING_SUCCESS), response.getValue().amountChargedWithCurrency()));
         }
     }
 
-    public BillingServiceResponse chargeFeeForDefaultedSubscription(Subscription subscription) {
+    public BillingServiceResponse chargeFeeForDefaultedSubscriptionDaily(Subscription subscription) {
+        chargeFeeForDefaultedSubscription(subscription, Day);
+        BillingServiceResponse response = chargeFeeForDefaultedSubscription(subscription, Week);
+        allSubscriptions.update(subscription.setStatus(ACTIVE));
+        return response;
+    }
+
+    public BillingServiceResponse chargeFeeForDefaultedSubscriptionWeekly(Subscription subscription) {
+        BillingServiceResponse response = chargeFeeForDefaultedSubscription(subscription, Week);
+        allSubscriptions.update(subscription.setStatus(ACTIVE));
+        return response;
+    }
+
+    private BillingServiceResponse chargeFeeForDefaultedSubscription(Subscription subscription, WallTimeUnit dayOrWeek) {
         BillingServiceResponse serviceResponse = chargeFee(subscription);
         if (!serviceResponse.hasErrors()) {
-            subscription.setStatus(ACTIVE);
-            allSubscriptions.update(subscription);
+            billingService.stopDefaultedBillingSchedule(new DefaultedBillingRequest(subscription.subscriberNumber(), subscription.getProgramType(), dayOrWeek));
         }
         return serviceResponse;
     }
@@ -65,11 +80,11 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
     }
 
     private void createDefaultedDailyAndWeeklyBillingSchedule(Subscription subscription, BillingServiceResponse response) {
-        if (response.getValidationErrors().contains(ValidationError.INSUFFICIENT_FUNDS)) {
+        if (response.getValidationErrors().contains(INSUFFICIENT_FUNDS)) {
             DateTime startDateForDailySchedule = dateUtils.startOfDay(DateUtil.now().dayOfMonth().addToCopy(1));
             DateTime endDateForDailySchedule = dateUtils.startOfDay(startDateForDailySchedule.dayOfMonth().addToCopy(6));
 
-            DefaultedBillingRequest dailyBillingRequest = createDefaultedSchedule(subscription, WallTimeUnit.Day, startDateForDailySchedule, endDateForDailySchedule);
+            DefaultedBillingRequest dailyBillingRequest = createDefaultedSchedule(subscription, Day, startDateForDailySchedule, endDateForDailySchedule);
             billingService.startDefaultedBillingSchedule(dailyBillingRequest);
 
             createWeeklyDefaultBillingScheduleToRunAfterDailySchedule(subscription, endDateForDailySchedule);
@@ -78,7 +93,7 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
 
     private void createWeeklyDefaultBillingScheduleToRunAfterDailySchedule(Subscription subscription, DateTime endDateForDailySchedule) {
         DateTime startDateForWeeklySchedule = dateUtils.startOfDay(endDateForDailySchedule.dayOfMonth().addToCopy(1));
-        DefaultedBillingRequest weeklyBillingRequestAfterDailySchedule = createDefaultedSchedule(subscription, WallTimeUnit.Week, startDateForWeeklySchedule, subscription.getCycleEndDate());
+        DefaultedBillingRequest weeklyBillingRequestAfterDailySchedule = createDefaultedSchedule(subscription, Week, startDateForWeeklySchedule, subscription.getCycleEndDate());
         billingService.startDefaultedBillingSchedule(weeklyBillingRequestAfterDailySchedule);
     }
 

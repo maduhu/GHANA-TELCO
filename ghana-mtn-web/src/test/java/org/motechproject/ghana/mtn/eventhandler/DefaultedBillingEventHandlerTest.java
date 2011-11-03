@@ -46,12 +46,12 @@ public class DefaultedBillingEventHandlerTest {
         when(allSubscriptions.findBy(externalId, programKey, PAYMENT_DEFAULT)).thenReturn(subscription);
 
         handler.checkDaily(event);
-        verify(billingServiceMediator).chargeFeeForDefaultedSubscription(subscription);
+        verify(billingServiceMediator).chargeFeeForDefaultedSubscriptionDaily(subscription);
 
         reset(billingServiceMediator);
 
         handler.checkWeekly(event);
-        verify(billingServiceMediator).chargeFeeForDefaultedSubscription(subscription);
+        verify(billingServiceMediator).chargeFeeForDefaultedSubscriptionWeekly(subscription);
     }
 
     @Test
@@ -67,11 +67,11 @@ public class DefaultedBillingEventHandlerTest {
         when(allSubscriptions.findBy(externalId, programKey, PAYMENT_DEFAULT)).thenReturn(null);
 
         handler.checkDaily(event);
-        verify(billingServiceMediator, never()).chargeFeeForDefaultedSubscription(any(Subscription.class));
+        verify(billingServiceMediator, never()).chargeFeeForDefaultedSubscriptionDaily(any(Subscription.class));
 
         reset(billingServiceMediator);
 
         handler.checkWeekly(event);
-        verify(billingServiceMediator, never()).chargeFeeForDefaultedSubscription(any(Subscription.class));
+        verify(billingServiceMediator, never()).chargeFeeForDefaultedSubscriptionWeekly(any(Subscription.class));
     }
 }

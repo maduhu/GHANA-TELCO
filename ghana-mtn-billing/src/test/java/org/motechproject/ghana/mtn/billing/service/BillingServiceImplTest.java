@@ -77,7 +77,7 @@ public class BillingServiceImplTest {
         when(request.getProgramFeeValue()).thenReturn(charge.getValue());
         when(request.getProgramType()).thenReturn(programType);
         when(mtnMock.getBalanceFor(mobileNumber)).thenReturn(1d);
-        when(mtnMock.chargeCustomer(mobileNumber, charge.getValue())).thenReturn(charge);
+        when( mtnMock.chargeCustomer(mobileNumber, charge.getValue())).thenReturn(charge);
 
         BillingServiceResponse<CustomerBill> response = service.chargeProgramFee(request);
 
@@ -167,5 +167,15 @@ public class BillingServiceImplTest {
 
         assertThat(response.hasErrors(), is(false));
         verify(scheduler).startDefaultedBillingSchedule(request);
+    }
+    
+    @Test
+    public void shouldStopDefaultedBillingSchedule(){
+        DefaultedBillingRequest request = mock(DefaultedBillingRequest.class);
+
+        BillingServiceResponse response = service.stopDefaultedBillingSchedule(request);
+
+        verify(scheduler).stop(request);
+        assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STOPPED, response.getValue());
     }
 }

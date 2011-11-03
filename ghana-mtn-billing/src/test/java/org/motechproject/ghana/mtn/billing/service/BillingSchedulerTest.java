@@ -13,7 +13,6 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.WallTimeUnit;
 import org.quartz.CronExpression;
 
 import java.text.ParseException;
@@ -29,6 +28,8 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
 import static org.motechproject.scheduler.MotechSchedulerService.JOB_ID_KEY;
+import static org.motechproject.valueobjects.WallTimeUnit.Day;
+import static org.motechproject.valueobjects.WallTimeUnit.Week;
 
 public class BillingSchedulerTest {
 
@@ -99,7 +100,7 @@ public class BillingSchedulerTest {
         DateTime now = DateTime.now();
         DateTime cycleEndDate = now.dayOfMonth().addToCopy(1);
         String mobileNumber = "123456890";
-        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber, programType, now, WallTimeUnit.Day, cycleEndDate);
+        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber, programType, now, Day, cycleEndDate);
 
         when(programType.getProgramKey()).thenReturn("programKey");
         billingScheduler.startDefaultedBillingSchedule(request);
@@ -126,7 +127,7 @@ public class BillingSchedulerTest {
         DateTime now = DateTime.now();
         DateTime cycleEndDate = now.dayOfMonth().addToCopy(1);
         String mobileNumber = "123456890";
-        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber, programType, now, WallTimeUnit.Week, cycleEndDate);
+        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber, programType, now, Week, cycleEndDate);
 
         when(programType.getProgramKey()).thenReturn("programKey");
         billingScheduler.startDefaultedBillingSchedule(request);
@@ -144,6 +145,26 @@ public class BillingSchedulerTest {
         assertThat((String) parameters.get(EXTERNAL_ID_KEY), is(mobileNumber));
         assertThat((String) parameters.get(PROGRAM_KEY), is(programType.getProgramKey()));
         assertThat((String) parameters.get(JOB_ID_KEY), is(programType.getProgramKey() + "." + mobileNumber));
+    }
+    
+    @Test
+    public void shouldStopDefaultedBillingSchedule() {
+
+        IProgramType programType = programType("programkey");
+        String subscriberNumber = "9500012345";
+        billingScheduler.stop(new DefaultedBillingRequest(subscriberNumber, programType, Day));
+        verify(schedulerService).unscheduleJob(DEFAULTED_DAILY_SCHEDULE, programType.getProgramKey() +"." +  subscriberNumber);
+
+        reset(schedulerService);
+
+        billingScheduler.stop(new DefaultedBillingRequest(subscriberNumber, programType, Week));
+        verify(schedulerService).unscheduleJob(DEFAULTED_WEEKLY_SCHEDULE, programType.getProgramKey() +"." +  subscriberNumber);
+    }
+
+    private IProgramType programType(String programkey) {
+        IProgramType programType = mock(IProgramType.class);
+        when(programType.getProgramKey()).thenReturn(programkey);
+        return programType;
     }
 
     private Date date(int year, int month, int day, int hour, int min) {

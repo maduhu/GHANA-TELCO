@@ -18,6 +18,11 @@ public class DefaultedBillingRequest extends BillingServiceRequest {
         this.cycleEndDate = cycleEndDate;
     }
 
+    public DefaultedBillingRequest(String mobileNumber,
+                                   IProgramType programType ,WallTimeUnit frequency) {
+        this(mobileNumber, programType, null, frequency, null);
+    }
+
     public WallTimeUnit getFrequency() {
         return frequency;
     }

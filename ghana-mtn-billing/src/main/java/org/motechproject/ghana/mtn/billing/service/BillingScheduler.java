@@ -67,6 +67,15 @@ public class BillingScheduler {
         log.info("Billing job unscheduled for [" + mobileNumber + "|" + programName + "]");
     }
 
+    public void stop(DefaultedBillingRequest request) {
+        String mobileNumber = request.getMobileNumber();
+        String programName = request.programKey();
+        String jobId = jobId(mobileNumber, programName);
+
+        schedulerService.unscheduleJob(defaultedBillingSubjectMap().get(request.getFrequency()), jobId);
+        log.info("Billing defaulted job unscheduled for [" + mobileNumber + "|" + programName + "]");
+    }
+
     public void startDefaultedBillingSchedule(DefaultedBillingRequest request) {
         String mobileNumber = request.getMobileNumber();
         String programKey = request.programKey();

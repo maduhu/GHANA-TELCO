@@ -9,4 +9,5 @@ public interface BillingService {
     BillingServiceResponse<CustomerBill> chargeProgramFee(BillingServiceRequest billingServiceRequest);
     BillingServiceResponse checkIfUserHasFunds(BillingServiceRequest billingServiceRequest);
     BillingServiceResponse startDefaultedBillingSchedule(DefaultedBillingRequest defaultedBillingRequest);
+    BillingServiceResponse stopDefaultedBillingSchedule(DefaultedBillingRequest defaultedBillingRequest);
 }
