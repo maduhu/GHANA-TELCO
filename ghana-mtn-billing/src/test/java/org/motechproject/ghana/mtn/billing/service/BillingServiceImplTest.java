@@ -12,7 +12,6 @@ import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 import static org.hamcrest.core.Is.is;
@@ -162,7 +161,7 @@ public class BillingServiceImplTest {
         String mobileNumber = "1234567890";
         IProgramType programType = mock(IProgramType.class);
         DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber,
-                programType, DateTime.now(), new WallTime(7, WallTimeUnit.Day), DateTime.now().dayOfMonth().addToCopy(1));
+                programType, DateTime.now(), WallTimeUnit.Day, DateTime.now().dayOfMonth().addToCopy(1));
 
         BillingServiceResponse response = service.startDefaultedBillingSchedule(request);
 

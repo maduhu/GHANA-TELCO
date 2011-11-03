@@ -19,8 +19,10 @@ import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.vo.Money;
+import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 import java.util.Arrays;
@@ -63,17 +65,22 @@ public class BillingServiceMediatorTest {
 
         billingServiceMediator.chargeFeeAndHandleResponse(subscription);
 
-        ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
-        verify(smsService).send(captor.capture());
-        SMSServiceRequest captured = captor.getValue();
-        assertEquals(errorMsg, captured.getMessage());
-        assertEquals(mobileNumber, captured.getMobileNumber());
+        assertSmsRequest(mobileNumber, errorMsg);
 
+        DateTime now = new DateUtils().startOfDay(DateUtil.now());
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
-        verify(billingService).startDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
-        DefaultedBillingRequest billingRequest = defaultedBillingRequestCaptor.getValue();
-        assertThat(billingRequest.getMobileNumber(), is(mobileNumber));
-        assertThat(billingRequest.getFrequency().getUnit(), is(WallTimeUnit.Day));
+        verify(billingService, times(2)).startDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
+        DefaultedBillingRequest dailyDefaultedBillingRequest = defaultedBillingRequestCaptor.getAllValues().get(0);
+        assertThat(dailyDefaultedBillingRequest.getMobileNumber(), is(mobileNumber));
+        assertThat(dailyDefaultedBillingRequest.getFrequency(), is(WallTimeUnit.Day));
+        assertThat(dailyDefaultedBillingRequest.getCycleStartDate(), is(now.dayOfMonth().addToCopy(1)));
+        assertThat(dailyDefaultedBillingRequest.getCycleEndDate(), is(now.dayOfMonth().addToCopy(7)));
+
+        DefaultedBillingRequest weeklyDefaultedBillingRequest = defaultedBillingRequestCaptor.getAllValues().get(1);
+        assertThat(weeklyDefaultedBillingRequest.getMobileNumber(), is(mobileNumber));
+        assertThat(weeklyDefaultedBillingRequest.getFrequency(), is(WallTimeUnit.Week));
+        assertThat(weeklyDefaultedBillingRequest.getCycleStartDate(), is(now.dayOfMonth().addToCopy(7 + 1)));
+        assertThat(weeklyDefaultedBillingRequest.getCycleEndDate(), is(subscription.getCycleEndDate()));
 
         verify(allSubscriptions).update(subscription);
         assertThat(subscription.getStatus(), is(SubscriptionStatus.PAYMENT_DEFAULT));
@@ -83,7 +90,15 @@ public class BillingServiceMediatorTest {
     public void shouldChargeDefaultedSubscription() {
 
     }
-    
+
+    private void assertSmsRequest(String mobileNumber, String errorMsg) {
+        ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
+        verify(smsService).send(captor.capture());
+        SMSServiceRequest captured = captor.getValue();
+        assertEquals(errorMsg, captured.getMessage());
+        assertEquals(mobileNumber, captured.getMobileNumber());
+    }
+
     private Subscription subscription(String mobileNumber, DateTime registeredDate, Week startWeek, ProgramType program) {
         Subscription subscription = new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, Day.MONDAY))
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))

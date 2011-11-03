@@ -13,7 +13,6 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 import org.quartz.CronExpression;
 
@@ -95,12 +94,12 @@ public class BillingSchedulerTest {
     }
 
     @Test
-    public void shouldStartDefaultedBillingSchedule() {
+    public void shouldStartDefaultedDailyBillingSchedule() {
         IProgramType programType = mock(IProgramType.class);
         DateTime now = DateTime.now();
         DateTime cycleEndDate = now.dayOfMonth().addToCopy(1);
         String mobileNumber = "123456890";
-        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber, programType, now, new WallTime(7, WallTimeUnit.Day), cycleEndDate);
+        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber, programType, now, WallTimeUnit.Day, cycleEndDate);
 
         when(programType.getProgramKey()).thenReturn("programKey");
         billingScheduler.startDefaultedBillingSchedule(request);
@@ -114,6 +113,33 @@ public class BillingSchedulerTest {
         assertThat(scheduledJob.getStartTime(), is(now.toDate()));
         assertThat(scheduledJob.getEndTime(), is(cycleEndDate.toDate()));
         assertThat(scheduledJob.getMotechEvent().getSubject(), is(DEFAULTED_DAILY_SCHEDULE));
+
+        assertThat((String) parameters.get(EXTERNAL_ID_KEY), is(mobileNumber));
+        assertThat((String) parameters.get(PROGRAM_KEY), is(programType.getProgramKey()));
+        assertThat((String) parameters.get(JOB_ID_KEY), is(programType.getProgramKey() + "." + mobileNumber));
+    }
+                                                                                                                                           
+    @Test
+    public void shouldStartDefaultedWeeklyBillingScheduleForWallTimeUnitAsWeek() {
+
+        IProgramType programType = mock(IProgramType.class);
+        DateTime now = DateTime.now();
+        DateTime cycleEndDate = now.dayOfMonth().addToCopy(1);
+        String mobileNumber = "123456890";
+        DefaultedBillingRequest request = new DefaultedBillingRequest(mobileNumber, programType, now, WallTimeUnit.Week, cycleEndDate);
+
+        when(programType.getProgramKey()).thenReturn("programKey");
+        billingScheduler.startDefaultedBillingSchedule(request);
+
+        ArgumentCaptor<RepeatingSchedulableJob> captor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService).scheduleRepeatingJob(captor.capture());
+
+        RepeatingSchedulableJob scheduledJob = captor.getValue();
+        Map<String, Object> parameters = scheduledJob.getMotechEvent().getParameters();
+
+        assertThat(scheduledJob.getStartTime(), is(now.toDate()));
+        assertThat(scheduledJob.getEndTime(), is(cycleEndDate.toDate()));
+        assertThat(scheduledJob.getMotechEvent().getSubject(), is(DEFAULTED_WEEKLY_SCHEDULE));
 
         assertThat((String) parameters.get(EXTERNAL_ID_KEY), is(mobileNumber));
         assertThat((String) parameters.get(PROGRAM_KEY), is(programType.getProgramKey()));

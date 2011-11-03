@@ -2,23 +2,23 @@ package org.motechproject.ghana.mtn.billing.dto;
 
 import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.domain.IProgramType;
-import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 
 public class DefaultedBillingRequest extends BillingServiceRequest {
     private DateTime cycleStartDate;
-    private WallTime frequency;
+    private WallTimeUnit frequency;
     private DateTime cycleEndDate;
 
     public DefaultedBillingRequest(String mobileNumber,
                                    IProgramType programType, DateTime cycleStartDate,
-                                   WallTime frequency, DateTime cycleEndDate) {
+                                   WallTimeUnit frequency, DateTime cycleEndDate) {
         super(mobileNumber, programType);
         this.cycleStartDate = cycleStartDate;
         this.frequency = frequency;
         this.cycleEndDate = cycleEndDate;
     }
 
-    public WallTime getFrequency() {
+    public WallTimeUnit getFrequency() {
         return frequency;
     }
 
