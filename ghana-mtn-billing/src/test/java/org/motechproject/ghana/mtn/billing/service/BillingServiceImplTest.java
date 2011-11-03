@@ -102,7 +102,7 @@ public class BillingServiceImplTest {
         when(mtnMock.getBalanceFor(mobileNumber)).thenReturn(1d);
         when(mtnMock.chargeCustomer(mobileNumber, charge.getValue())).thenReturn(charge);
 
-        BillingServiceResponse<CustomerBill> response = service.startBilling(request);
+        BillingServiceResponse<CustomerBill> response = service.chargeAndStartBilling(request);
 
         verify(scheduler).startFor(request);
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STARTED, response.getValue().getMessage());

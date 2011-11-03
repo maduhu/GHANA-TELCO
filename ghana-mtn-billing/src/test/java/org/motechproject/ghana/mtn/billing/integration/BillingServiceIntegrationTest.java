@@ -70,7 +70,7 @@ public class BillingServiceIntegrationTest {
         String subscriberNumber = "9876543210";
         BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, getPregnancyProgramType(), new DateTime(2011, 10, 11, 0, 0));
 
-        BillingServiceResponse<CustomerBill> billingServiceResponse = billingService.startBilling(billingCycleRequest);
+        BillingServiceResponse<CustomerBill> billingServiceResponse = billingService.chargeAndStartBilling(billingCycleRequest);
         BillAccount billAccount = allBillAccounts.findByMobileNumber(subscriberNumber);
         List<BillAudit> billAudits = select(allBillAudits.getAll(), having(on(BillAudit.class).getMobileNumber(), equalTo(subscriberNumber)));
 

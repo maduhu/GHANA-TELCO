@@ -66,7 +66,7 @@ public class BillingCycleProcessorTest {
         when(response.hasErrors()).thenReturn(true);
         when(response.getValidationErrors()).thenReturn(errors);
         when(messageBundle.get(errors)).thenReturn("errors message");
-        when(billingService.startBilling(any(BillingCycleRequest.class))).thenReturn(response);
+        when(billingService.chargeAndStartBilling(any(BillingCycleRequest.class))).thenReturn(response);
 
         Boolean reply = billing.startFor(subscription);
 
@@ -91,7 +91,7 @@ public class BillingCycleProcessorTest {
         when(response.hasErrors()).thenReturn(false);
         when(response.getValue()).thenReturn(customerBill);
         when(messageBundle.get(MessageBundle.BILLING_SUCCESS)).thenReturn("success message %s");
-        when(billingService.startBilling(any(BillingCycleRequest.class))).thenReturn(response);
+        when(billingService.chargeAndStartBilling(any(BillingCycleRequest.class))).thenReturn(response);
 
         Boolean reply = billing.startFor(subscription);
 

@@ -92,7 +92,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
     }
 
     private Boolean startFor(Subscription subscription, BillingCycleRequest request, String msgKey) {
-        BillingServiceResponse<CustomerBill> response = billingService.startBilling(request);
+        BillingServiceResponse<CustomerBill> response = billingService.chargeAndStartBilling(request);
         String successMsg = response.hasErrors() ? null : format(messageFor(msgKey), response.getValue().amountCharged());
         return handleResponse(subscription, response, successMsg);
     }

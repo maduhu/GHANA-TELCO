@@ -71,7 +71,7 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
-    public BillingServiceResponse<CustomerBill> startBilling(BillingCycleRequest request) {
+    public BillingServiceResponse<CustomerBill> chargeAndStartBilling(BillingCycleRequest request) {
         BillingServiceResponse<CustomerBill> response = chargeProgramFee(request);
         if (response.hasErrors()) return response;
         scheduler.startFor(request);
