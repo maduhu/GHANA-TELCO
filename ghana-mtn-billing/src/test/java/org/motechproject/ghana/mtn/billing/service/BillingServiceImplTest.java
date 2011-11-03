@@ -108,6 +108,15 @@ public class BillingServiceImplTest {
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STARTED, response.getValue().getMessage());
         assertEquals(charge.getValue(), response.getValue().amountCharged());
     }
+    
+    @Test
+    public void shouldStartAScheduleForBillingCycleRequest() throws InsufficientFundsException {
+        BillingCycleRequest request = mock(BillingCycleRequest.class);
+        BillingServiceResponse<String> response = service.startBilling(request);
+
+        verify(scheduler).startFor(request);
+        assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STARTED, response.getValue());
+    }
 
     @Test
     public void shouldContainValidationErrorsWhenUserDoesNotHaveInsufficientFund() throws InsufficientFundsException {

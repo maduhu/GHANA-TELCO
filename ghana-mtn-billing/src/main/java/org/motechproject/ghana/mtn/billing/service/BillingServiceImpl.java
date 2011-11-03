@@ -77,6 +77,12 @@ public class BillingServiceImpl implements BillingService {
         scheduler.startFor(request);
         return new BillingServiceResponse<CustomerBill>(new CustomerBill(BILLING_SCHEDULE_STARTED, response.getValue().getAmountCharged()));
     }
+    
+    @Override
+    public BillingServiceResponse<String> startBilling(BillingCycleRequest request) {
+        scheduler.startFor(request);
+        return new BillingServiceResponse<String>(BILLING_SCHEDULE_STARTED);
+    }
 
     @Override
     public BillingServiceResponse stopBilling(BillingCycleRequest request) {

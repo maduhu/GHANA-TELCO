@@ -1,10 +1,7 @@
 package org.motechproject.ghana.mtn.process;
 
 import org.joda.time.DateTime;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
-import org.motechproject.ghana.mtn.billing.dto.DefaultedBillingRequest;
+import org.motechproject.ghana.mtn.billing.dto.*;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
@@ -54,6 +51,7 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
         if (!response.hasErrors()) {
             stopDefaultedBillingSchedule(subscription, Day);
             stopDefaultedBillingSchedule(subscription, Week);
+            startBillingSchedule(subscription);
             allSubscriptions.update(subscription.setStatus(ACTIVE));
         }
         return response;
@@ -63,9 +61,15 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
         BillingServiceResponse response = chargeFee(subscription);
         if (!response.hasErrors()) {
             stopDefaultedBillingSchedule(subscription, Week);
+            startBillingSchedule(subscription);
             allSubscriptions.update(subscription.setStatus(ACTIVE));
         }
         return response;
+    }
+
+    private void startBillingSchedule(Subscription subscription) {
+        DateTime nextBillingDate = dateUtils.startOfDay(DateUtil.now().monthOfYear().addToCopy(1));
+        billingService.startBilling(new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), nextBillingDate));
     }
 
     private void stopDefaultedBillingSchedule(Subscription subscription, WallTimeUnit dayOrWeek) {
