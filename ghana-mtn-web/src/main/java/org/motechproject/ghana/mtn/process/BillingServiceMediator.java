@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
 
 @Component
 public class BillingServiceMediator extends BaseSubscriptionProcess {
@@ -47,8 +48,9 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
 
     public BillingServiceResponse chargeFeeForDefaultedSubscription(Subscription subscription) {
         BillingServiceResponse serviceResponse = chargeFee(subscription);
-        if (serviceResponse.hasErrors()) {
-
+        if (!serviceResponse.hasErrors()) {
+            subscription.setStatus(ACTIVE);
+            allSubscriptions.update(subscription);
         }
         return serviceResponse;
     }

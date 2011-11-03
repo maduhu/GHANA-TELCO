@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
 import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
@@ -87,8 +88,16 @@ public class BillingServiceMediatorTest {
     }
 
     @Test
-    public void shouldChargeDefaultedSubscription() {
+    public void shouldChargeDefaultedSubscriptionAndUpdateSubscriptionToActiveIfBillingIsSuccessful() {
 
+        String mobileNumber = "123";
+        Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType);
+
+        when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
+        billingServiceMediator.chargeFeeForDefaultedSubscription(subscription);
+
+        verify(allSubscriptions).update(subscription);
+        assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
     }
 
     private void assertSmsRequest(String mobileNumber, String errorMsg) {
