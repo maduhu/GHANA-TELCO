@@ -21,7 +21,6 @@ import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.utils.DateUtils;
-import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTimeUnit;
@@ -33,6 +32,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.PAYMENT_DEFAULT;
+import static org.motechproject.ghana.mtn.validation.ValidationError.INSUFFICIENT_FUNDS;
 import static org.motechproject.valueobjects.WallTimeUnit.Week;
 
 public class BillingServiceMediatorTest {
@@ -60,10 +61,10 @@ public class BillingServiceMediatorTest {
         Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType);
         CustomerBill customerBill = new CustomerBill("message", new Money(12d));
         BillingServiceResponse<CustomerBill> response = new BillingServiceResponse<CustomerBill>(customerBill);
-        response.addError(ValidationError.INSUFFICIENT_FUNDS);
+        response.addError(INSUFFICIENT_FUNDS);
 
         when(billingService.chargeProgramFee(any(BillingServiceRequest.class))).thenReturn(response);
-        when(messageBundle.get(Arrays.asList(ValidationError.INSUFFICIENT_FUNDS))).thenReturn(errorMsg);
+        when(messageBundle.get(Arrays.asList(INSUFFICIENT_FUNDS))).thenReturn(errorMsg);
 
         billingServiceMediator.chargeFeeAndHandleResponse(subscription);
 
@@ -83,18 +84,19 @@ public class BillingServiceMediatorTest {
                 weeklyDefaultedBillingRequest);
 
         verify(allSubscriptions).update(subscription);
-        assertThat(subscription.getStatus(), is(SubscriptionStatus.PAYMENT_DEFAULT));
+        assertThat(subscription.getStatus(), is(PAYMENT_DEFAULT));
     }
 
     @Test
     public void shouldTryToChargeDefaultedSubscriptionDailyAnd_StopDailyAndWeeklyDefaultedJobAndStartBillingSchedule_IfBillingIsSuccessful() {
 
         String mobileNumber = "123";
-        Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType);
+        Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType).setStatus(PAYMENT_DEFAULT);
 
         when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
         billingServiceMediator.chargeFeeForDefaultedSubscriptionDaily(subscription);
 
+        verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
         verify(allSubscriptions).update(subscription);
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
@@ -104,22 +106,49 @@ public class BillingServiceMediatorTest {
         assertDefaultBillingRequest(
                 new DefaultedBillingRequest(mobileNumber, programType, WallTimeUnit.Week), defaultedBillingRequestCaptor.getAllValues().get(1));
     }
+
+    @Test
+    public void shouldTryToChargeDefaultedSubscriptionDailyAnd_DonotStopDailyAndWeeklyDefaultedJobAndDonotStartBillingSchedule_IfBillingIsNotSuccessful() {
+
+        Subscription subscription = subscription("123", DateTime.now(), new Week(1), programType).setStatus(PAYMENT_DEFAULT);
+        when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse().addError(INSUFFICIENT_FUNDS));
+        billingServiceMediator.chargeFeeForDefaultedSubscriptionDaily(subscription);
+
+        verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
+        verify(allSubscriptions, never()).update(subscription);
+        assertThat(subscription.getStatus(), is(PAYMENT_DEFAULT));
+        verify(billingService, never()).stopDefaultedBillingSchedule(Matchers.<DefaultedBillingRequest>any());
+    }
     
     @Test
     public void shouldTryToChargeDefaultedSubscriptionWeekyAnd_StopWeeklyDefaultedJobAndStartBillingSchedule_IfBillingIsSuccessful() {
 
         String mobileNumber = "123";
-        Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType);
+        Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType).setStatus(PAYMENT_DEFAULT);
 
         when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
         billingServiceMediator.chargeFeeForDefaultedSubscriptionWeekly(subscription);
 
+        verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
         verify(allSubscriptions).update(subscription);
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
         verify(billingService).stopDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
         assertDefaultBillingRequest(
                 new DefaultedBillingRequest(mobileNumber, programType, Week), defaultedBillingRequestCaptor.getValue());
+    }
+    
+    @Test
+    public void shouldTryToChargeDefaultedSubscriptionWeeklyAnd_DonotStopWeeklyDefaultedJobAndDonotStartBillingSchedule_IfBillingIsNotSuccessful() {
+
+        Subscription subscription = subscription("123", DateTime.now(), new Week(1), programType).setStatus(PAYMENT_DEFAULT);
+        when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse().addError(INSUFFICIENT_FUNDS));
+        billingServiceMediator.chargeFeeForDefaultedSubscriptionWeekly(subscription);
+
+        verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
+        verify(allSubscriptions, never()).update(subscription);
+        assertThat(subscription.getStatus(), is(PAYMENT_DEFAULT));
+        verify(billingService, never()).stopDefaultedBillingSchedule(Matchers.<DefaultedBillingRequest>any());
     }
 
     private void assertSmsRequest(String mobileNumber, String errorMsg) {

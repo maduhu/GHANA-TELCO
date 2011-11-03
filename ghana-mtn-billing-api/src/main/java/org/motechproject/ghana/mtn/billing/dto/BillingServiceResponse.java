@@ -32,7 +32,8 @@ public class BillingServiceResponse<T> {
        return validationErrors;
    }
 
-   public void addError(ValidationError validationError) {
+   public BillingServiceResponse<T> addError(ValidationError validationError) {
        validationErrors.add(validationError);
+       return this;
    }
 }

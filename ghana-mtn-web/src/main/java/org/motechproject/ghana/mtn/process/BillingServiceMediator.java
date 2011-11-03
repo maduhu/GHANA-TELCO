@@ -8,7 +8,6 @@ import org.motechproject.ghana.mtn.billing.dto.DefaultedBillingRequest;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.utils.DateUtils;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 import static java.lang.String.format;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_SUCCESS;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
+import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.PAYMENT_DEFAULT;
 import static org.motechproject.ghana.mtn.validation.ValidationError.INSUFFICIENT_FUNDS;
 import static org.motechproject.valueobjects.WallTimeUnit.Day;
 import static org.motechproject.valueobjects.WallTimeUnit.Week;
@@ -50,28 +50,30 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
     }
 
     public BillingServiceResponse chargeFeeForDefaultedSubscriptionDaily(Subscription subscription) {
-        chargeFeeForDefaultedSubscription(subscription, Day);
-        BillingServiceResponse response = chargeFeeForDefaultedSubscription(subscription, Week);
-        allSubscriptions.update(subscription.setStatus(ACTIVE));
+        BillingServiceResponse response = chargeFee(subscription);
+        if (!response.hasErrors()) {
+            stopDefaultedBillingSchedule(subscription, Day);
+            stopDefaultedBillingSchedule(subscription, Week);
+            allSubscriptions.update(subscription.setStatus(ACTIVE));
+        }
         return response;
     }
 
     public BillingServiceResponse chargeFeeForDefaultedSubscriptionWeekly(Subscription subscription) {
-        BillingServiceResponse response = chargeFeeForDefaultedSubscription(subscription, Week);
-        allSubscriptions.update(subscription.setStatus(ACTIVE));
+        BillingServiceResponse response = chargeFee(subscription);
+        if (!response.hasErrors()) {
+            stopDefaultedBillingSchedule(subscription, Week);
+            allSubscriptions.update(subscription.setStatus(ACTIVE));
+        }
         return response;
     }
 
-    private BillingServiceResponse chargeFeeForDefaultedSubscription(Subscription subscription, WallTimeUnit dayOrWeek) {
-        BillingServiceResponse serviceResponse = chargeFee(subscription);
-        if (!serviceResponse.hasErrors()) {
-            billingService.stopDefaultedBillingSchedule(new DefaultedBillingRequest(subscription.subscriberNumber(), subscription.getProgramType(), dayOrWeek));
-        }
-        return serviceResponse;
+    private void stopDefaultedBillingSchedule(Subscription subscription, WallTimeUnit dayOrWeek) {
+        billingService.stopDefaultedBillingSchedule(new DefaultedBillingRequest(subscription.subscriberNumber(), subscription.getProgramType(), dayOrWeek));
     }
 
     private void updateSubscriptionStatus(Subscription subscription) {
-        subscription.setStatus(SubscriptionStatus.PAYMENT_DEFAULT);
+        subscription.setStatus(PAYMENT_DEFAULT);
         allSubscriptions.update(subscription);
     }
 
