@@ -68,7 +68,9 @@ public class BillingServiceIntegrationTest {
     @Test
     public void ShouldStartABillingSchedule() throws SchedulerException {
         String subscriberNumber = "9876543210";
-        BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, getPregnancyProgramType(), new DateTime(2011, 10, 11, 0, 0));
+        DateTime startDate = new DateTime(2011, 10, 11, 0, 0);
+        DateTime endDate = startDate.weekyear().addToCopy(35);
+        BillingCycleRequest billingCycleRequest = new BillingCycleRequest(subscriberNumber, getPregnancyProgramType(), startDate, endDate);
 
         BillingServiceResponse<CustomerBill> billingServiceResponse = billingService.chargeAndStartBilling(billingCycleRequest);
         BillAccount billAccount = allBillAccounts.findByMobileNumber(subscriberNumber);

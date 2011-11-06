@@ -79,7 +79,7 @@ public class BillingServiceMediatorTest {
         billingServiceMediator.chargeMonthlyFeeAndHandleIfDefaulted(subscription);
 
         assertSmsRequest(mobileNumber, errorMsg);
-        assertStopBillingRequest(new BillingCycleRequest(mobileNumber, programType, subscription.getCycleStartDate()));
+        assertStopBillingRequest(new BillingCycleRequest(mobileNumber, programType, null, null));
 
         DateTime now = DateUtil.now().withTimeAtStartOfDay();
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);

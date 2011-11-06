@@ -55,7 +55,8 @@ public class BillingScheduler {
                 .withProgram(programKey)
                 .params());
 
-        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startTime, null);
+        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startTime,
+                request.getCycleEndDate().toDate());
         schedulerService.scheduleJob(schedulableJob);
         log.info("Billing job scheduled for [" + mobileNumber + "|" + programKey + "|" + startTime + "]");
     }
