@@ -112,7 +112,7 @@ public class BillingServiceMediatorTest {
         billingServiceMediator.chargeFeeForDefaultedSubscriptionDaily(subscription);
 
         verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
-        verifyStartBilling(mobileNumber, programType, newDateTime(2012, 1, 1));
+        verifyStartBilling(mobileNumber, programType, newDateTime(2011, 12, 1));
 
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
         verify(billingService, times(2)).stopDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
@@ -142,7 +142,6 @@ public class BillingServiceMediatorTest {
     
     @Test
     public void shouldTryToChargeDefaultedSubscriptionWeekyAnd_StopWeeklyDefaultedJobAndStartBillingSchedule_IfBillingIsSuccessful() {
-
         String mobileNumber = "123";
         Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType).setStatus(PAYMENT_DEFAULT);
         String defaultSuccessMsg = "Billing success. Will be charge in %s of every month for " + programType.getProgramName();
@@ -153,7 +152,7 @@ public class BillingServiceMediatorTest {
         billingServiceMediator.chargeFeeForDefaultedSubscriptionWeekly(subscription);
 
         verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
-        verifyStartBilling(mobileNumber, programType, DateUtil.now().monthOfYear().addToCopy(1).withTimeAtStartOfDay());
+        verifyStartBilling(mobileNumber, programType, DateUtil.now().withTimeAtStartOfDay());
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
         verify(billingService).stopDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
         assertDefaultBillingRequest(
