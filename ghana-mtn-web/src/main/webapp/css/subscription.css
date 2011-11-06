@@ -52,6 +52,10 @@ legend {
     float: left;
 }
 
+.subscriptionStatus {
+    font-size: 10px;
+}
+
 .audit_box {
     height: 600px;
     width: 74%;
@@ -88,7 +92,8 @@ th {
 }
 
 #mtn_bill_table_box {
-    overflow-y: scroll;
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 #server_time {

@@ -85,10 +85,12 @@ public class AuditController {
 
     private String getBillAuditsForSubscriptions(List<Subscription> allPregnancySubscriptions) {
         StringBuilder billAuditsTable = new StringBuilder();
-        billAuditsTable.append("<table>");
+        billAuditsTable.append("<table border='1'>");
         for (Subscription pregnancySubscription : allPregnancySubscriptions) {
-            billAuditsTable.append("<tr>");
-            billAuditsTable.append("<td style=\"width: 100px;\">" + pregnancySubscription.subscriberNumber() + "</td>");
+            billAuditsTable.append("<tr>")
+                    .append("<td style=\"width: 100px;\">" + pregnancySubscription.subscriberNumber())
+                    .append("<div class=\"subscriptionStatus\">[" + pregnancySubscription.getStatus() + "]</div>")
+                    .append("</td>");
 
             List<BillAudit> billAudits = allBillAudits.fetchAuditsFor(pregnancySubscription.subscriberNumber(), pregnancySubscription.programKey());
 
