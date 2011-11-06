@@ -75,7 +75,7 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
     }
 
     private void startBillingSchedule(Subscription subscription) {
-        DateTime nextBillingDate = dateUtils.startOfDay(DateUtil.now().monthOfYear().addToCopy(1));
+        DateTime nextBillingDate = subscription.billingStartDate(DateUtil.now().monthOfYear().addToCopy(1));
         billingService.startBilling(new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), nextBillingDate));
     }
 
@@ -106,7 +106,7 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
 
     private void createWeeklyDefaultBillingScheduleToRunAfterDailySchedule(Subscription subscription, DateTime endDateForDailySchedule) {
         DateTime startDateForWeeklySchedule = endDateForDailySchedule.dayOfMonth().addToCopy(1).withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR);
-        DateTime endDate = subscription.getCycleEndDate().withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR);
+        DateTime endDate = subscription.getSubscriptionEndDate().withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR);
         DefaultedBillingRequest weeklyBillingRequestAfterDailySchedule = createDefaultedSchedule(subscription, Week, startDateForWeeklySchedule, endDate);
         billingService.startDefaultedBillingSchedule(weeklyBillingRequestAfterDailySchedule);
     }
