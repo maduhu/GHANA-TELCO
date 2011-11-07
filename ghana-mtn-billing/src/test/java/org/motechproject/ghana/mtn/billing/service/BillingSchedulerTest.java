@@ -50,10 +50,12 @@ public class BillingSchedulerTest {
         BillingCycleRequest request = mock(BillingCycleRequest.class);
         DateTime cycleStartDate = DateUtil.now();
         Date startDate = cycleStartDate.monthOfYear().addToCopy(1).toDate();
+        DateTime endDateTime = cycleStartDate.weekyear().addToCopy(35);
 
         when(request.getMobileNumber()).thenReturn("123");
         when(request.programKey()).thenReturn("program");
         when(request.getCycleStartDate()).thenReturn(cycleStartDate);
+        when(request.getCycleEndDate()).thenReturn(endDateTime);
 
         billingScheduler.startFor(request);
 
@@ -70,6 +72,7 @@ public class BillingSchedulerTest {
         assertEquals("program", params.get(BillingScheduler.PROGRAM_KEY));
         assertEquals(format("0 0 5 %s *", cycleStartDate.getDayOfMonth()), job.getCronExpression());
         assertEquals(startDate, job.getStartTime());
+        assertEquals(endDateTime.toDate(), job.getEndTime());
     }
 
     @Test

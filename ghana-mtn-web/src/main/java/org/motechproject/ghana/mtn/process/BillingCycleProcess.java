@@ -34,10 +34,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean startFor(Subscription subscription) {
-        BillingCycleRequest request = new BillingCycleRequest(
-                subscription.subscriberNumber(),
-                subscription.getProgramType(),
-                subscription.getBillingStartDate());
+        BillingCycleRequest request = billingRequest(subscription);
         return startFor(subscription, request, MessageBundle.BILLING_SUCCESS);
     }
 
@@ -48,8 +45,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean stopByUser(Subscription subscription) {
-        BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(),
-                subscription.getProgramType(), subscription.getBillingStartDate());
+        BillingCycleRequest request = billingRequest(subscription);
         subscription.setStatus(SubscriptionStatus.SUSPENDED);
         return stopFor(subscription, request, messageFor(BILLING_STOPPED));
     }
@@ -62,7 +58,7 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
     @Override
     public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
         return stopFor(pregnancySubscriptionWaitingForRollOver, billingRequest(pregnancySubscriptionWaitingForRollOver.subscriberNumber(),
-                pregnancySubscriptionWaitingForRollOver.getProgramType(), null), null);
+                pregnancySubscriptionWaitingForRollOver.getProgramType(), null, null), null);
     }
 
     @Override
@@ -74,15 +70,15 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     private Boolean performRollOver(Subscription fromSubscription, Subscription toSubscription, String successMsg) {
         DateTime billingStartDateFromSubscription = fromSubscription.getBillingStartDate();
-        BillingCycleRequest fromRequest = billingRequest(fromSubscription.subscriberNumber(), fromSubscription.getProgramType(), billingStartDateFromSubscription);
-        BillingCycleRequest toRequest = billingRequest(toSubscription.subscriberNumber(), toSubscription.getProgramType(), billingStartDateFromSubscription);
+        BillingCycleRequest fromRequest = billingRequest(fromSubscription);
+        BillingCycleRequest toRequest = billingRequest(toSubscription.subscriberNumber(), toSubscription.getProgramType(), billingStartDateFromSubscription,
+                toSubscription.getSubscriptionEndDate());
 
         return handleResponse(toSubscription, billingService.rollOverBilling(new BillingCycleRollOverRequest(fromRequest, toRequest)), successMsg);
     }
 
     private Boolean stop(Subscription subscription, String successMsg) {
-        BillingCycleRequest request = new BillingCycleRequest(subscription.subscriberNumber(),
-                subscription.getProgramType(), subscription.getBillingStartDate());
+        BillingCycleRequest request = billingRequest(subscription.subscriberNumber(), subscription.getProgramType(), null, null);
         subscription.setStatus(SubscriptionStatus.EXPIRED);
         return stopFor(subscription, request, successMsg);
     }
@@ -106,7 +102,12 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
         return true;
     }
 
-    private BillingCycleRequest billingRequest(String subscriberNumber, IProgramType programType, DateTime cycleStartDate) {
-        return new BillingCycleRequest(subscriberNumber, programType, cycleStartDate);
+    private BillingCycleRequest billingRequest(String subscriberNumber, IProgramType programType, DateTime cycleStartDate, DateTime cycleEndDate) {
+        return new BillingCycleRequest(subscriberNumber, programType, cycleStartDate, cycleEndDate);
+    }
+
+    private BillingCycleRequest billingRequest(Subscription subscription) {
+        return new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), subscription.getBillingStartDate(),
+                subscription.getSubscriptionEndDate());
     }
 }

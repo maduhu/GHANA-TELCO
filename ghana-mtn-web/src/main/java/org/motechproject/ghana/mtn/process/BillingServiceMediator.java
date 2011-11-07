@@ -43,7 +43,7 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
         BillingServiceResponse<CustomerBill> response = chargeFee(subscription);
         if (response.hasErrors()) {
             sendMessage(subscription, messageFor(response.getValidationErrors()));
-            billingService.stopBilling(new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), subscription.getCycleStartDate()));
+            billingService.stopBilling(new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), null, null));
             createDefaultedDailyAndWeeklyBillingSchedule(subscription, response);
             updateSubscriptionStatus(subscription);
         } else {
@@ -76,7 +76,8 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
 
     private void startBillingSchedule(Subscription subscription) {
         DateTime nextBillingDate = subscription.billingStartDate(DateUtil.now().monthOfYear().addToCopy(1));
-        billingService.startBilling(new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), nextBillingDate));
+        billingService.startBilling(new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), nextBillingDate, 
+                subscription.getSubscriptionEndDate()));
     }
 
     private void stopDefaultedBillingSchedule(Subscription subscription, WallTimeUnit dayOrWeek) {

@@ -15,8 +15,11 @@ import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
+import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.util.DateUtil;
 
@@ -29,6 +32,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_ROLLOVER;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
+import static org.motechproject.util.DateUtil.newDate;
 
 public class BillingCycleProcessorTest {
     private BillingCycleProcess billing;
@@ -124,13 +128,12 @@ public class BillingCycleProcessorTest {
         assertSMSRequest(mobileNumber, "errors message", program);
     }
 
-
     @Test
     public void shouldReturnTrueAndSendBillingSuccessMessageOnStoppingCycle() {
         DateTime now = DateUtil.now();
         String mobileNumber = "123";
         ProgramType programType = childCarePregnancyType;
-        Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
+        Subscription subscription = this.subscriptionBuilder(8, mobileNumber, now, now, programType)
                 .withType(programType).build();
         BillingServiceResponse successResponse = new BillingServiceResponse();
 
@@ -150,7 +153,7 @@ public class BillingCycleProcessorTest {
         String mobileNumber = "123";
 
         ProgramType programType = childCarePregnancyType;
-        Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
+        Subscription subscription = this.subscriptionBuilder(6, mobileNumber, now, now, programType)
                 .withType(programType).build();
         BillingServiceResponse response = mock(BillingServiceResponse.class);
         List errors = mockBillingServiceResponseWithErrors(response);
@@ -168,7 +171,7 @@ public class BillingCycleProcessorTest {
         DateTime now = DateUtil.now();
         String mobileNumber = "123";
         ProgramType programType = childCarePregnancyType;
-        Subscription subscription = subscriptionBuilder(mobileNumber, now, now, programType)
+        Subscription subscription = this.subscriptionBuilder(7, mobileNumber, now, now, programType)
                 .withType(programType).build();
         BillingServiceResponse successResponse = new BillingServiceResponse();
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(successResponse);
@@ -223,10 +226,10 @@ public class BillingCycleProcessorTest {
     @Test
     public void shouldStopBillingCycleForPregnancyProgramForRollOver_IfThereIsAExistingChildCareProgram() {
         String subscriberNumber = "9500012345";
-        DateTime deliveryDate = DateUtil.newDate(2011, 10, 10).toDateTimeAtCurrentTime();
-        Subscription fromSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType)
+        DateTime deliveryDate = newDate(2011, 10, 10).toDateTimeAtCurrentTime();
+        Subscription fromSubscription = this.subscriptionBuilder(6, subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType)
                 .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
-        Subscription toSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), childCarePregnancyType).build();
+        Subscription toSubscription = this.subscriptionBuilder(1, subscriberNumber, deliveryDate, DateUtil.now(), childCarePregnancyType).build();
 
         when(billingService.stopBilling(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
 
@@ -239,10 +242,10 @@ public class BillingCycleProcessorTest {
     @Test
     public void shouldStopBillingCycleForPregnancyProgramForRollOver_IfUserWantsToRetainExistingChildCareProgram() {
         String subscriberNumber = "9500012345";
-        DateTime deliveryDate = DateUtil.newDate(2011, 10, 10).toDateTimeAtCurrentTime();
-        Subscription fromSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType)
+        DateTime deliveryDate = newDate(2011, 10, 10).toDateTimeAtCurrentTime();
+        Subscription fromSubscription = this.subscriptionBuilder(10, subscriberNumber, deliveryDate, DateUtil.now(), pregnancyProgramType)
                 .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
-        Subscription toSubscription = subscriptionBuilder(subscriberNumber, deliveryDate, DateUtil.now(), childCarePregnancyType).build();
+        Subscription toSubscription = this.subscriptionBuilder(1, subscriberNumber, deliveryDate, DateUtil.now(), childCarePregnancyType).build();
 
         when(billingService.stopBilling(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
 
@@ -256,14 +259,13 @@ public class BillingCycleProcessorTest {
     @Test
     public void shouldStopTheExistingChildCareBillingCycleWhenRollOverToNewChildCareProgram() {
         String subscriberNumber = "9500012345";
-        DateTime pregnancyRegistrationDate = DateUtil.newDate(2011, 10, 10).toDateTimeAtCurrentTime();
-        DateTime childCareRegistrationDate = DateUtil.newDate(2010, 12, 13).toDateTimeAtCurrentTime();
-        DateTime childCareBillingDate = childCareRegistrationDate;
-        Subscription pregnancySubscriptionToRollOver = subscriptionBuilder(subscriberNumber, pregnancyRegistrationDate, pregnancyRegistrationDate, pregnancyProgramType)
-                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
-        Subscription newChildCareSubscriptionForRollOver = subscriptionBuilder(subscriberNumber, pregnancyRegistrationDate, pregnancyRegistrationDate, childCarePregnancyType)
-                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
-        Subscription existingChildCareSubscription = subscriptionBuilder(subscriberNumber, childCareRegistrationDate, childCareBillingDate, childCarePregnancyType).build();
+        DateTime pregnancyRegistrationDate = newDate(2011, 10, 10).toDateTimeAtCurrentTime();
+        DateTime childCareRegistrationDate = newDate(2010, 12, 13).toDateTimeAtCurrentTime();
+        Subscription pregnancySubscriptionToRollOver = this.subscriptionBuilder(6, subscriberNumber, pregnancyRegistrationDate, pregnancyProgramType)
+                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build().updateCycleInfo();
+        Subscription newChildCareSubscriptionForRollOver = this.subscriptionBuilder(1, subscriberNumber, pregnancyRegistrationDate, childCarePregnancyType)
+                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build().updateCycleInfo();
+        Subscription existingChildCareSubscription = this.subscriptionBuilder(9, subscriberNumber, childCareRegistrationDate, childCarePregnancyType).build().updateCycleInfo();
 
         when(billingService.stopBilling(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
         when(billingService.rollOverBilling(Matchers.<BillingCycleRollOverRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
@@ -273,19 +275,19 @@ public class BillingCycleProcessorTest {
         assertTrue(rollOver);
         ArgumentCaptor<BillingCycleRequest> stopBillingCaptor = ArgumentCaptor.forClass(BillingCycleRequest.class);
         verify(billingService).stopBilling(stopBillingCaptor.capture());
-        assertBillingCycleRequest(subscriberNumber, childCareRegistrationDate, childCarePregnancyType, stopBillingCaptor.getValue());
+        assertBillingCycleRequest(subscriberNumber, null, null, childCarePregnancyType, stopBillingCaptor.getValue());
     }
 
     @Test
     public void shouldRollOverFromPregnancyBillingCycleToNewChildCare_WhenUserSelectsRollOverToNewChildCareProgram() {
         String subscriberNumber = "9500012345";
-        DateTime pregnancyRegistrationDate = DateUtil.newDate(2011, 10, 10).toDateTimeAtCurrentTime();
-        DateTime childCareRegistrationDate = DateUtil.newDate(2010, 12, 13).toDateTimeAtCurrentTime();
-        Subscription pregnancySubscriptionToRollOver = subscriptionBuilder(subscriberNumber, pregnancyRegistrationDate, pregnancyRegistrationDate, pregnancyProgramType)
-                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
-        Subscription newChildCareSubscriptionForRollOver = subscriptionBuilder(subscriberNumber, pregnancyRegistrationDate, pregnancyRegistrationDate, childCarePregnancyType)
-                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build();
-        Subscription existingChildCareSubscription = subscriptionBuilder(subscriberNumber, childCareRegistrationDate, DateUtil.now(), childCarePregnancyType).build();
+        DateTime pregnancyRegistrationDate = newDate(2011, 10, 10).toDateTimeAtCurrentTime();
+        DateTime childCareRegistrationDate = newDate(2010, 12, 13).toDateTimeAtCurrentTime();
+        Subscription pregnancySubscriptionToRollOver = subscriptionBuilder(6, subscriberNumber, pregnancyRegistrationDate, pregnancyProgramType)
+                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build().updateCycleInfo();
+        Subscription newChildCareSubscriptionForRollOver = subscriptionBuilder(1, subscriberNumber, pregnancyRegistrationDate, childCarePregnancyType)
+                .withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build().updateCycleInfo();
+        Subscription existingChildCareSubscription = subscriptionBuilder(4, subscriberNumber, childCareRegistrationDate, childCarePregnancyType).build();
 
         when(messageBundle.get(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING)).thenReturn("success");
         when(billingService.stopBilling(Matchers.<BillingCycleRequest>any())).thenReturn(new BillingServiceResponse<Boolean>(true));
@@ -296,14 +298,23 @@ public class BillingCycleProcessorTest {
         assertTrue(rollOver);
         ArgumentCaptor<BillingCycleRollOverRequest> billingRollOverRequestCaptor = ArgumentCaptor.forClass(BillingCycleRollOverRequest.class);
         verify(billingService).rollOverBilling(billingRollOverRequestCaptor.capture());
-        assertBillingCycleRequest(subscriberNumber, pregnancyRegistrationDate, pregnancyProgramType, billingRollOverRequestCaptor.getValue().getFromRequest());
-        assertBillingCycleRequest(subscriberNumber, pregnancyRegistrationDate, childCarePregnancyType, billingRollOverRequestCaptor.getValue().getToRequest());
+
+        assertBillingCycleRequest(subscriberNumber, newDateWithStartDayOfTime(2011, 10, 12), pregnancySubscriptionToRollOver.getSubscriptionEndDate(), pregnancyProgramType,
+                billingRollOverRequestCaptor.getValue().getFromRequest());
+        assertBillingCycleRequest(subscriberNumber, newDateWithStartDayOfTime(2011, 10, 12), newChildCareSubscriptionForRollOver.getSubscriptionEndDate(),
+                childCarePregnancyType, billingRollOverRequestCaptor.getValue().getToRequest());
         assertSMSRequest(subscriberNumber, "success", newChildCareSubscriptionForRollOver.programKey());
         verifyNoMoreInteractions(smsService);
     }
 
-    private void assertBillingCycleRequest(String subscriberNumber, DateTime deliveryDate, IProgramType programType, BillingCycleRequest billingCycleRequest) {
-        assertEquals(deliveryDate.toLocalDate(), billingCycleRequest.getCycleStartDate().toLocalDate());
+    private DateTime newDateWithStartDayOfTime(int year, int month, int day) {
+        return newDate(year, month, day).toDateTimeAtCurrentTime().withTimeAtStartOfDay();
+    }
+
+    private void assertBillingCycleRequest(String subscriberNumber, DateTime startDate, DateTime stopDate, IProgramType programType, BillingCycleRequest billingCycleRequest) {
+
+        assertEquals(startDate, billingCycleRequest.getCycleStartDate());
+        assertEquals(stopDate, billingCycleRequest.getCycleEndDate());
         assertEquals(programType, billingCycleRequest.getProgramType());
         assertEquals(subscriberNumber,billingCycleRequest.getMobileNumber());
     }
@@ -332,10 +343,15 @@ public class BillingCycleProcessorTest {
         assertEquals(program, captured.programKey());
     }
 
-    private SubscriptionBuilder subscriptionBuilder(String subscriberNumber, DateTime registrationDate, DateTime billingStartDate, ProgramType programType) {
+    private SubscriptionBuilder subscriptionBuilder(int week, String subscriberNumber, DateTime registrationDate, DateTime billingStartDate, ProgramType programType) {
         return new SubscriptionBuilder().withBillingStartDate(billingStartDate).withRegistrationDate(registrationDate)
                 .withSubscriber(new Subscriber(subscriberNumber))
+                .withStartWeekAndDay(new WeekAndDay(new Week(week), new DateUtils().day(DateUtil.now())))
                 .withType(programType);
+    }
+
+    private SubscriptionBuilder subscriptionBuilder(int week, String subscriberNumber, DateTime registrationDate, ProgramType programType) {
+        return subscriptionBuilder(week, subscriberNumber, registrationDate, null, programType);
     }
 
 }
