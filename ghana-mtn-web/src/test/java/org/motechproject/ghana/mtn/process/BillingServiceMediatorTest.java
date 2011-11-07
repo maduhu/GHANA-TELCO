@@ -24,6 +24,7 @@ import org.motechproject.valueobjects.WallTimeUnit;
 
 import java.util.Arrays;
 
+import static java.lang.String.format;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -93,8 +94,10 @@ public class BillingServiceMediatorTest {
 
         String mobileNumber = "123";
         Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType).setStatus(PAYMENT_DEFAULT);
+        String defaultSuccessMsg = "Billing success. Will be charge in %s of every month for " + programType.getProgramName();
 
         when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
+        when(messageBundle.get(MessageBundle.DEFAULTED_BILLING_SUCCESS)).thenReturn(defaultSuccessMsg);
         billingServiceMediator.chargeFeeForDefaultedSubscriptionDaily(subscription);
 
         verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
@@ -107,6 +110,7 @@ public class BillingServiceMediatorTest {
         assertDefaultBillingRequest(
                 new DefaultedBillingRequest(mobileNumber, programType, WallTimeUnit.Week), defaultedBillingRequestCaptor.getAllValues().get(1));
         verify(allSubscriptions).update(subscription);
+        assertSmsRequest(mobileNumber, format(defaultSuccessMsg, dateUtils.dayWithOrdinal(DateUtil.today().getDayOfMonth())));
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
     }
 
@@ -122,6 +126,7 @@ public class BillingServiceMediatorTest {
         verify(allSubscriptions, never()).update(subscription);
         assertThat(subscription.getStatus(), is(PAYMENT_DEFAULT));
         verify(billingService, never()).stopDefaultedBillingSchedule(Matchers.<DefaultedBillingRequest>any());
+        verifyZeroInteractions(smsService);
     }
     
     @Test
@@ -129,7 +134,10 @@ public class BillingServiceMediatorTest {
 
         String mobileNumber = "123";
         Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType).setStatus(PAYMENT_DEFAULT);
+        String defaultSuccessMsg = "Billing success. Will be charge in %s of every month for " + programType.getProgramName();
+
         when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
+        when(messageBundle.get(MessageBundle.DEFAULTED_BILLING_SUCCESS)).thenReturn(defaultSuccessMsg);
 
         billingServiceMediator.chargeFeeForDefaultedSubscriptionWeekly(subscription);
 
@@ -140,6 +148,7 @@ public class BillingServiceMediatorTest {
         assertDefaultBillingRequest(
                 new DefaultedBillingRequest(mobileNumber, programType, Week), defaultedBillingRequestCaptor.getValue());
         verify(allSubscriptions).update(subscription);
+        assertSmsRequest(mobileNumber, format(defaultSuccessMsg, dateUtils.dayWithOrdinal(DateUtil.today().getDayOfMonth())));
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
     }
 
@@ -165,6 +174,7 @@ public class BillingServiceMediatorTest {
         verify(allSubscriptions, never()).update(subscription);
         assertThat(subscription.getStatus(), is(PAYMENT_DEFAULT));
         verify(billingService, never()).stopDefaultedBillingSchedule(Matchers.<DefaultedBillingRequest>any());
+        verifyZeroInteractions(smsService);
     }
 
     private void assertSmsRequest(String mobileNumber, String errorMsg) {

@@ -18,6 +18,7 @@ public class MessageBundle {
     public static final String ACTIVE_SUBSCRIPTION_PRESENT = "enrollment.active.subscription.present";
 
     public static final String BILLING_SUCCESS = "billing.success";
+    public static final String DEFAULTED_BILLING_SUCCESS = "defaulted.billing.success";
     public static final String BILLING_FAILURE = "billing.failure";
     public static final String BILLING_STOPPED = "billing.stopped";
     public static final String BILLING_ROLLOVER = "billing.rollover";

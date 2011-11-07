@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_SUCCESS;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.DEFAULTED_BILLING_SUCCESS;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.PAYMENT_DEFAULT;
 import static org.motechproject.ghana.mtn.validation.ValidationError.INSUFFICIENT_FUNDS;
@@ -57,6 +58,7 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
             stopDefaultedBillingSchedule(subscription, Week);
             startBillingSchedule(subscription);
             allSubscriptions.update(subscription.setStatus(ACTIVE));
+            sendMessage(subscription, format(messageFor(DEFAULTED_BILLING_SUCCESS), dateUtils.dayWithOrdinal(DateUtil.today().getDayOfMonth())));
         }
         return response;
     }
@@ -67,6 +69,7 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
             stopDefaultedBillingSchedule(subscription, Week);
             startBillingSchedule(subscription);
             allSubscriptions.update(subscription.setStatus(ACTIVE));
+            sendMessage(subscription, format(messageFor(DEFAULTED_BILLING_SUCCESS), dateUtils.dayWithOrdinal(DateUtil.today().getDayOfMonth())));
         }
         return response;
     }

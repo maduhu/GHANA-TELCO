@@ -35,6 +35,7 @@ public class MessageSeed extends Seed {
 
     private void addBilling() {
         save(BILLING_SUCCESS, "Your account has been charged with %s amount for the Mobile Midwife ${p} Service. Thank You for continuing to use the service.");
+        save(DEFAULTED_BILLING_SUCCESS, "Thanks for you payment. Your ${p} subscription has been reactivated. The subsequent billing checks will happen on %s of the every month.");
         save(BILLING_FAILURE, "Sorry we are having trouble processing your request.");
         save(BILLING_STOPPED, "Your account will be no longer charged for Mobile Midwife ${p} Program.");
         save(BILLING_ROLLOVER, "Your account will be now charged for the Mobile Midwife ${p} Program.");
