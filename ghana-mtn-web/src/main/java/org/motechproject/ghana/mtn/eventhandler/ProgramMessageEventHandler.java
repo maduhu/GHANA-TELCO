@@ -1,13 +1,11 @@
 package org.motechproject.ghana.mtn.eventhandler;
 
-import org.joda.time.Days;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.process.MessengerProcess;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
-import org.motechproject.valueobjects.WallTimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,13 +35,5 @@ public class ProgramMessageEventHandler {
             messenger.process(subscription);
             service.rollOverByEvent(subscription);
         }
-    }
-
-    public static void main(String[] args) {
-//        Date summa = new Date();
-//        System.out.println(summa);
-        long testb = (604800000L) / (60 * 60 * 24 * 1000);
-        System.out.println(testb);
-        System.out.println( Long.valueOf(Days.days(WallTimeUnit.Week.days).toStandardSeconds().getSeconds()) * 1000L + "");
     }
 }
