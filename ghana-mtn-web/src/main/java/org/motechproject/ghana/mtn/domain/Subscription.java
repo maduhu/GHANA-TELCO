@@ -32,8 +32,8 @@ public class Subscription extends MotechAuditableDataObject {
     private DateTime cycleStartDate;
     private DateTime billingStartDate;
     private DateUtils dateUtils = new DateUtils();
-    @JsonProperty("cycleEndDate")
-    private DateTime cycleEndDate;
+    @JsonProperty("subscriptionEndDate")
+    private DateTime subscriptionEndDate;
 
     public Subscription() {
     }
@@ -147,7 +147,7 @@ public class Subscription extends MotechAuditableDataObject {
     private void updateCycleEndDate() {
         int daysToFirstSaturday = daysToSaturday(this.cycleStartDate);
         Integer weeksRemaining = programType.getMaxWeek() - startWeekAndDay.getWeek().getNumber();
-        this.cycleEndDate = this.cycleStartDate.dayOfMonth().addToCopy(daysToFirstSaturday + weeksRemaining * 7);
+        this.subscriptionEndDate = this.cycleStartDate.dayOfMonth().addToCopy(daysToFirstSaturday + weeksRemaining * 7);
     }
 
     public Day currentDay() {
@@ -211,7 +211,7 @@ public class Subscription extends MotechAuditableDataObject {
         return programType.getRollOverProgramType();
     }
 
-    public DateTime getCycleEndDate() {
-        return cycleEndDate;
+    public DateTime getSubscriptionEndDate() {
+        return subscriptionEndDate;
     }
 }

@@ -107,14 +107,14 @@ public class SubscriptionTest {
         int daysToSaturdayForMonJan31 = 3;
         DateTime endDateForJan31 = date(2011, 2, 2).dayOfMonth().addToCopy(noOfDaysForRemainingWeeks + daysToSaturdayForMonJan31);
 
-        assertThat(registeredOn_MonJan31.getCycleEndDate(), is(endDateForJan31));
-        assertThat(registeredOn_TueFeb1.getCycleEndDate(), is(addDays(date(2011, 2, 2), 3 + noOfDaysForRemainingWeeks)));
-        assertThat(registeredOn_WedFeb2.getCycleEndDate(), is(addDays(date(2011, 2, 4), 1 + noOfDaysForRemainingWeeks)));
-        assertThat(registeredOn_ThurFeb3.getCycleEndDate(), is(addDays(date(2011, 2, 4), 1 + noOfDaysForRemainingWeeks)));
-        assertThat(registeredOn_FriFeb4.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
-        assertThat(registeredOn_SatFeb5.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
-        assertThat(registeredOn_SunFeb6.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
-        assertThat(registeredOn_MonFeb7.getCycleEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_MonJan31.getSubscriptionEndDate(), is(endDateForJan31));
+        assertThat(registeredOn_TueFeb1.getSubscriptionEndDate(), is(addDays(date(2011, 2, 2), 3 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_WedFeb2.getSubscriptionEndDate(), is(addDays(date(2011, 2, 4), 1 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_ThurFeb3.getSubscriptionEndDate(), is(addDays(date(2011, 2, 4), 1 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_FriFeb4.getSubscriptionEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_SatFeb5.getSubscriptionEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_SunFeb6.getSubscriptionEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
+        assertThat(registeredOn_MonFeb7.getSubscriptionEndDate(), is(addDays(date(2011, 2, 7), 5 + noOfDaysForRemainingWeeks)));
     }
 
     private DateTime addDays(DateTime date, int days) {
