@@ -81,7 +81,7 @@ public class BillingServiceMediatorTest {
         assertSmsRequest(mobileNumber, errorMsg);
         assertStopBillingRequest(new BillingCycleRequest(mobileNumber, programType, subscription.getCycleStartDate()));
 
-        DateTime now = new DateUtils().startOfDay(DateUtil.now());
+        DateTime now = DateUtil.now().withTimeAtStartOfDay();
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
         verify(billingService, times(2)).startDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
         DefaultedBillingRequest dailyDefaultedBillingRequest = defaultedBillingRequestCaptor.getAllValues().get(0);
@@ -153,7 +153,7 @@ public class BillingServiceMediatorTest {
         billingServiceMediator.chargeFeeForDefaultedSubscriptionWeekly(subscription);
 
         verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
-        verifyStartBilling(mobileNumber, programType, dateUtils.startOfDay(DateUtil.now().monthOfYear().addToCopy(1)));
+        verifyStartBilling(mobileNumber, programType, DateUtil.now().monthOfYear().addToCopy(1).withTimeAtStartOfDay());
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
         verify(billingService).stopDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
         assertDefaultBillingRequest(

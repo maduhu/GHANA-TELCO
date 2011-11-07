@@ -16,10 +16,6 @@ public class DateUtils {
         return Day.valueOf(day.toUpperCase());
     }
 
-    public DateTime startOfDay(DateTime dateTime) {
-        return dateTime.withTime(0, 0, 0, 0);
-    }
-
     public Day day(DateTime date) {
         return Day.valueOf(date.dayOfWeek().getAsText().toUpperCase());
     }

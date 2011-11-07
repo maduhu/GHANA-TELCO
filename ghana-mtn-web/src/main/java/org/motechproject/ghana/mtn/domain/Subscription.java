@@ -99,10 +99,10 @@ public class Subscription extends MotechAuditableDataObject {
     public Week currentWeek() {
 
         DateTime cycleStartDate = getCycleStartDate();
-        DateTime currentDateStartDayTime = dateUtils.startOfDay(dateUtils.now());
+        DateTime currentDateStartDayTime = dateUtils.now().withTimeAtStartOfDay();
         if(cycleStartDate.compareTo(currentDateStartDayTime) > 0) return null;
 
-        DateTime cycleStartDateWithStartDayTime = dateUtils.startOfDay(cycleStartDate);
+        DateTime cycleStartDateWithStartDayTime = cycleStartDate.withTimeAtStartOfDay();
         int daysDiff = new Period(cycleStartDateWithStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();
 
         if (daysDiff > 0) {
@@ -120,7 +120,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     private DateTime cycleStartDate() {
-        return dateUtils.startOfDay(new ProgramMessageCycle().nearestCycleDate(getRegistrationDate()));
+        return new ProgramMessageCycle().nearestCycleDate(getRegistrationDate()).withTimeAtStartOfDay();
     }
 
     public DateTime billingStartDate(DateTime startDateOfCycle) {
