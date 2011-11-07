@@ -91,7 +91,7 @@ public class BillingServiceMediatorTest {
 
         DefaultedBillingRequest weeklyDefaultedBillingRequest = defaultedBillingRequestCaptor.getAllValues().get(1);
         assertDefaultBillingRequest(
-                new DefaultedBillingRequest(mobileNumber, programType, now.dayOfMonth().addToCopy(7 + 1).withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR), Week,
+                new DefaultedBillingRequest(mobileNumber, programType, now.dayOfMonth().addToCopy(7 + 7).withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR), Week,
                 subscription.getSubscriptionEndDate().withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR)), weeklyDefaultedBillingRequest);
 
         verify(allSubscriptions).update(subscription);
