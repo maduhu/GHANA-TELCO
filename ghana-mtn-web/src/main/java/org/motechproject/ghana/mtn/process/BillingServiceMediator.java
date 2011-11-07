@@ -75,7 +75,7 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
     }
 
     private void startBillingSchedule(Subscription subscription) {
-        DateTime nextBillingDate = subscription.billingStartDate(DateUtil.now().monthOfYear().addToCopy(1));
+        DateTime nextBillingDate = subscription.billingStartDate(DateUtil.now());
         billingService.startBilling(new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), nextBillingDate, 
                 subscription.getSubscriptionEndDate()));
     }
