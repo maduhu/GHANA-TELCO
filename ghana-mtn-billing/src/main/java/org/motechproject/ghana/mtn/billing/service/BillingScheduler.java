@@ -74,8 +74,9 @@ public class BillingScheduler {
         String programName = request.programKey();
         String jobId = jobId(mobileNumber, programName);
 
-        schedulerService.unscheduleJob(defaultedBillingSubjectMap().get(request.getFrequency()), jobId);
-        log.info("Billing defaulted job unscheduled for [" + mobileNumber + "|" + programName + "]");
+        String subject = defaultedBillingSubjectMap().get(request.getFrequency());
+        schedulerService.unscheduleJob(subject, jobId);
+        log.info("Billing defaulted job unscheduled for [" + subject + "|"  + mobileNumber + "|" + programName + "]");
     }
 
     public void startDefaultedBillingSchedule(DefaultedBillingRequest request) {
@@ -94,7 +95,7 @@ public class BillingScheduler {
         RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob(motechEvent,
                 startTime, request.getCycleEndDate().toDate(), getRepeatingIntervalForPeriod(Days.days(unit.days).toPeriod()));
         schedulerService.scheduleRepeatingJob(repeatingSchedulableJob);
-        log.info("Defaulted Billing job scheduled for [" + mobileNumber + "|" + programKey + "|" + startTime + "]");
+        log.info("Defaulted Billing job scheduled for [" + subject + "|" + mobileNumber + "|" + programKey + "|" + startTime + "]");
     }
 
     private Map<WallTimeUnit, String> defaultedBillingSubjectMap() {
