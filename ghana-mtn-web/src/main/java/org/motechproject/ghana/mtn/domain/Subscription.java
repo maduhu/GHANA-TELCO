@@ -123,10 +123,11 @@ public class Subscription extends MotechAuditableDataObject {
         return dateUtils.startOfDay(new ProgramMessageCycle().nearestCycleDate(getRegistrationDate()));
     }
 
-    private DateTime billingStartDate(DateTime startDateOfCycle) {
+    public DateTime billingStartDate(DateTime startDateOfCycle) {
         List<Integer> forDaysToMoveToFirstOfMonth = asList(29, 30, 31);
+        startDateOfCycle = startDateOfCycle.withTimeAtStartOfDay();
         if (forDaysToMoveToFirstOfMonth.contains(startDateOfCycle.getDayOfMonth()))
-            return startDateOfCycle.dayOfMonth().addToCopy(1).withDayOfMonth(1);
+            return startDateOfCycle.monthOfYear().addToCopy(1).withDayOfMonth(1);
         return startDateOfCycle;
     }
 

@@ -1,11 +1,14 @@
 package org.motechproject.ghana.mtn.process;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.motechproject.ghana.mtn.billing.dto.*;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
@@ -21,6 +24,9 @@ import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTimeUnit;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 
@@ -33,8 +39,11 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.PAYMENT_DEFAULT;
 import static org.motechproject.ghana.mtn.process.BillingServiceMediator.DEFAULTED_SUBSCRIPTION_BILLING_HOUR;
 import static org.motechproject.ghana.mtn.validation.ValidationError.INSUFFICIENT_FUNDS;
+import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.valueobjects.WallTimeUnit.Week;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(DateUtil.class)
 public class BillingServiceMediatorTest {
     private BillingServiceMediator billingServiceMediator;
     private ProgramType programType = new ProgramTypeBuilder().withMaxWeek(35).withMinWeek(5).withShortCode("P").withProgramName("Pregnancy").build();
@@ -96,12 +105,14 @@ public class BillingServiceMediatorTest {
         Subscription subscription = subscription(mobileNumber, DateTime.now(), new Week(1), programType).setStatus(PAYMENT_DEFAULT);
         String defaultSuccessMsg = "Billing success. Will be charge in %s of every month for " + programType.getProgramName();
 
+        DateTime now = newDate(2011, 11, 29).toDateTimeAtCurrentTime();
+        mockCurrentDate(now);
         when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse());
         when(messageBundle.get(MessageBundle.DEFAULTED_BILLING_SUCCESS)).thenReturn(defaultSuccessMsg);
         billingServiceMediator.chargeFeeForDefaultedSubscriptionDaily(subscription);
 
         verify(billingService).chargeProgramFee(Matchers.<BillingServiceRequest>any());
-        verifyStartBilling(mobileNumber, programType, dateUtils.startOfDay(DateUtil.now().monthOfYear().addToCopy(1)));
+        verifyStartBilling(mobileNumber, programType, newDateTime(2012, 1, 1));
 
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
         verify(billingService, times(2)).stopDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
@@ -177,6 +188,12 @@ public class BillingServiceMediatorTest {
         verifyZeroInteractions(smsService);
     }
 
+    private void mockCurrentDate(DateTime date) {
+        PowerMockito.spy(DateUtil.class);
+        Mockito.when(DateUtil.now()).thenReturn(date);
+        Mockito.when(DateUtil.today()).thenReturn(date.toLocalDate());
+    }
+
     private void assertSmsRequest(String mobileNumber, String errorMsg) {
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());
@@ -212,4 +229,7 @@ public class BillingServiceMediatorTest {
         return subscription;
     }
 
+    public static DateTime newDateTime(int day, int month, int year) {
+        return DateUtil.newDateTime(new LocalDate(day, month, year), 0, 0, 0).withTimeAtStartOfDay();
+    }
 }
