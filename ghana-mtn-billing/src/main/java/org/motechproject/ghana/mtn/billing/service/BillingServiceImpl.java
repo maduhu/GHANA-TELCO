@@ -11,6 +11,9 @@ import org.motechproject.ghana.mtn.vo.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static org.motechproject.ghana.mtn.validation.ValidationError.INSUFFICIENT_FUNDS;
+import static org.motechproject.ghana.mtn.validation.ValidationError.INSUFFICIENT_FUNDS_DURING_REGISTRATION;
+
 @Service
 public class BillingServiceImpl implements BillingService {
     private MTNMock mtnMock;
@@ -42,38 +45,20 @@ public class BillingServiceImpl implements BillingService {
         }
         Double balance = mtnMock.getBalanceFor(mobileNumber);
         if (balance < fee) {
-            auditor.auditError(request, ValidationError.INSUFFICIENT_FUNDS);
-            return responseFor(ValidationError.INSUFFICIENT_FUNDS);
+            auditor.auditError(request, INSUFFICIENT_FUNDS);
+            return responseFor(INSUFFICIENT_FUNDS);
         }
         return new BillingServiceResponse();
     }
 
     @Override
     public BillingServiceResponse<CustomerBill> chargeProgramFee(BillingServiceRequest request) {
-        String mobileNumber = request.getMobileNumber();
-        Double fee = request.getProgramFeeValue();
-        IProgramType programType = request.getProgramType();
-
-        Double balance = mtnMock.getBalanceFor(mobileNumber);
-        Money chargedAmount = null;
-        try {
-            chargedAmount = mtnMock.chargeCustomer(mobileNumber, fee);
-        } catch (InsufficientFundsException e) {
-            log.debug("Insufficient Funds for " + mobileNumber);
-            BillingServiceResponse<CustomerBill> response = new BillingServiceResponse<CustomerBill>();
-            ValidationError insufficientFunds = ValidationError.INSUFFICIENT_FUNDS;
-            auditor.auditError(request, insufficientFunds);
-            return response.addError(insufficientFunds);
-        }
-
-        auditor.audit(request);
-        allBillAccounts.updateFor(mobileNumber, balance, programType);
-        return new BillingServiceResponse<CustomerBill>(new CustomerBill(BILLING_SUCCESSFUL, chargedAmount));
+        return chargeFee(request, INSUFFICIENT_FUNDS);
     }
 
     @Override
     public BillingServiceResponse<CustomerBill> chargeAndStartBilling(BillingCycleRequest request) {
-        BillingServiceResponse<CustomerBill> response = chargeProgramFee(request);
+        BillingServiceResponse<CustomerBill> response = chargeFee(request, INSUFFICIENT_FUNDS_DURING_REGISTRATION);
         if (response.hasErrors()) return response;
         scheduler.startFor(request);
         return new BillingServiceResponse<CustomerBill>(new CustomerBill(BILLING_SCHEDULE_STARTED, response.getValue().getAmountCharged()));
@@ -104,6 +89,27 @@ public class BillingServiceImpl implements BillingService {
     public BillingServiceResponse stopDefaultedBillingSchedule(DefaultedBillingRequest defaultedBillingRequest) {
         scheduler.stop(defaultedBillingRequest);
         return new BillingServiceResponse<String>(BILLING_SCHEDULE_STOPPED);
+    }
+
+    private BillingServiceResponse<CustomerBill> chargeFee(BillingServiceRequest request,  ValidationError insufficientFunds) {
+        String mobileNumber = request.getMobileNumber();
+        Double fee = request.getProgramFeeValue();
+        IProgramType programType = request.getProgramType();
+
+        Double balance = mtnMock.getBalanceFor(mobileNumber);
+        Money chargedAmount = null;
+        try {
+            chargedAmount = mtnMock.chargeCustomer(mobileNumber, fee);
+        } catch (InsufficientFundsException e) {
+            log.debug("Insufficient Funds for " + mobileNumber);
+            BillingServiceResponse<CustomerBill> response = new BillingServiceResponse<CustomerBill>();
+            auditor.auditError(request, insufficientFunds);
+            return response.addError(insufficientFunds);
+        }
+
+        auditor.audit(request);
+        allBillAccounts.updateFor(mobileNumber, balance, programType);
+        return new BillingServiceResponse<CustomerBill>(new CustomerBill(BILLING_SUCCESSFUL, chargedAmount));
     }
 
     private BillingServiceResponse responseFor(ValidationError error) {

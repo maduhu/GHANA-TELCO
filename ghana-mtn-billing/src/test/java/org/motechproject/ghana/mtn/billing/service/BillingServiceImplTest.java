@@ -109,6 +109,25 @@ public class BillingServiceImplTest {
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STARTED, response.getValue().getMessage());
         assertEquals(charge.getValue(), response.getValue().amountCharged());
     }
+
+    @Test
+    public void shouldRaiseValidationErrorForRegistrationIfSubscriberHashInsufficentFunds() throws InsufficientFundsException {
+        BillingCycleRequest request = mock(BillingCycleRequest.class);
+        IProgramType programType = mock(IProgramType.class);
+
+        String mobileNumber = "123";
+        Money charge = new Money(12d);
+        when(request.getMobileNumber()).thenReturn(mobileNumber);
+        when(request.getProgramFeeValue()).thenReturn(charge.getValue());
+        when(request.getProgramType()).thenReturn(programType);
+        when(mtnMock.getBalanceFor(mobileNumber)).thenReturn(1d);
+        when(mtnMock.chargeCustomer(mobileNumber, charge.getValue())).thenThrow(new InsufficientFundsException());
+
+        BillingServiceResponse<CustomerBill> response = service.chargeAndStartBilling(request);
+
+        verify(scheduler, never()).startFor(request);
+        assertEquals(ValidationError.INSUFFICIENT_FUNDS_DURING_REGISTRATION, response.getValidationErrors().get(0));
+    }
     
     @Test
     public void shouldStartAScheduleForBillingCycleRequest() throws InsufficientFundsException {
