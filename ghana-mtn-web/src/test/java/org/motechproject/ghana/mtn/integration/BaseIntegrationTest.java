@@ -144,32 +144,43 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         assertNotNull(subscription.getSubscriber());
 
         assertCampaignSchedule(subscription);
-        assertBillingScheduleAndAccount(subscription);
+        assertMonthlyBillingScheduleAndAccount(subscription);
     }
 
-    protected void assertBillingSchedule(Subscription subscription) {
+    protected void assertMonthlyBillingSchedule(Subscription subscription) {
+        assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT);
+        assertMonthlyBillingCron(subscription, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
+    }
 
-        String subscriberNumber = subscription.subscriberNumber();
-        ProgramType programType = subscription.getProgramType();
-        String jobId = format("%s-%s.%s", MONTHLY_BILLING_SCHEDULE_SUBJECT, programType.getProgramKey(), subscriberNumber);
-
+    private void assertBillingSchedule(Subscription subscription, String billingScheduleSubject) {
         try {
+            String subscriberNumber = subscription.subscriberNumber();
+            String jobId = getJobId(billingScheduleSubject, subscriberNumber, subscription.getProgramType());
             JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
             JobDataMap map = jobDetail.getJobDataMap();
             assertThat(map.get(EXTERNAL_ID_KEY).toString(), Matchers.is(subscriberNumber));
             assertThat(map.get(PROGRAM_KEY).toString(), Matchers.is(subscription.programKey()));
-            assertThat(map.get("eventType").toString(), Matchers.is(MONTHLY_BILLING_SCHEDULE_SUBJECT));
-
-            CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
-            assertThat(cronTrigger.getCronExpression(), Matchers.is(format(billingCron, subscription.getBillingStartDate().getDayOfMonth())));
-
+            assertThat(map.get("eventType").toString(), Matchers.is(billingScheduleSubject));
         } catch (SchedulerException e) {
             throw new AssertionError(e);
         }
     }
 
-    protected void assertBillingScheduleAndAccount(Subscription subscription) {
-        assertBillingSchedule(subscription);
+    private String getJobId(String billingScheduleSubject, String subscriberNumber, ProgramType programType) {
+        return format("%s-%s.%s", billingScheduleSubject, programType.getProgramKey(), subscriberNumber);
+    }
+
+    private void assertMonthlyBillingCron(Subscription subscription, String jobId) {
+        try {
+            CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
+            assertThat(cronTrigger.getCronExpression(), Matchers.is(format(billingCron, subscription.getBillingStartDate().getDayOfMonth())));
+        } catch (SchedulerException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    protected void assertMonthlyBillingScheduleAndAccount(Subscription subscription) {
+        assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT);
         assertBillAccount(subscription.subscriberNumber(), subscription.getProgramType());
         assertBillAudit(subscription.subscriberNumber(), subscription.getProgramType());
     }
@@ -195,7 +206,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     protected void assertIfBillingScheduleIsStopped(Subscription subscription) {
         String subscriberNumber = subscription.subscriberNumber();
         ProgramType programType = subscription.getProgramType();
-        String jobId = format("%s-%s.%s", MONTHLY_BILLING_SCHEDULE_SUBJECT, programType.getProgramKey(), subscriberNumber);
+        String jobId = getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscriberNumber, programType);
         try {
             JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
             CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");

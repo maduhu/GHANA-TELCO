@@ -36,12 +36,12 @@ public class StopIntegrationTest extends BaseIntegrationTest {
 
         Subscription pregnancySubscription = enroll(subscriberEmma, "p 08", PREGNANCY);
         pregnancySubscription = subscription(pregnancySubscription);
-        assertBillingScheduleAndAccount(pregnancySubscription);
+        assertMonthlyBillingScheduleAndAccount(pregnancySubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         message(subscriberEmma, "d");
         Subscription childCareSubscription = subscription(pregnancySubscription.subscriberNumber(), CHILDCARE);
-        assertBillingSchedule(childCareSubscription);
+        assertMonthlyBillingSchedule(childCareSubscription);
         assertCampaignSchedule(childCareSubscription);
         assertIfBillingScheduleIsStopped(pregnancySubscription);
         assertIfCampaignScheduleIsStopped(pregnancySubscription);
