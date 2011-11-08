@@ -41,6 +41,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.DEFAULTED_DAILY_SCHEDULE;
+import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.DEFAULTED_WEEKLY_SCHEDULE;
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
 
@@ -126,8 +128,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         Subscription subscription = subscription(subscriberNumber, programKey);
         assertNull(subscription);
 
-        SubscriptionRequest subscriptionRequest = request(inputMessage, subscriberNumber);
-        subscriptionController.handle(subscriptionRequest);
+        subscriptionController.handle(request(inputMessage, subscriberNumber));
 
         subscription = subscription(subscriberNumber, programKey);
         assertEnrollmentDetails(subscription);
@@ -149,7 +150,17 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
     protected void assertMonthlyBillingSchedule(Subscription subscription) {
         assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT);
-        assertMonthlyBillingCron(subscription, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
+        assertBillingCron(subscription, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
+    }
+
+    protected void assertDailyBillingSchedule(Subscription subscription) {
+        assertBillingSchedule(subscription, DEFAULTED_DAILY_SCHEDULE);
+        assertBillingCron(subscription, getJobId(DEFAULTED_DAILY_SCHEDULE, subscription.subscriberNumber(), subscription.getProgramType()));
+    }
+
+    protected void assertWeeklyBillingSchedule(Subscription subscription) {
+        assertBillingSchedule(subscription, DEFAULTED_WEEKLY_SCHEDULE);
+        assertBillingCron(subscription, getJobId(DEFAULTED_WEEKLY_SCHEDULE, subscription.subscriberNumber(), subscription.getProgramType()));
     }
 
     private void assertBillingSchedule(Subscription subscription, String billingScheduleSubject) {
@@ -170,7 +181,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         return format("%s-%s.%s", billingScheduleSubject, programType.getProgramKey(), subscriberNumber);
     }
 
-    private void assertMonthlyBillingCron(Subscription subscription, String jobId) {
+    private void assertBillingCron(Subscription subscription, String jobId) {
         try {
             CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
             assertThat(cronTrigger.getCronExpression(), Matchers.is(format(billingCron, subscription.getBillingStartDate().getDayOfMonth())));
