@@ -144,10 +144,11 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         assertNotNull(subscription.getSubscriber());
 
         assertCampaignSchedule(subscription);
-        assertBillingSchedule(subscription);
+        assertBillingScheduleAndAccount(subscription);
     }
 
     protected void assertBillingSchedule(Subscription subscription) {
+
         String subscriberNumber = subscription.subscriberNumber();
         ProgramType programType = subscription.getProgramType();
         String jobId = format("%s-%s.%s", MONTHLY_BILLING_SCHEDULE_SUBJECT, programType.getProgramKey(), subscriberNumber);
@@ -165,9 +166,12 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         } catch (SchedulerException e) {
             throw new AssertionError(e);
         }
+    }
 
-        assertBillAccount(subscriberNumber, programType);
-        assertBillAudit(subscriberNumber, programType);
+    protected void assertBillingScheduleAndAccount(Subscription subscription) {
+        assertBillingSchedule(subscription);
+        assertBillAccount(subscription.subscriberNumber(), subscription.getProgramType());
+        assertBillAudit(subscription.subscriberNumber(), subscription.getProgramType());
     }
 
     private void assertBillAudit(String subscriberNumber, ProgramType programType) {

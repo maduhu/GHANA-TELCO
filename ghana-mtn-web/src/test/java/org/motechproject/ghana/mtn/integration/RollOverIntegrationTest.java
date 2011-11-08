@@ -40,12 +40,12 @@ public class RollOverIntegrationTest extends BaseIntegrationTest {
         message(subscriberEmma, "d");
         pregnancySubscription = subscription(pregnancySubscription);
         assertEquals(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE, pregnancySubscription.getStatus());
-        assertBillingSchedule(pregnancySubscription);
+        assertBillingScheduleAndAccount(pregnancySubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         childCareSubscription = subscription(childCareSubscription);
         assertEquals(SubscriptionStatus.ACTIVE, subscription(childCareSubscription).getStatus());
-        assertBillingSchedule(childCareSubscription);
+        assertBillingScheduleAndAccount(childCareSubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         message(subscriberEmma, "e");
@@ -54,7 +54,7 @@ public class RollOverIntegrationTest extends BaseIntegrationTest {
         assertIfCampaignScheduleIsStopped(pregnancySubscription);
 
         assertEquals(SubscriptionStatus.ACTIVE, subscription(childCareSubscription).getStatus());
-        assertBillingSchedule(childCareSubscription);
+        assertBillingScheduleAndAccount(childCareSubscription);
         assertCampaignSchedule(childCareSubscription);
     }
     
@@ -67,12 +67,12 @@ public class RollOverIntegrationTest extends BaseIntegrationTest {
         message(subscriberEmma, "d");
         pregnancySubscription = subscription(pregnancySubscription);
         assertEquals(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE, pregnancySubscription.getStatus());
-        assertBillingSchedule(pregnancySubscription);
+        assertBillingScheduleAndAccount(pregnancySubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         childCareSubscription = subscription(childCareSubscription);
         assertEquals(SubscriptionStatus.ACTIVE, subscription(childCareSubscription).getStatus());
-        assertBillingSchedule(childCareSubscription);
+        assertBillingScheduleAndAccount(childCareSubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         message(subscriberEmma, "n");
@@ -81,7 +81,7 @@ public class RollOverIntegrationTest extends BaseIntegrationTest {
         assertEquals(SubscriptionStatus.ACTIVE, newChildCareSubscription.getStatus());
         assertIfBillingScheduleIsStopped(pregnancySubscription);
         assertIfCampaignScheduleIsStopped(pregnancySubscription);
-        assertBillingSchedule(newChildCareSubscription);
+        assertBillingScheduleAndAccount(newChildCareSubscription);
         assertCampaignSchedule(newChildCareSubscription);
 
         assertEquals(SubscriptionStatus.EXPIRED, subscription(childCareSubscription).getStatus());
