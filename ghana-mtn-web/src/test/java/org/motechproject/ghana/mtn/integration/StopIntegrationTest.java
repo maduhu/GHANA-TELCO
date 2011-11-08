@@ -78,11 +78,11 @@ public class StopIntegrationTest extends BaseIntegrationTest {
         message(subscriberEmma, "stop");
 
         assertEquals(ACTIVE, subscription(pregnancySubscription).getStatus());
-        assertBillingScheduleAndAccount(pregnancySubscription);
+        assertMonthlyBillingScheduleAndAccount(pregnancySubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         assertEquals(ACTIVE, subscription(childCareSubscription).getStatus());
-        assertBillingScheduleAndAccount(childCareSubscription);
+        assertMonthlyBillingScheduleAndAccount(childCareSubscription);
         assertCampaignSchedule(childCareSubscription);
 
         message(subscriberEmma, "stop c");
@@ -91,7 +91,7 @@ public class StopIntegrationTest extends BaseIntegrationTest {
         assertIfCampaignScheduleIsStopped(childCareSubscription);
 
         assertEquals(ACTIVE, subscription(pregnancySubscription).getStatus());
-        assertBillingScheduleAndAccount(pregnancySubscription);
+        assertMonthlyBillingScheduleAndAccount(pregnancySubscription);
         assertCampaignSchedule(pregnancySubscription);
     }
 
