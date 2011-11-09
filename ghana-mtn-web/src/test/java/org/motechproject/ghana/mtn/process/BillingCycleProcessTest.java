@@ -33,8 +33,9 @@ import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_ROLLOVER;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.util.DateUtil.newDateTime;
 
-public class BillingCycleProcessorTest {
+public class BillingCycleProcessTest {
     private BillingCycleProcess billing;
     @Mock
     private BillingService billingService;
@@ -307,6 +308,12 @@ public class BillingCycleProcessorTest {
         verifyNoMoreInteractions(smsService);
     }
 
+    @Test
+    public void shouldNotStartMonthlyBillingScheduleForProgramThatEndsEvenBeForeAMonth() {
+        billing.startFor(subscriptionBuilder(31, "0987654321", newDateTime(DateTime.now().toDate()), pregnancyProgramType).build().updateCycleInfo());
+        verifyZeroInteractions(billingService);
+    }
+
     private DateTime newDateWithStartDayOfTime(int year, int month, int day) {
         return newDate(year, month, day).toDateTimeAtCurrentTime().withTimeAtStartOfDay();
     }
@@ -330,6 +337,8 @@ public class BillingCycleProcessorTest {
         when(programType.getProgramKey()).thenReturn(programKey);
         when(subscription.subscriberNumber()).thenReturn(mobileNumber);
         when(subscription.getBillingStartDate()).thenReturn(now);
+        when(subscription.nextBillingDate()).thenReturn(now.monthOfYear().addToCopy(1));
+        when(subscription.getSubscriptionEndDate()).thenReturn(now.monthOfYear().addToCopy(2));
         when(subscription.getProgramType()).thenReturn(programType);
     }
 
