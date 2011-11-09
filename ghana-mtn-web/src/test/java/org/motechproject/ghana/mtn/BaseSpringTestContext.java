@@ -15,14 +15,19 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
 import java.util.ArrayList;
@@ -32,7 +37,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/testApplicationContext.xml"})
-public abstract class BaseSpringTestContext extends AbstractJUnit4SpringContextTests {
+@TestExecutionListeners( { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class })
+public abstract class BaseSpringTestContext implements ApplicationContextAware {
 
     protected MockHttpServletResponse response;
     protected MockHttpServletRequest request;
@@ -50,6 +56,8 @@ public abstract class BaseSpringTestContext extends AbstractJUnit4SpringContextT
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
+
+    protected ApplicationContext applicationContext;
 
     @Before
     public void before() {
@@ -117,5 +125,9 @@ public abstract class BaseSpringTestContext extends AbstractJUnit4SpringContextT
             bulkDelete.add(new BulkDeleteDocument(object.getId(), object.getRevision()));
         }
         dbConnector.executeAllOrNothing(bulkDelete);
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }
