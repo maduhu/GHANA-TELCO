@@ -77,7 +77,7 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(subscriptions.size(), is(0));
         assertThat(subscribers.size(), is(0));
 
-        assertMessageSentToUser("Invalid Phone Number");
+        assertSmsSent("Invalid Phone Number");
     }
 
     @Test

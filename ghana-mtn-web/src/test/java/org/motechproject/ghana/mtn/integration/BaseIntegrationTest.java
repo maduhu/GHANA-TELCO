@@ -13,6 +13,7 @@ import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
+import org.motechproject.ghana.mtn.parser.RegisterProgramMessageParser;
 import org.motechproject.ghana.mtn.repository.*;
 import org.motechproject.ghana.mtn.tools.seed.MessageSeed;
 import org.motechproject.ghana.mtn.tools.seed.ShortCodeSeed;
@@ -34,15 +35,14 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
 import static java.lang.String.format;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
+import static org.apache.commons.lang.StringUtils.replace;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.DEFAULTED_DAILY_SCHEDULE;
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.DEFAULTED_WEEKLY_SCHEDULE;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
 
@@ -78,6 +78,8 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     ShortCodeSeed shortCodeSeed;
     @Autowired
     MessageSeed messageSeed;
+    @Autowired
+    RegisterProgramMessageParser registerProgramMessageParser;
 
     public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1)
             .withMaxWeek(52).withProgramKey(IProgramType.CHILDCARE).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
@@ -131,21 +133,35 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         subscriptionController.handle(request(inputMessage, subscriberNumber));
 
         subscription = subscription(subscriberNumber, programKey);
-        assertEnrollmentDetails(subscription);
+
+        RegisterProgramSMS registerSms = registerProgramMessageParser.parse(inputMessage, subscriberNumber);
+        assertEnrollmentDetails(subscription, registerSms);
         return subscription;
     }
 
-    protected void assertEnrollmentDetails(Subscription subscription) {
+    protected void assertEnrollmentDetails(Subscription subscription, RegisterProgramSMS registerSms) {
         assertNotNull(subscription);
-        ProgramType programType = allProgramTypes.findByCampaignShortCode(subscription.getProgramType().getShortCodes().get(0));
+        ProgramType programType = allProgramTypes.findByCampaignShortCode(registerSms.getDomain().getProgramType().getShortCodes().get(0));
         assertThat(programType, new ProgramTypeMatcher(subscription.getProgramType()));
         assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
+        assertEquals(subscription.getStartWeekAndDay().getWeek().getNumber(), registerSms.getDomain().getStartWeekAndDay().getWeek().getNumber());
         assertTrue(subscription.getStartWeekAndDay().getWeek().getNumber() >= programType.getMinWeek());
         assertTrue(subscription.getStartWeekAndDay().getWeek().getNumber() <= programType.getMaxWeek());
-        assertNotNull(subscription.getSubscriber());
+        assertEquals(registerSms.getFromMobileNumber(), subscription.getSubscriber().getNumber());
 
         assertCampaignSchedule(subscription);
         assertMonthlyBillingScheduleAndAccount(subscription);
+        List<SMSAudit> smsAudits = lastNSms(2);
+        assertSMS(messageFor(BILLING_SUCCESS, programType, programType.getFee().getValue()), smsAudits.get(0));
+        assertSMS(messageFor(ENROLLMENT_SUCCESS, programType), smsAudits.get(1));
+    }
+
+    private String messageFor(String billingSuccess, IProgramType programType, Object... params) {
+        return replace(messageFor(billingSuccess, params), PROGRAM_NAME_MARKER, programType.getProgramName());
+    }
+
+    private String messageFor(String billingSuccess, Object... params) {
+        return format(allMessages.findBy(billingSuccess).getContent(), params);
     }
 
     protected void assertMonthlyBillingSchedule(Subscription subscription) {
@@ -270,8 +286,17 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         }
     }
 
-    protected void assertMessageSentToUser(String message) {
+    protected void assertSMS(String expected, SMSAudit smsAudit) {
+        assertEquals(expected, smsAudit.getContent());
+    }
+
+    protected void assertSmsSent(String message) {
         List<SMSAudit> smsAudits = allSMSAudits.getAll();
         assertThat(smsAudits.get(smsAudits.size() - 1).getContent(), is(message));
+    }
+
+    protected List<SMSAudit> lastNSms(int count) {
+        List<SMSAudit> smsAudits = allSMSAudits.getAll();
+        return smsAudits.subList(smsAudits.size() - count, smsAudits.size());
     }
 }

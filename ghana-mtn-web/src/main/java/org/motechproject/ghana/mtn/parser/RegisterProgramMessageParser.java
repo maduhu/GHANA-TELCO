@@ -1,8 +1,6 @@
 package org.motechproject.ghana.mtn.parser;
 
 import org.motechproject.ghana.mtn.domain.RegisterProgramSMS;
-import org.motechproject.ghana.mtn.domain.SMS;
-import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -20,7 +18,7 @@ public class RegisterProgramMessageParser extends MessageParser {
     public static final String START_OF_PATTERN = "^(";
     public static final String END_OF_PATTERN = ")\\s([\\d]{1,2})$";
 
-    public SMS<Subscription> parse(String input, String enrolledMobileNumber) {
+    public RegisterProgramSMS parse(String input, String enrolledMobileNumber) {
         Matcher matcher = pattern().matcher(input);
         if (matcher.find()) {
             RegisterProgramSMS registerProgramSMS = new RegisterProgramSMS(input, new SubscriptionBuilder()

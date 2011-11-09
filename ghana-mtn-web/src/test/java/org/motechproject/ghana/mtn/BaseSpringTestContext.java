@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.ektorp.BulkDeleteDocument;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
@@ -76,8 +77,10 @@ public abstract class BaseSpringTestContext extends AbstractJUnit4SpringContextT
     }
 
     protected void deleteAll() {
-        dbConnector.executeBulk(toDelete);
-        toDelete.clear();
+        if(CollectionUtils.isEmpty(toDelete)) {
+            dbConnector.executeBulk(toDelete);
+            toDelete.clear();
+        }
     }
 
     protected void markForDeletion(Object... documents) {
