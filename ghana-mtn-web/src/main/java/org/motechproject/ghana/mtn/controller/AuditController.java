@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -49,7 +51,17 @@ public class AuditController {
     }
 
     private <T> List<T> reverse(List<T> list) {
-        Collections.reverse(list);
+        Collections.sort(list, new Comparator<T>() {
+            @Override
+            public int compare(T o1, T o2) {
+
+                Date o1SentTime = ((SMSAudit) o1).getSentTime().toDate();
+                Date o2SentTime = ((SMSAudit) o2).getSentTime().toDate();
+                if (o1SentTime.getTime() < o2SentTime.getTime()) return 1;
+                else if (o1SentTime.getTime() > o2SentTime.getTime()) return -1;
+                else return 0;
+            }
+        });
         return list;
     }
 
