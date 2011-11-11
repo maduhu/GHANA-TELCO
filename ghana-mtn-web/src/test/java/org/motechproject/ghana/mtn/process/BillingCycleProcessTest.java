@@ -310,7 +310,7 @@ public class BillingCycleProcessTest {
 
     @Test
     public void shouldNotStartMonthlyBillingScheduleForProgramThatEndsEvenBeForeAMonth() {
-        billing.startFor(subscriptionBuilder(31, "0987654321", newDateTime(DateTime.now().toDate()), pregnancyProgramType).build().updateCycleInfo());
+        billing.startFor(subscriptionBuilder(32, "0987654321", newDateTime(DateTime.now().toDate()), pregnancyProgramType).build().updateCycleInfo());
         verifyZeroInteractions(billingService);
     }
 
