@@ -2,23 +2,14 @@ package org.motechproject.ghana.mtn.integration;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.motechproject.ghana.mtn.billing.domain.BillAccount;
 import org.motechproject.ghana.mtn.billing.domain.MTNMockUser;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.vo.Money;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
-@PrepareForTest(System.class)
-@Ignore
 public class SubscriptionBillingIntegrationTest extends BaseIntegrationTest {
-
-//    @Rule
-//    public PowerMockRule rule = new PowerMockRule();
 
     public static final String MOBILE_NUMBER_WITH_LESS_FUND = "0950012345";
     private MTNMockUser userWithLessFund = new MTNMockUser(MOBILE_NUMBER_WITH_LESS_FUND, new Money(0.60D));
@@ -36,11 +27,6 @@ public class SubscriptionBillingIntegrationTest extends BaseIntegrationTest {
     public void shouldStartDefaultedDailyBillingScheduleAndRunFor7Days() {
         Subscription subscription = enroll(MOBILE_NUMBER_WITH_LESS_FUND, "P 25", IProgramType.PREGNANCY);
         assertMonthlyBillingSchedule(subscription);
-    }
-
-    private void mockSystemTimeTo(long time) {
-        PowerMockito.spy(System.class);
-        Mockito.when(System.currentTimeMillis()).thenReturn(time);
     }
 
     @After

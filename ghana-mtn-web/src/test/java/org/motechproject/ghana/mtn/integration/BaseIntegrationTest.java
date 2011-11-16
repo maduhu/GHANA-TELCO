@@ -14,6 +14,7 @@ import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.parser.RegisterProgramMessageParser;
+import org.motechproject.ghana.mtn.process.CampaignProcess;
 import org.motechproject.ghana.mtn.repository.*;
 import org.motechproject.ghana.mtn.tools.seed.MessageSeed;
 import org.motechproject.ghana.mtn.tools.seed.ShortCodeSeed;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
+import java.util.Date;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
@@ -43,6 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
+import static org.motechproject.ghana.mtn.process.CampaignProcess.DATE_MARKER;
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
 
@@ -152,11 +155,15 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         assertMonthlyBillingScheduleAndAccount(subscription);
         List<SMSAudit> smsAudits = lastNSms(2);
         assertSMS(messageFor(BILLING_SUCCESS, programType, programType.getFee().getValue()), smsAudits.get(0));
-        assertSMS(messageFor(ENROLLMENT_SUCCESS, programType), smsAudits.get(1));
+        assertSMS(replaceDateMarker(messageFor(ENROLLMENT_SUCCESS, programType, programType.getFee().getValue()), programType.getFee().getValue(), subscription.getCycleStartDate().toDate()), smsAudits.get(1));
     }
 
-    private String messageFor(String billingSuccess, IProgramType programType, Object... params) {
-        return replace(messageFor(billingSuccess, params), PROGRAM_NAME_MARKER, programType.getProgramName());
+    private String messageFor(String message, IProgramType programType, Object... params) {
+        return replace(messageFor(message, params), PROGRAM_NAME_MARKER, programType.getProgramName());
+    }
+
+    private String replaceDateMarker(String text, Double value, Date date) {
+        return replace(text, DATE_MARKER, CampaignProcess.friendlyDateFormatter.format(date));
     }
 
     private String messageFor(String billingSuccess, Object... params) {

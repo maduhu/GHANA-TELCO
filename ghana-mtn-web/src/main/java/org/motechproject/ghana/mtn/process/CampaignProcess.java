@@ -17,8 +17,8 @@ import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_
 public class CampaignProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private MessageCampaignService campaignService;
     private RollOverWaitSchedule rollOverWaitSchedule;
-    private static final String DATE_MARKER = "${d}";
-    private static SimpleDateFormat friendlyDateFormatter = new SimpleDateFormat("EEE, MMM d, ''yy");
+    public static final String DATE_MARKER = "${d}";
+    public static SimpleDateFormat friendlyDateFormatter = new SimpleDateFormat("EEE, MMM d, ''yy");
 
     @Autowired
     public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService, RollOverWaitSchedule rollOverWaitSchedule) {
