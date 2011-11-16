@@ -24,10 +24,7 @@ import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
-import org.quartz.CronTrigger;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -51,6 +48,7 @@ import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIG
 
 public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
+    public static final String REPEAT = "-repeat";
     @Autowired
     protected SubscriptionController subscriptionController;
     @Autowired
@@ -171,24 +169,25 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     }
 
     protected void assertMonthlyBillingSchedule(Subscription subscription) {
-        assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT);
+        assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
         assertBillingCron(subscription, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
     }
 
     protected void assertDailyBillingSchedule(Subscription subscription) {
-        assertBillingSchedule(subscription, DEFAULTED_DAILY_SCHEDULE);
-        assertBillingCron(subscription, getJobId(DEFAULTED_DAILY_SCHEDULE, subscription.subscriberNumber(), subscription.getProgramType()));
+        String jobId = getJobId(DEFAULTED_DAILY_SCHEDULE, subscription.subscriberNumber(), subscription.getProgramType()) + REPEAT;
+        assertBillingSchedule(subscription, DEFAULTED_DAILY_SCHEDULE, jobId);
+        assertDefaultedBillingTrigger(jobId, (long) 60 * 24 * 60 * 1000);
     }
 
     protected void assertWeeklyBillingSchedule(Subscription subscription) {
-        assertBillingSchedule(subscription, DEFAULTED_WEEKLY_SCHEDULE);
-        assertBillingCron(subscription, getJobId(DEFAULTED_WEEKLY_SCHEDULE, subscription.subscriberNumber(), subscription.getProgramType()));
+        String jobId = getJobId(DEFAULTED_WEEKLY_SCHEDULE, subscription.subscriberNumber(), subscription.getProgramType()) + REPEAT;
+        assertBillingSchedule(subscription, DEFAULTED_WEEKLY_SCHEDULE, jobId);
+        assertDefaultedBillingTrigger(jobId, (long) 60 * 24 * 60 * 1000 * 7);
     }
 
-    private void assertBillingSchedule(Subscription subscription, String billingScheduleSubject) {
+    private void assertBillingSchedule(Subscription subscription, String billingScheduleSubject, String jobId) {
         try {
             String subscriberNumber = subscription.subscriberNumber();
-            String jobId = getJobId(billingScheduleSubject, subscriberNumber, subscription.getProgramType());
             JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
             JobDataMap map = jobDetail.getJobDataMap();
             assertThat(map.get(EXTERNAL_ID_KEY).toString(), Matchers.is(subscriberNumber));
@@ -212,8 +211,17 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         }
     }
 
+    private void assertDefaultedBillingTrigger(String jobId, Long repeatInterval) {
+        try {
+            SimpleTrigger simpleTrigger = (SimpleTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
+            assertThat(simpleTrigger.getRepeatInterval(), is(repeatInterval));
+        } catch (SchedulerException e) {
+            throw new AssertionError(e);
+        }
+    }
+
     protected void assertMonthlyBillingScheduleAndAccount(Subscription subscription) {
-        assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT);
+        assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
         assertBillAccount(subscription.subscriberNumber(), subscription.getProgramType());
         assertBillAudit(subscription.subscriberNumber(), subscription.getProgramType());
     }
