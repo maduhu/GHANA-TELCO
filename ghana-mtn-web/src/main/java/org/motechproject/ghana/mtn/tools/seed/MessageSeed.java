@@ -27,7 +27,7 @@ public class MessageSeed extends Seed {
 
     private void addEnrolment() {
         save(REQUEST_FAILURE, "Sorry we are having trouble processing your request.");
-        save(ENROLLMENT_SUCCESS, "Welcome to Mobile Midwife ${p} Program. You are now enrolled & will receive SMSs full of great info every Mon,Weds &Fri. To stop these messages send STOP.");
+        save(ENROLLMENT_SUCCESS, "Welcome to Mobile Midwife ${p} Program. You are now enrolled & will receive SMSs from ${d} with full of great info every Mon,Weds &Fri. To stop these messages send STOP.");
         save(ENROLLMENT_STOPPED, "Your Mobile Midwife ${p} Program has ended. Thanks for using the program.");
         save(ENROLLMENT_ROLLOVER, "You have successfully been rolled over to the Mobile Midwife ${p} program.");
         save(ACTIVE_SUBSCRIPTION_PRESENT, "You already have an active ${p} Program Subscription. Please wait for the program to complete, or stop it to start a new one.");

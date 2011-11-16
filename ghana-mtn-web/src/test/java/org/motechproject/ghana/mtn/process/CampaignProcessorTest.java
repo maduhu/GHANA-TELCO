@@ -49,6 +49,7 @@ public class CampaignProcessorTest {
         Subscription subscription = mockSubscription(subscriberNumber);
         CampaignRequest campaignRequest = new CampaignRequest();
         when(subscription.createCampaignRequest()).thenReturn(campaignRequest);
+        when(subscription.getCycleStartDate()).thenReturn(DateUtil.now());
         when(messageBundle.get(MessageBundle.ENROLLMENT_SUCCESS)).thenReturn(message);
 
         Boolean reply = campaign.startFor(subscription);

@@ -1,11 +1,14 @@
 package org.motechproject.ghana.mtn.process;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
 
 import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
@@ -14,6 +17,8 @@ import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_
 public class CampaignProcess extends BaseSubscriptionProcess implements ISubscriptionFlowProcess {
     private MessageCampaignService campaignService;
     private RollOverWaitSchedule rollOverWaitSchedule;
+    private static final String DATE_MARKER = "${d}";
+    private static SimpleDateFormat friendlyDateFormatter = new SimpleDateFormat("EEE, MMM d, ''yy");
 
     @Autowired
     public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService, RollOverWaitSchedule rollOverWaitSchedule) {
@@ -25,8 +30,12 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
     @Override
     public Boolean startFor(Subscription subscription) {
         campaignService.startFor(subscription.createCampaignRequest());
-        sendMessage(subscription, messageFor(ENROLLMENT_SUCCESS));
+        sendMessage(subscription, getSuccessMessage(subscription));
         return true;
+    }
+
+    private String getSuccessMessage(Subscription subscription) {
+        return StringUtils.replace(messageFor(ENROLLMENT_SUCCESS), DATE_MARKER, friendlyDateFormatter.format(subscription.getCycleStartDate().toDate()));
     }
 
     @Override
