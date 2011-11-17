@@ -1,10 +1,7 @@
 package org.motechproject.ghana.mtn.process;
 
 import org.joda.time.DateTime;
-import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingCycleRollOverRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
+import org.motechproject.ghana.mtn.billing.dto.*;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
@@ -36,9 +33,9 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
     public Boolean startFor(Subscription subscription) {
         if (subscription.nextBillingDate().isBefore(subscription.getSubscriptionEndDate())) {
             BillingCycleRequest request = billingRequest(subscription);
-            return startFor(subscription, request, MessageBundle.BILLING_SUCCESS);
-        }
-        return true;
+            return startFor(subscription, request, BILLING_SUCCESS);
+        } else
+            return chargeFee(subscription);
     }
 
     @Override
@@ -93,6 +90,13 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
     private Boolean startFor(Subscription subscription, BillingCycleRequest request, String msgKey) {
         BillingServiceResponse<CustomerBill> response = billingService.chargeAndStartBilling(request);
         String successMsg = response.hasErrors() ? null : format(messageFor(msgKey), response.getValue().amountCharged());
+        return handleResponse(subscription, response, successMsg);
+    }
+
+    private Boolean chargeFee(Subscription subscription) {
+        BillingServiceResponse<CustomerBill> response = billingService.chargeProgramFee(new BillingServiceRequest(subscription.subscriberNumber(),
+                subscription.getProgramType()));
+        String successMsg = response.hasErrors() ? null : format(messageFor(BILLING_SUCCESS), response.getValue().amountCharged());
         return handleResponse(subscription, response, successMsg);
     }
 

@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.controller;
 
 import org.drools.core.util.StringUtils;
+import org.joda.time.DateTime;
 import org.motechproject.ghana.mtn.billing.domain.BillAudit;
 import org.motechproject.ghana.mtn.billing.repository.AllBillAudits;
 import org.motechproject.ghana.mtn.domain.IProgramType;
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.sort;
 import static java.util.Arrays.asList;
 
 @Controller
@@ -34,7 +35,7 @@ public class AuditController {
 
     @RequestMapping("/audits/sms")
     public void showAllSMSAudits(HttpServletResponse response) throws IOException {
-        List<SMSAudit> messageAudits = reverse(allProgramMessageAudits.getAll());
+        List<SMSAudit> messageAudits = sort(allProgramMessageAudits.getAll(), on(SMSAudit.class).getSentTime(), sortComparator());
 
         StringBuilder builder = new StringBuilder();
         builder.append("<div id='server_time'>" + DateUtil.now() + "</div>");
@@ -50,24 +51,9 @@ public class AuditController {
         response.getWriter().write(builder.toString());
     }
 
-    private <T> List<T> reverse(List<T> list) {
-        Collections.sort(list, new Comparator<T>() {
-            @Override
-            public int compare(T o1, T o2) {
-
-                Date o1SentTime = ((SMSAudit) o1).getSentTime().toDate();
-                Date o2SentTime = ((SMSAudit) o2).getSentTime().toDate();
-                if (o1SentTime.getTime() < o2SentTime.getTime()) return 1;
-                else if (o1SentTime.getTime() > o2SentTime.getTime()) return -1;
-                else return 0;
-            }
-        });
-        return list;
-    }
-
     @RequestMapping("/audits/bill")
     public void showAllBillAudits(HttpServletResponse response) throws IOException {
-        List<BillAudit> billAudits = reverse(allBillAudits.getAll());
+        List<BillAudit> billAudits = sort(allBillAudits.getAll(), on(BillAudit.class).getDate(), sortComparator());
 
         StringBuilder builder = new StringBuilder();
         builder.append("<div id='server_time'>" + DateUtil.now() + "</div>");
@@ -89,6 +75,15 @@ public class AuditController {
         writer.write(getBillAuditsForSubscriptions(allSubscriptions.getAllActiveSubscriptions(IProgramType.PREGNANCY)));
         title(writer, IProgramType.CHILDCARE);
         writer.write(getBillAuditsForSubscriptions(allSubscriptions.getAllActiveSubscriptions(IProgramType.CHILDCARE)));
+    }
+
+    private Comparator<DateTime> sortComparator() {
+        return new Comparator<DateTime>() {
+            @Override
+            public int compare(DateTime o1, DateTime o2) {
+                return o2.compareTo(o1);
+            }
+        };
     }
 
     private void title(PrintWriter writer, String programName) {

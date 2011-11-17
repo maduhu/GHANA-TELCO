@@ -7,10 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.TestData;
-import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingCycleRollOverRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.dto.CustomerBill;
+import org.motechproject.ghana.mtn.billing.dto.*;
 import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
@@ -21,16 +18,17 @@ import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.ghana.mtn.validation.ValidationError;
+import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.ghana.mtn.domain.MessageBundle.BILLING_ROLLOVER;
-import static org.motechproject.ghana.mtn.domain.MessageBundle.PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -309,9 +307,36 @@ public class BillingCycleProcessTest {
     }
 
     @Test
-    public void shouldNotStartMonthlyBillingScheduleForProgramThatEndsEvenBeForeAMonth() {
-        billing.startFor(subscriptionBuilder(32, "0987654321", newDateTime(DateTime.now().toDate()), pregnancyProgramType).build().updateCycleInfo());
-        verifyZeroInteractions(billingService);
+    public void shouldNotStartMonthlyBillingScheduleAndChargeCustomerOnceForProgramThatEndsEvenBeForeAMonth() {
+
+        ArgumentCaptor<BillingServiceRequest> captor = ArgumentCaptor.forClass(BillingServiceRequest.class);
+        String mobileNumber = "0987654321";
+        String message = "message";
+        when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse(new CustomerBill("charged", new Money(100d))));
+        when(messageBundle.get(BILLING_SUCCESS)).thenReturn(message);
+        Boolean result = billing.startFor(subscriptionBuilder(32, mobileNumber, newDateTime(DateTime.now().toDate()), pregnancyProgramType).build().updateCycleInfo());
+
+        assertTrue(result);
+        verify(billingService, never()).startBilling(Matchers.<BillingCycleRequest>any());
+        verify(billingService).chargeProgramFee(captor.capture());
+        assertEquals(pregnancyProgramType, captor.getValue().getProgramType());
+        assertEquals(mobileNumber, captor.getValue().getMobileNumber());
+    }
+    
+    @Test
+    public void shouldNotStartMonthlyBillingScheduleAndReturnFalseWhenChargeCustomerFails_ForProgramThatEndsEvenBeforeAMonth() {
+
+        ArgumentCaptor<BillingServiceRequest> captor = ArgumentCaptor.forClass(BillingServiceRequest.class);
+        String mobileNumber = "0987654321";
+        String message = "errmessage";
+        when(billingService.chargeProgramFee(Matchers.<BillingServiceRequest>any())).thenReturn(new BillingServiceResponse().addError(ValidationError.INSUFFICIENT_FUNDS_DURING_REGISTRATION));
+        when(messageBundle.get(asList(ValidationError.INSUFFICIENT_FUNDS_DURING_REGISTRATION))).thenReturn(message);
+        Boolean result = billing.startFor(subscriptionBuilder(32, mobileNumber, newDateTime(DateTime.now().toDate()), pregnancyProgramType).build().updateCycleInfo());
+
+        assertFalse(result);
+        verify(billingService, never()).startBilling(Matchers.<BillingCycleRequest>any());
+        verify(billingService).chargeProgramFee(captor.capture());
+        assertSMSRequest(mobileNumber, message, pregnancyProgramType.getProgramKey());
     }
 
     private DateTime newDateWithStartDayOfTime(int year, int month, int day) {
