@@ -34,8 +34,11 @@ public class BillingCycleProcess extends BaseSubscriptionProcess implements ISub
 
     @Override
     public Boolean startFor(Subscription subscription) {
-        BillingCycleRequest request = billingRequest(subscription);
-        return startFor(subscription, request, MessageBundle.BILLING_SUCCESS);
+        if (subscription.nextBillingDate().isBefore(subscription.getSubscriptionEndDate())) {
+            BillingCycleRequest request = billingRequest(subscription);
+            return startFor(subscription, request, MessageBundle.BILLING_SUCCESS);
+        }
+        return true;
     }
 
     @Override

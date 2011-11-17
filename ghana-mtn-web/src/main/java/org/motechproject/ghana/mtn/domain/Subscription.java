@@ -214,4 +214,8 @@ public class Subscription extends MotechAuditableDataObject {
     public DateTime getSubscriptionEndDate() {
         return subscriptionEndDate;
     }
+
+    public DateTime nextBillingDate() {
+        return getBillingStartDate().monthOfYear().addToCopy(1);
+    }
 }
