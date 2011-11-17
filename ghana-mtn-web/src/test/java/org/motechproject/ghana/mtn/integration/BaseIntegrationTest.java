@@ -134,8 +134,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
         subscription = subscription(subscriberNumber, programKey);
 
-        RegisterProgramSMS registerSms = registerProgramMessageParser.parse(inputMessage, subscriberNumber);
-        assertEnrollmentDetails(subscription, registerSms);
+        assertEnrollmentDetails(subscription, registerProgramMessageParser.parse(inputMessage, subscriberNumber));
         return subscription;
     }
 
