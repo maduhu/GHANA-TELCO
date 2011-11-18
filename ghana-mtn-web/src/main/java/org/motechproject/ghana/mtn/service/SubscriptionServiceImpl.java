@@ -83,6 +83,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE,
                 new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
                 DateUtil.now());
+
         rollOver(subscription, rollOverSubscription);
     }
 
