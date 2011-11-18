@@ -89,7 +89,7 @@ public class BillingServiceIntegrationTest {
         assertThat(jobDetail.getJobDataMap().get("Program").toString(), is(getPregnancyProgramType().getProgramName()));
         assertThat(jobDetail.getJobDataMap().get("eventType").toString(), is(BillingScheduler.MONTHLY_BILLING_SCHEDULE_SUBJECT));
 
-        assertThat(cronTrigger.getCronExpression(), is("0 0 5 11 * ?"));
+        assertThat(cronTrigger.getCronExpression(), is("0 58 23 11 * ?"));
     }
 
     public IProgramType getPregnancyProgramType() {

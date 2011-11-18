@@ -119,4 +119,14 @@ public class BillingServiceImplTest {
         assertEquals(BillingServiceImpl.BILLING_SCHEDULE_STOPPED, response.getValue());
     }
 
+    @Test
+    public void shouldCallSchedulerForRollOverBilling(){
+        BillingCycleRequest request = mock(BillingCycleRequest.class);
+
+        BillingServiceResponse response = service.rollOverBilling(request);
+
+        verify(scheduler).startFor(request);
+        assertEquals(BillingServiceImpl.BILLING_ROLLED_OVER, response.getValue());
+    }
+
 }

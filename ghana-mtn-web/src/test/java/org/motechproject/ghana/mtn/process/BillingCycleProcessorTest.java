@@ -176,7 +176,7 @@ public class BillingCycleProcessorTest {
     }
 
     @Test
-    public void shouldSourceBillingCycleAndStartTargetBilling() {
+    public void shouldStopSourceBillingCycleAndStartTargetBilling() {
         DateTime now = DateUtil.now();
         String mobileNumber = "123";
         String sourceProgram = "source_program";
@@ -200,14 +200,15 @@ public class BillingCycleProcessorTest {
         when(targetResponse.getValue()).thenReturn(targetBill);
 
         when(billingService.stopBilling(any(BillingCycleRequest.class))).thenReturn(sourceResponse);
-        when(billingService.startBilling(any(BillingCycleRequest.class))).thenReturn(targetResponse);
+        when(billingService.rollOverBilling(any(BillingCycleRequest.class))).thenReturn(targetResponse);
+
         when(messageBundle.get(MessageBundle.BILLING_STOPPED)).thenReturn("billing stopped");
         when(messageBundle.get(MessageBundle.BILLING_ROLLOVER)).thenReturn("billing rolled over");
 
         billing.rollOver(sourceSubscription, targetSubscription);
 
         ArgumentCaptor<BillingCycleRequest> captor = ArgumentCaptor.forClass(BillingCycleRequest.class);
-        verify(billingService).startBilling(captor.capture());
+        verify(billingService).rollOverBilling(captor.capture());
         BillingCycleRequest captured = captor.getValue();
 
         assertEquals(now, captured.getCycleStartDate());
