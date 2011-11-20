@@ -51,7 +51,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     }
 
     protected void enroll(String subscriberNumber, String inputMessage) {
-        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(inputMessage, "9500012345");
+        SubscriptionRequest subscriptionRequest = createSubscriptionRequest(inputMessage, subscriberNumber);
         subscriptionController.handle(subscriptionRequest);
 
         assertEquals(1, allSubscriptions.getAllActiveSubscriptionsForSubscriber(subscriberNumber));

@@ -42,6 +42,7 @@
                     <option value="sms">SMSAudit</option>
                     <option value="bill">BillAudit</option>
                 </select>
+                <input id="refresh_audit" type="button" value="Refresh"/>
             </form>
             <div id="audit_table"></div>
         </div>

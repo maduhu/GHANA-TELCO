@@ -34,6 +34,7 @@ $.Enrollment = function() {
         $('#submit_enrollment').click(hitServer);
         hitAudit();
         $('#audit_options').change(hitAudit);
+        $('#refresh_audit').click(hitAudit);
     };
 
     $(bootstrap);
