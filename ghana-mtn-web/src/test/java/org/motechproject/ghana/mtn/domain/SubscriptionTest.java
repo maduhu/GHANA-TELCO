@@ -4,10 +4,10 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.utils.DateUtils;
+import org.motechproject.model.DayOfWeek;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static junit.framework.Assert.*;
@@ -148,7 +148,7 @@ public class SubscriptionTest {
     public void shouldReturnCurrentDay() {
         Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), programType("Pregnancy"));
         mockCurrentDate(new DateTime(2012, 1, 1, 1, 1));
-        assertEquals(Day.SUNDAY, sub1.currentDay());
+        assertEquals(DayOfWeek.Sunday, sub1.currentDay());
 
     }
 
@@ -170,7 +170,7 @@ public class SubscriptionTest {
     }
 
     private Subscription subscription(String mobileNumber, DateTime registeredDate, Week startWeek, ProgramType program) {
-        Subscription subscription = new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, Day.MONDAY))
+        Subscription subscription = new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, DayOfWeek.Monday))
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program).build();
         ReflectionTestUtils.setField(subscription, "dateUtils", dateUtils);

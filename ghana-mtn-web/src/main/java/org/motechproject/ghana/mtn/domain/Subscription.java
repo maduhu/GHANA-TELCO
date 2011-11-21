@@ -4,10 +4,10 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.*;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.utils.DateUtils;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
@@ -150,9 +150,9 @@ public class Subscription extends MotechAuditableDataObject {
         this.subscriptionEndDate = this.cycleStartDate.dayOfMonth().addToCopy(daysToFirstSaturday + weeksRemaining * 7);
     }
 
-    public Day currentDay() {
+    public DayOfWeek currentDay() {
         String day = dateUtils.now().dayOfWeek().getAsText();
-        return Day.valueOf(day.toUpperCase());
+        return DayOfWeek.valueOf(day);
     }
 
     public String programName() {
@@ -195,7 +195,7 @@ public class Subscription extends MotechAuditableDataObject {
     @JsonIgnore
     public Boolean isCompleted() {
         Week week = currentWeek();
-        return week != null && week.getNumber() >= programType.getMaxWeek() && Day.FRIDAY.equals(currentDay());
+        return week != null && week.getNumber() >= programType.getMaxWeek() && DayOfWeek.Friday.equals(currentDay());
     }
 
     public Boolean canRollOff() {

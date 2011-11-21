@@ -3,9 +3,9 @@ package org.motechproject.ghana.mtn.domain;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public class ProgramMessage extends MotechAuditableDataObject {
         this.weekAndDay = weekAndDay;
     }
 
-    public boolean isOf(Week week, Day day) {
+    public boolean isOf(Week week, DayOfWeek day) {
         return this.weekAndDay.getWeek().equals(week) && this.weekAndDay.getDay().equals(day);
     }
 

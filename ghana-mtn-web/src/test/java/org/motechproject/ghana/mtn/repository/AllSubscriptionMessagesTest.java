@@ -7,9 +7,9 @@ import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
+import org.motechproject.model.DayOfWeek;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.assertEquals;
@@ -27,10 +27,10 @@ public class AllSubscriptionMessagesTest extends BaseSpringTestContext {
         addAndMarkForDeletion(allProgramTypes, type);
 
         Week week = new Week(12);
-        ProgramMessage subscriptionMessage = new ProgramMessage(programKey,"content", new WeekAndDay(week, Day.FRIDAY));
+        ProgramMessage subscriptionMessage = new ProgramMessage(programKey,"content", new WeekAndDay(week, DayOfWeek.Friday));
         addAndMarkForDeletion(allSubscriptionMessages, subscriptionMessage);
 
-        ProgramMessage dbSubscriptionMessage = allSubscriptionMessages.findBy(type, week, Day.FRIDAY);
+        ProgramMessage dbSubscriptionMessage = allSubscriptionMessages.findBy(type, week, DayOfWeek.Friday);
         assertEquals(subscriptionMessage.getContent(),dbSubscriptionMessage.getContent());
     }
 }

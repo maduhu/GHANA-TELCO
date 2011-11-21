@@ -4,9 +4,9 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
+import org.motechproject.model.DayOfWeek;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
@@ -18,7 +18,7 @@ public class SubscriptionBuilderTest {
         DateTime dateTime = new DateTime();
         Integer weekNumber = 5;
         Subscription subscription = new SubscriptionBuilder().withRegistrationDate(dateTime).
-                withStartWeekAndDay(new WeekAndDay(new Week(weekNumber), Day.MONDAY)).
+                withStartWeekAndDay(new WeekAndDay(new Week(weekNumber), DayOfWeek.Monday)).
                 withStatus(SubscriptionStatus.ACTIVE).build();
 
         assertThat(subscription. getRegistrationDate(), is(dateTime));

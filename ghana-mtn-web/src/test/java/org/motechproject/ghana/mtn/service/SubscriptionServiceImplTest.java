@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.motechproject.ghana.mtn.TestData;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.process.BillingCycleProcess;
@@ -18,6 +17,7 @@ import org.motechproject.ghana.mtn.process.CampaignProcess;
 import org.motechproject.ghana.mtn.process.PersistenceProcess;
 import org.motechproject.ghana.mtn.process.ValidationProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.util.DateUtil;
 
 import java.util.Date;
@@ -89,7 +89,7 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldInvokeAllProcessInvolvedInRollOverProcessForEvent() {
         Subscription subscription = spy(new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
-                .withSubscriber(new Subscriber("9850012345")).withType(pregnancyProgramType).withStartWeekAndDay(new WeekAndDay(new Week(36), Day.FRIDAY))
+                .withSubscriber(new Subscriber("9850012345")).withType(pregnancyProgramType).withStartWeekAndDay(new WeekAndDay(new Week(36), DayOfWeek.Friday))
                 .build().updateCycleInfo());
         when(subscription.isCompleted()).thenReturn(true);
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
@@ -250,7 +250,7 @@ public class SubscriptionServiceImplTest {
         when(source.getProgramType()).thenReturn(programType);
         when(source.rollOverProgramType()).thenReturn(programType);
         when(source.currentWeek()).thenReturn(week);
-        when(source.currentDay()).thenReturn(Day.SUNDAY);
+        when(source.currentDay()).thenReturn(DayOfWeek.Sunday);
         when(source.isCompleted()).thenReturn(true);
         when(source.canRollOff()).thenReturn(true);
         when(source.isPaymentDefaulted()).thenReturn(false);

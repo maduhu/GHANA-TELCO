@@ -10,11 +10,11 @@ import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.model.DayOfWeek;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -44,7 +44,7 @@ public class MessengerProcessorTest {
         when(subscription.currentWeek()).thenReturn(null);
 
         messenger.process(subscription);
-        verify(allProgramMessages, never()).findBy(Matchers.<ProgramType>any(), Matchers.<Week>any(), Matchers.<Day>any());
+        verify(allProgramMessages, never()).findBy(Matchers.<ProgramType>any(), Matchers.<Week>any(), Matchers.<DayOfWeek>any());
         verifyZeroInteractions(allSubscriptions);
     }
     
@@ -54,7 +54,7 @@ public class MessengerProcessorTest {
         ProgramType programType = mock(ProgramType.class);
         ProgramMessage programMessage = mock(ProgramMessage.class);
         Week currentWeek = new Week();
-        Day currentDay = Day.FRIDAY;
+        DayOfWeek currentDay = DayOfWeek.Friday;
         String mobileNumber = "123";
         String content = "content";
 

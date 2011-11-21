@@ -5,8 +5,8 @@ import org.ektorp.support.GenerateView;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.motechproject.model.DayOfWeek;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -21,7 +21,7 @@ public class AllProgramMessages extends MotechAuditableRepository<ProgramMessage
         super(ProgramMessage.class, db);
     }
 
-    public ProgramMessage findBy(ProgramType type, Week week, Day day) {
+    public ProgramMessage findBy(ProgramType type, Week week, DayOfWeek day) {
         List<ProgramMessage> messages = findByProgramKey(type.getProgramKey());
         for (ProgramMessage message : messages)
             if (message.isOf(week, day)) return message;

@@ -8,11 +8,11 @@ import org.motechproject.ghana.mtn.BaseSpringTestContext;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
 import org.motechproject.ghana.mtn.matchers.SubscriptionMatcher;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -56,7 +56,7 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
         childCare = programTypes.findByCampaignShortCode("C");
 
         subscription = new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
-                .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
+                .withStartWeekAndDay(new WeekAndDay(new Week(6), DayOfWeek.Monday)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(new Subscriber(mobileNumber))
                 .withType(pregnancy).build();
         subscription.updateCycleInfo();
@@ -76,7 +76,7 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
         ProgramType programType = new ProgramTypeBuilder()
                 .withShortCode("P").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
         Subscription subscription = new SubscriptionBuilder().withRegistrationDate(new DateTime())
-                .withStartWeekAndDay(new WeekAndDay(new Week(6), Day.MONDAY)).withStatus(SubscriptionStatus.ACTIVE)
+                .withStartWeekAndDay(new WeekAndDay(new Week(6), DayOfWeek.Monday)).withStatus(SubscriptionStatus.ACTIVE)
                 .withSubscriber(subscriber1)
                 .withType(programType).build();
         subscription.updateCycleInfo();
@@ -143,7 +143,7 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
     }
 
     private SubscriptionBuilder subscription(String mobileNumber, DateTime registeredDate, Week startWeek, ProgramType program) {
-        return new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, Day.MONDAY))
+        return new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, DayOfWeek.Monday))
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program);
     }

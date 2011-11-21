@@ -15,13 +15,13 @@ import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.ghana.mtn.vo.Money;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTimeUnit;
 import org.powermock.api.mockito.PowerMockito;
@@ -221,7 +221,7 @@ public class BillingServiceMediatorTest {
     }
 
     private Subscription subscription(String mobileNumber, DateTime registeredDate, Week startWeek, ProgramType program) {
-        Subscription subscription = new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, Day.MONDAY))
+        Subscription subscription = new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, DayOfWeek.Monday))
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program).build();
         subscription.updateCycleInfo();

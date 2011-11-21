@@ -2,11 +2,11 @@ package org.motechproject.ghana.mtn.tools.seed;
 
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.vo.Day;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
+import org.motechproject.model.DayOfWeek;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,9 +38,9 @@ public class ProgramMessageSeed extends Seed {
         for (int i = programType.getMinWeek(); i <= programType.getMaxWeek(); i++) {
             String programKey = programType.getProgramKey();
             Week week = new Week(i);
-            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + Day.MONDAY.name(), new WeekAndDay(week, Day.MONDAY)));
-            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + Day.WEDNESDAY.name(), new WeekAndDay(week, Day.WEDNESDAY)));
-            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + Day.FRIDAY.name(), new WeekAndDay(week, Day.FRIDAY)));
+            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + DayOfWeek.Monday.name(), new WeekAndDay(week, DayOfWeek.Monday)));
+            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + DayOfWeek.Wednesday.name(), new WeekAndDay(week, DayOfWeek.Wednesday)));
+            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + DayOfWeek.Friday.name(), new WeekAndDay(week, DayOfWeek.Friday)));
         }
     }
 
