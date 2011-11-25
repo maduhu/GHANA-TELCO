@@ -19,7 +19,13 @@
     <logger name="org.springframework">
         <level value="warn"/>
     </logger>
+     <logger name="metrics">
+        <level value="warn"/>
+    </logger>
     <logger name="org.ektorp">
+        <level value="warn"/>
+    </logger>
+     <logger name="org.quartz">
         <level value="warn"/>
     </logger>
     <logger name="org.motechproject">
