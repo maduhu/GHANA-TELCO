@@ -1,6 +1,5 @@
 package org.motechproject.ghana.mtn.parser;
 
-import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.SMS;
 import org.motechproject.ghana.mtn.domain.StopSMS;
@@ -19,7 +18,7 @@ public class StopMessageParser extends MessageParser {
 
     public static final String STOP_PATTERN = "^(%s)\\s?(\\s([%s]))?$";
 
-    public SMS<IProgramType> parse(String input, String enrolledMobileNumber) {
+    public SMS<ProgramType> parse(String input, String enrolledMobileNumber) {
         Matcher matcher = pattern().matcher(input.trim());
         if (matcher.find()) {
             String program = matcher.group(3);

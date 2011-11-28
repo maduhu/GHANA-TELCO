@@ -5,9 +5,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceRequest;
-import org.motechproject.ghana.mtn.billing.dto.BillingServiceResponse;
-import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ShortCodeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
@@ -17,10 +14,12 @@ import org.motechproject.ghana.mtn.matchers.SMSServiceRequestMatcher;
 import org.motechproject.ghana.mtn.repository.AllShortCodes;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.motechproject.util.DateUtil;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -31,9 +30,9 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.TestData.childProgramType;
 import static org.motechproject.ghana.mtn.TestData.pregnancyProgramType;
-import static org.motechproject.ghana.mtn.domain.IProgramType.CHILDCARE;
-import static org.motechproject.ghana.mtn.domain.IProgramType.PREGNANCY;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
+import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
 import static org.motechproject.ghana.mtn.domain.ShortCode.RETAIN_EXISTING_CHILDCARE_PROGRAM;
 import static org.motechproject.ghana.mtn.domain.ShortCode.USE_ROLLOVER_TO_CHILDCARE_PROGRAM;
 
@@ -47,8 +46,6 @@ public class ValidationProcessorTest {
     @Mock
     private AllSubscriptions allSubscriptions;
     @Mock
-    private BillingService billingService;
-    @Mock
     private AllShortCodes allShortCodes;
 
     public final ProgramType childCareProgramType = pregnancyProgramType().build();
@@ -57,7 +54,7 @@ public class ValidationProcessorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        validation = new ValidationProcess(smsService, messageBundle, allSubscriptions, billingService, allShortCodes);
+        validation = new ValidationProcess(smsService, messageBundle, allSubscriptions, allShortCodes);
     }
 
     @Test
@@ -102,34 +99,6 @@ public class ValidationProcessorTest {
         assertFalse(reply);
         assertSMSRequest(mobileNumber, "error msg " + programName, programKey);
     }
-
-
-    @Test
-    public void shouldReturnMessageIfUserHasNoMoney() {
-        String mobileNumber = "123";
-        String errMsg = "error msg";
-        String program = "program";
-
-        Subscription subscription = mock(Subscription.class);
-        ProgramType programType = mock(ProgramType.class);
-        List<ValidationError> errors = new ArrayList<ValidationError>();
-        BillingServiceResponse response = mock(BillingServiceResponse.class);
-
-
-        setupSubscriptionMock(mobileNumber, program, programType, subscription);
-        when(subscription.isNotValid()).thenReturn(false);
-        when(messageBundle.get(errors)).thenReturn(errMsg);
-        when(allSubscriptions.getAllActiveSubscriptionsForSubscriber(mobileNumber)).thenReturn(Collections.EMPTY_LIST);
-        when(response.hasErrors()).thenReturn(true);
-        when(response.getValidationErrors()).thenReturn(errors);
-        when(billingService.checkIfUserHasFunds(any(BillingServiceRequest.class))).thenReturn(response);
-
-        Boolean reply = validation.startFor(subscription);
-
-        assertFalse(reply);
-        assertSMSRequest(mobileNumber, errMsg, program);
-    }
-
 
     @Test
     public void shouldAskTheSourceSubscriptionIfItCanRollOver() {
@@ -233,7 +202,7 @@ public class ValidationProcessorTest {
 
         Subscription pregnancySubscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
         Subscription childcareSubscription = subscriptionBuilder(subscriberNumber, childCareProgramType).build();
-        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(existingChildcareSubscription);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, CHILDCARE)).thenReturn(existingChildcareSubscription);
 
         Boolean actualValidation = validation.rollOver(pregnancySubscription, childcareSubscription);
         assertTrue(actualValidation);

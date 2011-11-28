@@ -54,7 +54,7 @@ public class AllBillAccountsTest extends RepositoryTest {
 
             @Override
             public String getProgramKey() {
-                return PREGNANCY;
+                return "PREGNANCY";
             }
 
             @Override
@@ -88,7 +88,7 @@ public class AllBillAccountsTest extends RepositoryTest {
 
             @Override
             public String getProgramKey() {
-                return CHILDCARE;
+                return "CHILDCARE";
             }
 
             @Override

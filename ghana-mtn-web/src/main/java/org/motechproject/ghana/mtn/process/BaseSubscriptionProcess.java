@@ -5,9 +5,6 @@ import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.ghana.mtn.validation.ValidationError;
-
-import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.replace;
 
@@ -23,10 +20,6 @@ public abstract class BaseSubscriptionProcess {
 
     protected String messageFor(String key) {
         return messageBundle.get(key);
-    }
-
-    protected String messageFor(List<ValidationError> validationErrors) {
-        return messageBundle.get(validationErrors);
     }
 
     protected void sendMessage(Subscription subscription, String content) {

@@ -14,9 +14,8 @@
 </div>
 <div id="tabs">
     <ul>
-        <li><a id="tab1" href="#tabs-1">Input</a></li>
-        <li><a id="tab2" href="#tabs-2">MTN</a></li>
-        <li><a id="tab3" href="#tabs-3">Bill Schedules</a></li>
+        <li><a id="tab1" href="#tabs-1">Input</a></li>       
+
     </ul>
     <div id="tabs-1">
         <div class="enrollment_box">
@@ -41,7 +40,6 @@
                 Audits :
                 <select id="audit_options">
                     <option value="sms">SMSAudit</option>
-                    <option value="bill">BillAudit</option>
                 </select>
                 <input id="refresh_audit" type="button" value="Refresh"/>
             </form>
@@ -49,31 +47,7 @@
         </div>
     </div>
     <div id="tabs-2">
-        <div class="mtn_user_box">
-            <div id="mtn_table_box"></div>
-            <div id="mtn_user_edit">
-                <form id="mtn_user_edit_form">
-                    <table>
-                        <tr>
-                            <td><label for="mtn_user_no">Number:</label></td>
-                            <td><input id="mtn_user_no" name="mtnUserNumber" type="text"/></td>
-                        </tr>
-                        <tr>
-                            <td><label for="mtn_user_balance">Balance:</label></td>
-                            <td><input id="mtn_user_balance" name="mtnUserBalance" type="text"/></td>
-                        </tr>
-                        <tr>
-                            <td><input id="update_mtn_user" type="button" value="Add"></td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div id="tabs-3">
-        <div class="mtn_bill_schedules">
-            <div id="mtn_bill_table_box"></div>
-        </div>
+
     </div>
 </div>
 </body>

@@ -4,13 +4,13 @@ import org.ektorp.DbPath;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.ghana.mtn.billing.domain.BillAccount;
-import org.motechproject.ghana.mtn.billing.domain.MTNMockUser;
-import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.Subscriber;
+import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
-import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,15 +27,12 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     AllMessageCampaigns allMessageCampaigns;
-    private MTNMockUser validMtnMockUser = new MTNMockUser("0950001234", new Money(10D));
 
     @Before
     public void setUp() {
         addSeedData();
         addAndMarkForDeletion(allProgramTypes, pregnancyProgramType);
         addAndMarkForDeletion(allProgramTypes, childCarePregnancyType);        
-        addAndMarkForDeletion(allMtnMock, mtnMockUser);
-        addAndMarkForDeletion(allMtnMock, validMtnMockUser);
     }
 
     @Test
@@ -89,8 +86,8 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void ShouldCheckTheCampaignProgramJsonForKeysDefinedInProgramType() throws IOException {
-        assertNotNull(allMessageCampaigns.get(IProgramType.PREGNANCY));
-        assertNotNull(allMessageCampaigns.get(IProgramType.CHILDCARE));
+        assertNotNull(allMessageCampaigns.get(ProgramType.PREGNANCY));
+        assertNotNull(allMessageCampaigns.get(ProgramType.CHILDCARE));
     }
 
     @After
@@ -98,7 +95,6 @@ public class RelativeServiceIntegrationTest extends BaseIntegrationTest {
         super.after();
         remove(allSubscriptions.getAll());
         remove(allSubscribers.getAll());
-        for (BillAccount billAccount : allBillAccounts.getAll()) allBillAccounts.remove(billAccount);
         removeAllQuartzJobs();
     }
 }

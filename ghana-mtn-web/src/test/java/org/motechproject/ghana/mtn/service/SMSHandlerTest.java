@@ -10,7 +10,6 @@ import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.exception.InvalidProgramException;
 import org.motechproject.ghana.mtn.process.UserMessageParserProcess;
-import org.motechproject.ghana.mtn.vo.Money;
 
 import java.io.IOException;
 
@@ -30,7 +29,7 @@ public class SMSHandlerTest {
     private SMSService smsService;
     private SMSHandler handler;
 
-    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
+    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withMinWeek(5).withMaxWeek(35).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").build();
 
     @Before
     public void setUp() {

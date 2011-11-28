@@ -1,18 +1,23 @@
 package org.motechproject.ghana.mtn.domain;
 
 import org.apache.commons.lang.math.IntRange;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.List;
 
 @TypeDiscriminator("doc.type === 'ProgramType'")
-public class ProgramType extends MotechAuditableDataObject implements IProgramType {
+public class ProgramType extends MotechAuditableDataObject {
+
+    @JsonIgnore
+    public static final String PREGNANCY = "PREGNANCY";
+    @JsonIgnore
+    public static final String CHILDCARE = "CHILDCARE";
+
     @JsonProperty("type")
     private String type = "ProgramType";
-    private Money fee;
     private Integer minWeek;
     private Integer maxWeek;
     private String programName;
@@ -61,20 +66,12 @@ public class ProgramType extends MotechAuditableDataObject implements IProgramTy
         this.maxWeek = maxWeek;
     }
 
-    public Money getFee() {
-        return fee;
-    }
-
     public String getProgramKey() {
         return programKey;
     }
 
     public void setProgramKey(String programKey) {
         this.programKey = programKey;
-    }
-
-    public void setFee(Money fee) {
-        this.fee = fee;
     }
 
     public Boolean canRollOff() {

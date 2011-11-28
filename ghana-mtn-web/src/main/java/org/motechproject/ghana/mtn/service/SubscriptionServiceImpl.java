@@ -1,11 +1,14 @@
 package org.motechproject.ghana.mtn.service;
 
-import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
-import org.motechproject.ghana.mtn.process.*;
+import org.motechproject.ghana.mtn.process.CampaignProcess;
+import org.motechproject.ghana.mtn.process.ISubscriptionFlowProcess;
+import org.motechproject.ghana.mtn.process.PersistenceProcess;
+import org.motechproject.ghana.mtn.process.ValidationProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.util.DateUtil;
@@ -22,19 +25,16 @@ import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_
 public class SubscriptionServiceImpl implements SubscriptionService {
     private AllSubscriptions allSubscriptions;
     private ValidationProcess validation;
-    private BillingCycleProcess billing;
     private PersistenceProcess persistence;
     private CampaignProcess campaign;
 
     @Autowired
     public SubscriptionServiceImpl(AllSubscriptions allSubscriptions,
                                    ValidationProcess validation,
-                                   BillingCycleProcess billing,
                                    PersistenceProcess persistence,
                                    CampaignProcess campaign) {
         this.allSubscriptions = allSubscriptions;
         this.validation = validation;
-        this.billing = billing;
         this.persistence = persistence;
         this.campaign = campaign;
     }
@@ -42,7 +42,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void start(Subscription subscription) {
         subscription.updateCycleInfo();
-        for (ISubscriptionFlowProcess process : asList(validation, billing, persistence, campaign)) {
+        for (ISubscriptionFlowProcess process : asList(validation, persistence, campaign)) {
             if (process.startFor(subscription)) continue;
             break;
         }
@@ -50,17 +50,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void stopExpired(Subscription subscription) {
-        for (ISubscriptionFlowProcess process : asList(billing, campaign, persistence)) {
+        subscription.setStatus(SubscriptionStatus.EXPIRED);
+        for (ISubscriptionFlowProcess process : asList(campaign, persistence)) {
             if (process.stopExpired(subscription)) continue;
             break;
         }
     }
 
     @Override
-    public void stopByUser(String subscriberNumber, IProgramType programType) {
+    public void stopByUser(String subscriberNumber, ProgramType programType) {
         Subscription subscription = validation.validateSubscriptionToStop(subscriberNumber, programType);
+
         if (subscription != null) {
-            for (ISubscriptionFlowProcess process : asList(billing, campaign, persistence)) {
+            subscription.setStatus(SubscriptionStatus.EXPIRED);
+            for (ISubscriptionFlowProcess process : asList(campaign, persistence)) {
                 if (process.stopByUser(subscription)) continue;
                 break;
             }
@@ -84,14 +87,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void retainOrRollOver(String subscriberNumber, boolean retainExistingChildCareSubscription) {
-        Subscription pregnancyProgramWaitingForRollOver = allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE);
-        Subscription existingChildCare = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE);
+        Subscription pregnancyProgramWaitingForRollOver = allSubscriptions.findBy(subscriberNumber, ProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE);
+        Subscription existingChildCare = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, ProgramType.CHILDCARE);
         if (retainExistingChildCareSubscription) {
-            for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
+            for (ISubscriptionFlowProcess process : asList(validation, campaign, persistence)) {
                 if (!process.retainExistingChildCare(pregnancyProgramWaitingForRollOver, existingChildCare)) break;
             }
         } else {
-            for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
+            for (ISubscriptionFlowProcess process : asList(validation, campaign, persistence)) {
                 if (!process.rollOverToNewChildCareProgram(pregnancyProgramWaitingForRollOver, rollOverSubscriptionFrom(pregnancyProgramWaitingForRollOver), existingChildCare)) break;
             }
         }
@@ -110,7 +113,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private void performRollOver(Subscription subscription) {
         Subscription rollOverSubscription = rollOverSubscriptionFrom(subscription);
 
-        for (ISubscriptionFlowProcess process : asList(validation, billing, campaign, persistence)) {
+        for (ISubscriptionFlowProcess process : asList(validation, campaign, persistence)) {
             if (process.rollOver(subscription, rollOverSubscription)) continue;
             break;
         }

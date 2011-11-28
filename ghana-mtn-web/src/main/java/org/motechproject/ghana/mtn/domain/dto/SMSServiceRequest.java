@@ -1,18 +1,18 @@
 package org.motechproject.ghana.mtn.domain.dto;
 
-import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 
 public class SMSServiceRequest {
     String mobileNumber;
     String message;
-    IProgramType programType;
+    ProgramType programType;
 
     public SMSServiceRequest(String mobileNumber, String message) {
         this.mobileNumber = mobileNumber;
         this.message = message;
     }
 
-    public SMSServiceRequest(String mobileNumber, String message, IProgramType programType) {
+    public SMSServiceRequest(String mobileNumber, String message, ProgramType programType) {
         this(mobileNumber, message);
         this.programType = programType;
     }
@@ -25,7 +25,7 @@ public class SMSServiceRequest {
         return message;
     }
 
-    public IProgramType getProgramType() {
+    public ProgramType getProgramType() {
         return programType;
     }
 

@@ -1,7 +1,6 @@
 package org.motechproject.ghana.mtn.process;
 
 import org.apache.log4j.Logger;
-import org.motechproject.ghana.mtn.billing.service.SchedulerParamsBuilder;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.MotechEvent;
@@ -11,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import static java.lang.String.format;
+import static org.motechproject.server.messagecampaign.EventKeys.EXTERNAL_ID_KEY;
 
 @Component
 public class RollOverWaitSchedule {
@@ -49,4 +50,29 @@ public class RollOverWaitSchedule {
     public void stopScheduleWaitFor(Subscription subscription) {
         scheduledService.unscheduleJob(ROLLOVER_WAIT_SCHEDULE, jobId(subscription.subscriberNumber()));
     }
+
+    private static class SchedulerParamsBuilder {
+
+        public final static String PROGRAM_KEY = "Program";
+        private HashMap<String, Object> params = new HashMap<String, Object>();
+        public HashMap<String, Object> params() {
+            return params;
+        }
+
+        public SchedulerParamsBuilder withJobId(String id) {
+            params.put(MotechSchedulerService.JOB_ID_KEY, id);
+            return this;
+        }
+
+        public SchedulerParamsBuilder withExternalId(String id) {
+            params.put(EXTERNAL_ID_KEY, id);
+            return this;
+        }
+
+        public SchedulerParamsBuilder withProgram(String program) {
+            params.put(PROGRAM_KEY, program);
+            return this;
+        }
+    }
+
 }

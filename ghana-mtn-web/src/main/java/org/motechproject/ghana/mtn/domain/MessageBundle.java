@@ -2,11 +2,8 @@ package org.motechproject.ghana.mtn.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.ghana.mtn.repository.AllMessages;
-import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class MessageBundle {
@@ -46,17 +43,5 @@ public class MessageBundle {
     public String get(String key) {
         Message message = allMessages.findBy(key);
         return message != null ? message.getContent() : StringUtils.EMPTY;
-    }
-
-    public String get(ValidationError error) {
-        return get(error.key());
-    }
-
-    public String get(List<ValidationError> errors) {
-        StringBuilder builder = new StringBuilder();
-        for (ValidationError error : errors) {
-            builder.append(get(error));
-        }
-        return builder.toString();
     }
 }

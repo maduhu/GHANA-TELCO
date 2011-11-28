@@ -2,7 +2,6 @@ package org.motechproject.ghana.mtn.tools.seed;
 
 import org.motechproject.ghana.mtn.domain.Message;
 import org.motechproject.ghana.mtn.repository.AllMessages;
-import org.motechproject.ghana.mtn.validation.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,6 @@ public class MessageSeed extends Seed {
         addBilling();
         addStop();
         addRollover();
-        addValidationError();
     }
 
     private void addEnrolment() {
@@ -55,12 +53,6 @@ public class MessageSeed extends Seed {
         save(PENDING_ROLLOVER_RETAIN_CHILDCARE, "Your pregnancy care program was terminated based on your input. Your existing child care program will continue to be active. Thanks for using the Mobile Midwife service.");
         save(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE, "Your pregnancy care program was rolled over to child care program. Your existing child care program was terminated. Thanks for using the Mobile Midwife service.");
         save(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING, "Your account will be no longer charged for your previous Mobile Midwife Child Care Program. Your account will be now charged for the new Mobile Midwife Child Care Program instead of your pregnancy program.");
-    }
-
-    private void addValidationError() {
-        save(ValidationError.INVALID_CUSTOMER.key(), "This service is for MTN Customers only. This is not a valid MTN Mobile Number.");
-        save(ValidationError.INSUFFICIENT_FUNDS_DURING_REGISTRATION.key(), "There are no sufficient funds to proceed with the registration.");
-        save(ValidationError.INSUFFICIENT_FUNDS.key(), "You do not have enough credit to continue with the Mobile Mid Wife - ${p} Program. The service will be suspended. The service will resume when we are able to successfully bill you.");
     }
 
     private void save(String messageKey, String message) {

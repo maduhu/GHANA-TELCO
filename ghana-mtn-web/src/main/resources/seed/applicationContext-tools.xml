@@ -9,8 +9,7 @@
             <list>
                 <ref bean="programTypeSeed"/>
                 <ref bean="programMessageSeed"/>
-                <ref bean="shortCodeSeed"/>
-                <ref bean="mockMTNUserSeed"/>
+                <ref bean="shortCodeSeed"/>                
                 <ref bean="messageSeed"/>
             </list>
         </constructor-arg>

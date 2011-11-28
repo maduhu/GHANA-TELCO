@@ -3,7 +3,7 @@ package org.motechproject.ghana.mtn.eventhandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.domain.IProgramType;
+import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.process.MessengerProcess;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
@@ -33,7 +33,7 @@ public class ProgramMessageEventHandlerTest {
     @Test
     public void shouldUseSubscriptionMessageSenderAfterPickingRightSubscription() {
         String subscriberNumber = "externalId";
-        String programKey = IProgramType.PREGNANCY;
+        String programKey = ProgramType.PREGNANCY;
         Subscription subscription = mock(Subscription.class);
 
         Map params = new HashMap();

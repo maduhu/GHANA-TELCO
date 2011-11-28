@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.repository;
 
 import org.junit.Test;
 import org.motechproject.ghana.mtn.BaseSpringTestContext;
-import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
@@ -13,6 +12,7 @@ import org.motechproject.model.DayOfWeek;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.assertEquals;
+import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
 
 public class AllSubscriptionMessagesTest extends BaseSpringTestContext {
     @Autowired
@@ -22,7 +22,7 @@ public class AllSubscriptionMessagesTest extends BaseSpringTestContext {
 
     @Test
     public void shouldFindByProgramAndWeekAndDay(){
-        String programKey = IProgramType.CHILDCARE;
+        String programKey = CHILDCARE;
         ProgramType type = new ProgramTypeBuilder().withProgramKey(programKey).build();
         addAndMarkForDeletion(allProgramTypes, type);
 

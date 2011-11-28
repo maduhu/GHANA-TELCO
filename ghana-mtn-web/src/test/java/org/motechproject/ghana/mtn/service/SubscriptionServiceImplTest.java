@@ -8,11 +8,13 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.TestData;
-import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.Subscriber;
+import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
-import org.motechproject.ghana.mtn.process.BillingCycleProcess;
 import org.motechproject.ghana.mtn.process.CampaignProcess;
 import org.motechproject.ghana.mtn.process.PersistenceProcess;
 import org.motechproject.ghana.mtn.process.ValidationProcess;
@@ -27,6 +29,8 @@ import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
@@ -35,8 +39,6 @@ public class SubscriptionServiceImplTest {
     private SubscriptionServiceImpl service;
     @Mock
     private ValidationProcess validation;
-    @Mock
-    private BillingCycleProcess billing;
     @Mock
     private PersistenceProcess persistence;
     @Mock
@@ -50,7 +52,7 @@ public class SubscriptionServiceImplTest {
     @Before
     public void setUp() {
         initMocks(this);
-        service = new SubscriptionServiceImpl(allSubscriptions, validation, billing, persistence, campaign);
+        service = new SubscriptionServiceImpl(allSubscriptions, validation, persistence, campaign);
     }
 
     @Test
@@ -58,7 +60,6 @@ public class SubscriptionServiceImplTest {
         Subscription subscription = mock(Subscription.class);
 
         when(validation.startFor(subscription)).thenReturn(true);
-        when(billing.startFor(subscription)).thenReturn(true);
         when(persistence.startFor(subscription)).thenReturn(true);
         when(campaign.startFor(subscription)).thenReturn(true);
 
@@ -66,7 +67,6 @@ public class SubscriptionServiceImplTest {
 
         verify(subscription).updateCycleInfo();
         verify(validation).startFor(subscription);
-        verify(billing).startFor(subscription);
         verify(persistence).startFor(subscription);
         verify(campaign).startFor(subscription);
     }
@@ -75,13 +75,10 @@ public class SubscriptionServiceImplTest {
     public void shouldCallAllProcessInvolvedOnNoErrorsDuringStopSubscription() {
         Subscription subscription = mock(Subscription.class);
 
-        when(billing.stopExpired(subscription)).thenReturn(true);
         when(campaign.stopExpired(subscription)).thenReturn(true);
         when(persistence.stopExpired(subscription)).thenReturn(true);
 
         service.stopExpired(subscription);
-
-        verify(billing).stopExpired(subscription);
         verify(campaign).stopExpired(subscription);
         verify(persistence).stopExpired(subscription);
     }
@@ -93,14 +90,12 @@ public class SubscriptionServiceImplTest {
                 .build().updateCycleInfo());
         when(subscription.isCompleted()).thenReturn(true);
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
-        when(billing.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(campaign.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(persistence.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
 
         service.rollOverByEvent(subscription);
 
         verify(validation).rollOver(eq(subscription), Matchers.<Subscription>any());
-        verify(billing).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(campaign).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(persistence).rollOver(eq(subscription), Matchers.<Subscription>any());
     }
@@ -116,7 +111,6 @@ public class SubscriptionServiceImplTest {
         service.rollOver(subscriberNumber, deliveryDate);
 
         verify(validation, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
-        verify(billing, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
         verify(campaign, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
         verify(persistence, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
     }
@@ -133,7 +127,6 @@ public class SubscriptionServiceImplTest {
         when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(subscription);
 
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
-        when(billing.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(campaign.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(persistence.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
 
@@ -144,7 +137,6 @@ public class SubscriptionServiceImplTest {
         verify(validation).rollOver(eq(subscription), childCareCaptor.capture());
 
         assertNotNull(childCareCaptor.getValue().getBillingStartDate().toLocalDate());
-        verify(billing).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(campaign).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(persistence).rollOver(eq(subscription), Matchers.<Subscription>any());
     }
@@ -152,18 +144,16 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldInvokeAllProcessInvolvedInStopProcessByUser() {
         String subscriberNumber = "9500012345";
-        IProgramType programType = childCareProgramType;
+        ProgramType programType = childCareProgramType;
         Subscription subscription = mock(Subscription.class);
 
         when(validation.validateSubscriptionToStop(subscriberNumber, programType)).thenReturn(subscription);
-        when(billing.stopByUser(subscription)).thenReturn(true);
         when(campaign.stopByUser(subscription)).thenReturn(true);
         when(persistence.stopByUser(subscription)).thenReturn(true);
 
         service.stopByUser(subscriberNumber, programType);
 
         verify(validation).validateSubscriptionToStop(subscriberNumber, programType);
-        verify(billing).stopByUser(subscription);
         verify(campaign).stopByUser(subscription);
         verify(persistence).stopByUser(subscription);
 
@@ -172,18 +162,16 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldNotInvokeAllStopProcessByUserIfValidationFailsInFindingSubscriptionToStop() {
         String subscriberNumber = "9500012345";
-        IProgramType programType = childCareProgramType;
+        ProgramType programType = childCareProgramType;
         Subscription subscription = mock(Subscription.class);
 
         when(validation.validateSubscriptionToStop(subscriberNumber, programType)).thenReturn(null);
-        when(billing.stopByUser(subscription)).thenReturn(true);
         when(campaign.stopByUser(subscription)).thenReturn(true);
         when(persistence.stopByUser(subscription)).thenReturn(true);
 
         service.stopByUser(subscriberNumber, programType);
 
         verify(validation).validateSubscriptionToStop(subscriberNumber, programType);
-        verify(billing, never()).stopByUser(subscription);
         verify(campaign, never()).stopByUser(subscription);
         verify(persistence, never()).stopByUser(subscription);
     }
@@ -191,7 +179,7 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldFindSubscriptionByMobileNumberUsingRepository() {
         String subscriberNumber = "123";
-        String program = IProgramType.PREGNANCY;
+        String program = PREGNANCY;
         Subscription subscription = new Subscription();
         when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, program)).thenReturn(subscription);
 
@@ -228,13 +216,11 @@ public class SubscriptionServiceImplTest {
         when(subscription.canRollOff()).thenReturn(false);
         when(subscription.getProgramType()).thenReturn(programType);
         when(subscription.rollOverProgramType()).thenReturn(programType);
-        when(billing.stopExpired(subscription)).thenReturn(true);
         when(campaign.stopExpired(subscription)).thenReturn(true);
         when(persistence.stopExpired(subscription)).thenReturn(true);
 
         service.rollOverByEvent(subscription);
 
-        verify(billing).stopExpired(subscription);
         verify(campaign).stopExpired(subscription);
         verify(persistence).stopExpired(subscription);
     }
@@ -257,7 +243,6 @@ public class SubscriptionServiceImplTest {
         when(programType.getRollOverProgramType()).thenReturn(programType);
 
         when(validation.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
-        when(billing.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
         when(campaign.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
         when(persistence.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);
 
@@ -265,7 +250,6 @@ public class SubscriptionServiceImplTest {
 
         SubscriptionMatcher matcher = new SubscriptionMatcher(subscriber, programType, ACTIVE);
         verify(validation).rollOver(eq(source), argThat(matcher));
-        verify(billing).rollOver(eq(source), argThat(matcher));
         verify(campaign).rollOver(eq(source), argThat(matcher));
         verify(persistence).rollOver(eq(source), argThat(matcher));
 
@@ -282,18 +266,16 @@ public class SubscriptionServiceImplTest {
 
         Subscription existingChildCareSubscription = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
 
-        when(allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(pregnancySubscriptionWaitingForRollOver);
-        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(existingChildCareSubscription);
+        when(allSubscriptions.findBy(subscriberNumber, PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(pregnancySubscriptionWaitingForRollOver);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, CHILDCARE)).thenReturn(existingChildCareSubscription);
 
         when(validation.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription)).thenReturn(true);
-        when(billing.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription)).thenReturn(true);
         when(campaign.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription)).thenReturn(true);
         when(persistence.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription)).thenReturn(true);
 
         service.retainOrRollOver(subscriberNumber, false);
 
         verify(validation).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
-        verify(billing).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
         verify(persistence).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
         verify(campaign).rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
     }
@@ -305,11 +287,10 @@ public class SubscriptionServiceImplTest {
         Subscription pregnancySubscriptionWaitingForRollOver = subscriptionB(subscriberNumber, pregnancyProgramType, WAITING_FOR_ROLLOVER_RESPONSE).build();
         Subscription childCareSubscription = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
 
-        when(allSubscriptions.findBy(subscriberNumber, IProgramType.PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(pregnancySubscriptionWaitingForRollOver);
-        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, IProgramType.CHILDCARE)).thenReturn(childCareSubscription);
+        when(allSubscriptions.findBy(subscriberNumber, PREGNANCY, WAITING_FOR_ROLLOVER_RESPONSE)).thenReturn(pregnancySubscriptionWaitingForRollOver);
+        when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, CHILDCARE)).thenReturn(childCareSubscription);
 
         when(validation.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
-        when(billing.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
         when(campaign.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
         when(persistence.retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription)).thenReturn(true);
 
@@ -317,7 +298,6 @@ public class SubscriptionServiceImplTest {
 
         verify(validation).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
         verify(persistence).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
-        verify(billing).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
         verify(campaign).retainExistingChildCare(pregnancySubscriptionWaitingForRollOver, childCareSubscription);
     }
 

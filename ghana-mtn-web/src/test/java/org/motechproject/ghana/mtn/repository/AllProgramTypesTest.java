@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.motechproject.ghana.mtn.domain.IProgramType.CHILDCARE;
-import static org.motechproject.ghana.mtn.domain.IProgramType.PREGNANCY;
+import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
 
 public class AllProgramTypesTest extends BaseSpringTestContext {
 

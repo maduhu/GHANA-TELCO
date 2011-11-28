@@ -131,7 +131,7 @@ public class BillingServiceIntegrationTest {
 
             @Override
             public String getProgramKey() {
-                return PREGNANCY;
+                return "PREGNANCY";
             }
 
             @Override
@@ -165,7 +165,7 @@ public class BillingServiceIntegrationTest {
 
             @Override
             public String getProgramKey() {
-                return IProgramType.CHILDCARE;
+                return "CHILDCARE";
             }
 
             @Override

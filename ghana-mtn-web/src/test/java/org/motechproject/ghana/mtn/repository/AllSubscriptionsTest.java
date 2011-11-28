@@ -5,7 +5,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.BaseSpringTestContext;
-import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.Subscriber;
+import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
@@ -21,6 +24,8 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
+import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.EXPIRED;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
@@ -43,13 +48,13 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
                 .withProgramName("Pregnancy")
                 .withShortCode("P")
                 .withShortCode("p")
-                .withProgramKey(IProgramType.PREGNANCY)
+                .withProgramKey(PREGNANCY)
                 .withMaxWeek(35).withMinWeek(5).build());
         programTypes.add(new ProgramTypeBuilder()
                 .withProgramName("Child Care")
                 .withShortCode("C")
                 .withShortCode("c")
-                .withProgramKey(IProgramType.CHILDCARE)
+                .withProgramKey(CHILDCARE)
                 .withMaxWeek(52).withMinWeek(1).build());
 
         pregnancy = programTypes.findByCampaignShortCode("P");
@@ -121,8 +126,8 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
         Subscription pregnancyProgramForUser2 = subscription("987654321", new DateTime(2012, 2, 3, 0, 0), new Week(7), pregnancy).withStatus(EXPIRED).build().updateCycleInfo();
         allSubscriptions.add(pregnancyProgramForUser2);
 
-        Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findActiveSubscriptionFor(user1Mobile, IProgramType.PREGNANCY);
-        Subscription actualChildCareForUsr1 = allSubscriptions.findActiveSubscriptionFor(user1Mobile, IProgramType.CHILDCARE);
+        Subscription actualPregnancyProgramForUsr1 = allSubscriptions.findActiveSubscriptionFor(user1Mobile, PREGNANCY);
+        Subscription actualChildCareForUsr1 = allSubscriptions.findActiveSubscriptionFor(user1Mobile, CHILDCARE);
         assertEquals(pregnancyProgramForUser1.getRevision(), actualPregnancyProgramForUsr1.getRevision());
         assertThat(pregnancyProgramForUser1, new SubscriptionMatcher(actualPregnancyProgramForUsr1));
         assertEquals(childCareForUser1.getRevision(), actualChildCareForUsr1.getRevision());
@@ -132,7 +137,7 @@ public class AllSubscriptionsTest extends BaseSpringTestContext {
     @Test
     public void shouldFetchWaitingForResponseSubscriptionForASubscriber() {
         String subscriberNumber = "9999933333";
-        String programKey = IProgramType.PREGNANCY;
+        String programKey = PREGNANCY;
 
         Subscription pregnancySubscription = subscription(subscriberNumber, new DateTime(2012, 2, 2, 0, 0), new Week(6), pregnancy).withStatus(WAITING_FOR_ROLLOVER_RESPONSE).build().updateCycleInfo();
         allSubscriptions.add(pregnancySubscription);

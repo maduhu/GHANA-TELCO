@@ -1,9 +1,7 @@
 package org.motechproject.ghana.mtn.tools.seed;
 
-import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
-import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.ghana.mtn.repository.AllProgramTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,8 +18,8 @@ public class ProgramTypeSeed extends Seed {
                 .withProgramName("Child Care")
                 .withShortCode("C").withShortCode("c")
                 .withMaxWeek(52).withMinWeek(1)
-                .withProgramKey(IProgramType.CHILDCARE)
-                .withFee(new Money(0.60D)).build();
+                .withProgramKey(ProgramType.CHILDCARE)
+                .build();
 
         allProgramTypes.add(childCareProgramType);
 
@@ -30,8 +28,8 @@ public class ProgramTypeSeed extends Seed {
                 .withShortCode("P").withShortCode("p")
                 .withMaxWeek(35).withMinWeek(5)
                 .withRollOverProgramType(childCareProgramType)
-                .withProgramKey(IProgramType.PREGNANCY)
-                .withFee(new Money(0.60D)).build();
+                .withProgramKey(ProgramType.PREGNANCY)
+                .build();
 
         allProgramTypes.add(pregnancyProgramType);
     }

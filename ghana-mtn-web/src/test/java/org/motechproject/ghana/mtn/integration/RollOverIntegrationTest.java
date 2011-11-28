@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.integration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.ghana.mtn.domain.IProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
@@ -12,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
-import static org.motechproject.ghana.mtn.domain.IProgramType.CHILDCARE;
-import static org.motechproject.ghana.mtn.domain.IProgramType.PREGNANCY;
+import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
 
 
 public class RollOverIntegrationTest extends BaseIntegrationTest {
@@ -26,10 +25,9 @@ public class RollOverIntegrationTest extends BaseIntegrationTest {
         addSeedData();
         addAndMarkForDeletion(allProgramTypes, pregnancyProgramType);
         addAndMarkForDeletion(allProgramTypes, childCarePregnancyType);
-        addAndMarkForDeletion(allMtnMock, mtnMockUser);
     }
 
-    String subscriberEmma = mtnMockUser.getMobileNumber();
+    String subscriberEmma = "9500012345";
 
     @Test
     public void ShouldRetainExistingChildCareSubscription_WhenRolloverOfPregnancyToChildSubscriptionHappens() throws IOException {
@@ -40,21 +38,17 @@ public class RollOverIntegrationTest extends BaseIntegrationTest {
         message(subscriberEmma, "d");
         pregnancySubscription = subscription(pregnancySubscription);
         assertEquals(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE, pregnancySubscription.getStatus());
-        assertMonthlyBillingScheduleAndAccount(pregnancySubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         childCareSubscription = subscription(childCareSubscription);
         assertEquals(SubscriptionStatus.ACTIVE, subscription(childCareSubscription).getStatus());
-        assertMonthlyBillingScheduleAndAccount(childCareSubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         message(subscriberEmma, "e");
         assertEquals(SubscriptionStatus.EXPIRED, subscription(pregnancySubscription).getStatus());
-        assertIfBillingScheduleIsStopped(pregnancySubscription);
         assertIfCampaignScheduleIsStopped(pregnancySubscription);
 
         assertEquals(SubscriptionStatus.ACTIVE, subscription(childCareSubscription).getStatus());
-        assertMonthlyBillingScheduleAndAccount(childCareSubscription);
         assertCampaignSchedule(childCareSubscription);
     }
     
@@ -67,21 +61,17 @@ public class RollOverIntegrationTest extends BaseIntegrationTest {
         message(subscriberEmma, "d");
         pregnancySubscription = subscription(pregnancySubscription);
         assertEquals(SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE, pregnancySubscription.getStatus());
-        assertMonthlyBillingScheduleAndAccount(pregnancySubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         childCareSubscription = subscription(childCareSubscription);
         assertEquals(SubscriptionStatus.ACTIVE, subscription(childCareSubscription).getStatus());
-        assertMonthlyBillingScheduleAndAccount(childCareSubscription);
         assertCampaignSchedule(pregnancySubscription);
 
         message(subscriberEmma, "n");
-        Subscription newChildCareSubscription = subscription(subscriberEmma, IProgramType.CHILDCARE);
+        Subscription newChildCareSubscription = subscription(subscriberEmma, CHILDCARE);
         assertEquals(SubscriptionStatus.ROLLED_OFF, subscription(pregnancySubscription).getStatus());
         assertEquals(SubscriptionStatus.ACTIVE, newChildCareSubscription.getStatus());
-        assertIfBillingScheduleIsStopped(pregnancySubscription);
         assertIfCampaignScheduleIsStopped(pregnancySubscription);
-        assertMonthlyBillingScheduleAndAccount(newChildCareSubscription);
         assertCampaignSchedule(newChildCareSubscription);
 
         assertEquals(SubscriptionStatus.EXPIRED, subscription(childCareSubscription).getStatus());

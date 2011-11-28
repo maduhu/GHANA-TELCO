@@ -1,13 +1,8 @@
 package org.motechproject.ghana.mtn.integration;
 
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.mtn.BaseSpringTestContext;
-import org.motechproject.ghana.mtn.billing.domain.*;
-import org.motechproject.ghana.mtn.billing.repository.AllBillAccounts;
-import org.motechproject.ghana.mtn.billing.repository.AllBillAudits;
-import org.motechproject.ghana.mtn.billing.repository.AllMTNMockUsers;
 import org.motechproject.ghana.mtn.controller.SubscriptionController;
 import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.ProgramTypeBuilder;
@@ -18,30 +13,29 @@ import org.motechproject.ghana.mtn.process.CampaignProcess;
 import org.motechproject.ghana.mtn.repository.*;
 import org.motechproject.ghana.mtn.tools.seed.MessageSeed;
 import org.motechproject.ghana.mtn.tools.seed.ShortCodeSeed;
-import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
-import org.quartz.*;
+import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import java.util.Date;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.*;
 import static java.lang.String.format;
 import static junit.framework.Assert.*;
 import static org.apache.commons.lang.StringUtils.replace;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
-import static org.motechproject.ghana.mtn.domain.MessageBundle.*;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.ENROLLMENT_SUCCESS;
+import static org.motechproject.ghana.mtn.domain.MessageBundle.PROGRAM_NAME_MARKER;
 import static org.motechproject.ghana.mtn.process.CampaignProcess.DATE_MARKER;
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
@@ -58,17 +52,9 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     @Autowired
     protected AllProgramTypes allProgramTypes;
     @Autowired
-    protected AllBillAccounts allBillAccounts;
-    @Autowired
-    private AllBillAudits allBillAudits;
-    @Autowired
-    SchedulerFactoryBean schedulerFactoryBean;
-    @Value("#{billingProperties['job.cron']}")
-    String billingCron;
+    SchedulerFactoryBean schedulerFactoryBean;   
     @Autowired
     protected AllShortCodes allShortCodes;
-    @Autowired
-    AllMTNMockUsers allMtnMock;
     @Autowired
     protected AllSMSAudits allSMSAudits;
     @Autowired
@@ -82,11 +68,10 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     @Autowired
     RegisterProgramMessageParser registerProgramMessageParser;
 
-    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(1)
-            .withMaxWeek(52).withProgramKey(IProgramType.CHILDCARE).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
-    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withFee(new Money(0.60D)).withMinWeek(5).withMaxWeek(35)
-            .withProgramKey(IProgramType.PREGNANCY).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").withRollOverProgramType(childCarePregnancyType).build();
-    protected MTNMockUser mtnMockUser = new MTNMockUser("9500012345", new Money(1000D));
+    public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withMinWeek(1)
+            .withMaxWeek(52).withProgramKey(ProgramType.CHILDCARE).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
+    public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withMinWeek(5).withMaxWeek(35)
+            .withProgramKey(ProgramType.PREGNANCY).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").withRollOverProgramType(childCarePregnancyType).build();
 
     protected void addSeedData() {
         shortCodeSeed.run();
@@ -95,7 +80,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
     protected void cleanData() {
         super.after();
-        remove(allMtnMock, allShortCodes, allProgramTypes, allMessages, allSubscriptions, allSubscribers, allBillAudits, allBillAccounts);
+        remove( allShortCodes, allProgramTypes, allMessages, allSubscriptions, allSubscribers);
         removeAllQuartzJobs();
     }
 
@@ -150,17 +135,15 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         assertEquals(registerSms.getFromMobileNumber(), subscription.getSubscriber().getNumber());
 
         assertCampaignSchedule(subscription);
-        assertMonthlyBillingScheduleAndAccount(subscription);
-        List<SMSAudit> smsAudits = lastNSms(2);
-        assertSMS(messageFor(BILLING_SUCCESS, programType, programType.getFee().getValue()), smsAudits.get(0));
-        assertSMS(replaceDateMarker(messageFor(ENROLLMENT_SUCCESS, programType, programType.getFee().getValue()), programType.getFee().getValue(), subscription.getCycleStartDate().toDate()), smsAudits.get(1));
+        List<SMSAudit> smsAudits = lastNSms(1);        
+        assertSMS(replaceDateMarker(messageFor(ENROLLMENT_SUCCESS, programType), subscription.getCycleStartDate().toDate()), smsAudits.get(0));
     }
 
-    private String messageFor(String message, IProgramType programType, Object... params) {
+    private String messageFor(String message, ProgramType programType, Object... params) {
         return replace(messageFor(message, params), PROGRAM_NAME_MARKER, programType.getProgramName());
     }
 
-    private String replaceDateMarker(String text, Double value, Date date) {
+    private String replaceDateMarker(String text, Date date) {
         return replace(text, DATE_MARKER, CampaignProcess.friendlyDateFormatter.format(date));
     }
 
@@ -168,95 +151,6 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         return format(allMessages.findBy(billingSuccess).getContent(), params);
     }
 
-    protected void assertMonthlyBillingSchedule(Subscription subscription) {
-        assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
-        assertBillingCron(subscription, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
-    }
-
-    protected void assertDailyBillingSchedule(Subscription subscription) {
-        String jobId = getJobId(DEFAULTED_DAILY_SCHEDULE, subscription.subscriberNumber(), subscription.getProgramType()) + REPEAT;
-        assertBillingSchedule(subscription, DEFAULTED_DAILY_SCHEDULE, jobId);
-        assertDefaultedBillingTrigger(jobId, (long) 60 * 24 * 60 * 1000);
-    }
-
-    protected void assertWeeklyBillingSchedule(Subscription subscription) {
-        String jobId = getJobId(DEFAULTED_WEEKLY_SCHEDULE, subscription.subscriberNumber(), subscription.getProgramType()) + REPEAT;
-        assertBillingSchedule(subscription, DEFAULTED_WEEKLY_SCHEDULE, jobId);
-        assertDefaultedBillingTrigger(jobId, (long) 60 * 24 * 60 * 1000 * 7);
-    }
-
-    private void assertBillingSchedule(Subscription subscription, String billingScheduleSubject, String jobId) {
-        try {
-            String subscriberNumber = subscription.subscriberNumber();
-            JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
-            JobDataMap map = jobDetail.getJobDataMap();
-            assertThat(map.get(EXTERNAL_ID_KEY).toString(), Matchers.is(subscriberNumber));
-            assertThat(map.get(PROGRAM_KEY).toString(), Matchers.is(subscription.programKey()));
-            assertThat(map.get("eventType").toString(), Matchers.is(billingScheduleSubject));
-        } catch (SchedulerException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    private String getJobId(String billingScheduleSubject, String subscriberNumber, ProgramType programType) {
-        return format("%s-%s.%s", billingScheduleSubject, programType.getProgramKey(), subscriberNumber);
-    }
-
-    private void assertBillingCron(Subscription subscription, String jobId) {
-        try {
-            CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
-            assertThat(cronTrigger.getCronExpression(), Matchers.is(format(billingCron, subscription.getBillingStartDate().getDayOfMonth())));
-        } catch (SchedulerException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    private void assertDefaultedBillingTrigger(String jobId, Long repeatInterval) {
-        try {
-            SimpleTrigger simpleTrigger = (SimpleTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
-            assertThat(simpleTrigger.getRepeatInterval(), is(repeatInterval));
-        } catch (SchedulerException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    protected void assertMonthlyBillingScheduleAndAccount(Subscription subscription) {
-        assertBillingSchedule(subscription, MONTHLY_BILLING_SCHEDULE_SUBJECT, getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscription.subscriberNumber(), subscription.getProgramType()));
-        assertBillAccount(subscription.subscriberNumber(), subscription.getProgramType());
-        assertBillAudit(subscription.subscriberNumber(), subscription.getProgramType());
-    }
-
-    private void assertBillAudit(String subscriberNumber, ProgramType programType) {
-        List<BillAudit> billAudits = select(allBillAudits.getAll(), having(on(BillAudit.class).getMobileNumber(), equalTo(subscriberNumber)));
-        billAudits = select(billAudits, having(on(BillAudit.class).getProgram(), equalTo(programType.getProgramKey())));
-
-        BillAudit billAudit = billAudits.get(billAudits.size() - 1);
-        MatcherAssert.assertThat(billAudit.getMobileNumber(), Matchers.is(subscriberNumber));
-        MatcherAssert.assertThat(billAudit.getAmountCharged(), equalTo(programType.getFee()));
-        MatcherAssert.assertThat(billAudit.getBillStatus(), Matchers.is(BillStatus.SUCCESS));
-        MatcherAssert.assertThat(billAudit.getFailureReason(), Matchers.is(""));
-    }
-
-    private void assertBillAccount(String subscriberNumber, ProgramType programType) {
-        BillAccount billAccount = allBillAccounts.findByMobileNumber(subscriberNumber);
-        BillProgramAccount billProgramAccount = selectFirst(billAccount.getProgramAccounts(), having(on(BillProgramAccount.class).getProgramKey(), equalTo(programType.getProgramKey())));
-        MatcherAssert.assertThat(billProgramAccount.getProgramKey(), Matchers.is(programType.getProgramKey()));
-        MatcherAssert.assertThat(billProgramAccount.getFee(), Matchers.is(programType.getFee()));
-    }
-
-    protected void assertIfBillingScheduleIsStopped(Subscription subscription) {
-        String subscriberNumber = subscription.subscriberNumber();
-        ProgramType programType = subscription.getProgramType();
-        String jobId = getJobId(MONTHLY_BILLING_SCHEDULE_SUBJECT, subscriberNumber, programType);
-        try {
-            JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
-            CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
-            assertNull(jobDetail);
-            assertNull(cronTrigger);
-        } catch (SchedulerException e) {
-            throw new AssertionError(e);
-        }
-    }
 
     protected void assertIfCampaignScheduleIsStopped(Subscription subscription) {
         String subscriberNumber = subscription.subscriberNumber();
@@ -287,7 +181,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
             CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
 
             JobDataMap map = jobDetail.getJobDataMap();
-            assertThat(map.get(EXTERNAL_ID_KEY).toString(), Matchers.is(subscriberNumber));
+            assertThat(map.get(EventKeys.EXTERNAL_ID_KEY).toString(), Matchers.is(subscriberNumber));
             assertThat(map.get(EventKeys.CAMPAIGN_NAME_KEY).toString(), Matchers.is(subscription.programKey()));
             assertThat(map.get(EventKeys.SCHEDULE_JOB_ID_KEY).toString(), Matchers.is(prefix));
             assertThat(map.get("eventType").toString(), Matchers.is(MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT));

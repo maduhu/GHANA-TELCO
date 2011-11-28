@@ -3,9 +3,12 @@ package org.motechproject.ghana.mtn.eventhandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.ghana.mtn.billing.service.SchedulerParamsBuilder;
 import org.motechproject.ghana.mtn.service.SubscriptionService;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.messagecampaign.EventKeys;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -26,7 +29,9 @@ public class RollOverWaitScheduleEventHandlerTest {
     @Test
     public void shouldRollOverOrRetainSubscription() {
         String subscriberNumber = "1234567890";
-        MotechEvent event = new MotechEvent(ROLLOVER_WAIT_SCHEDULE, new SchedulerParamsBuilder().withExternalId(subscriberNumber).params());
+        Map params=new HashMap<String,Object>();
+        params.put(EventKeys.EXTERNAL_ID_KEY,subscriberNumber);
+        MotechEvent event = new MotechEvent(ROLLOVER_WAIT_SCHEDULE, params);
 
         rollOverWaitScheduleEventHandler.rollOverSchedule(event);
 

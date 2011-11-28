@@ -19,6 +19,8 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
 
@@ -155,12 +157,12 @@ public class CampaignProcessorTest {
         verify(rollOverWaitHandler).stopScheduleWaitFor(pregnancySubscriptionToRollOver);
         verify(campaignService, times(2)).stopFor(captor.capture());
 
-        assertEquals(IProgramType.CHILDCARE, captor.getAllValues().get(0).campaignName());
+        assertEquals(CHILDCARE, captor.getAllValues().get(0).campaignName());
         assertEquals(subscriberNumber, captor.getAllValues().get(0).externalId());
-        assertEquals(IProgramType.PREGNANCY, captor.getAllValues().get(1).campaignName());
+        assertEquals(PREGNANCY, captor.getAllValues().get(1).campaignName());
         assertEquals(subscriberNumber, captor.getAllValues().get(1).externalId());
 
-        verifyStartCampaign(IProgramType.CHILDCARE, subscriberNumber);
+        verifyStartCampaign(CHILDCARE, subscriberNumber);
         assertSMS(subscriberNumber, successMsg);
         verifyNoMoreInteractions(smsService);
     }

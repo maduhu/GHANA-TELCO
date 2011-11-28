@@ -1,7 +1,6 @@
 package org.motechproject.ghana.mtn.domain.builder;
 
 import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.vo.Money;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +10,6 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
     private String programName;
     private Integer minWeek;
     private Integer maxWeek;
-    private Money fee;
     private ProgramType rollOverProgramType;
     private String programKey;
 
@@ -38,11 +36,6 @@ public class ProgramTypeBuilder extends Builder<ProgramType> {
     public ProgramTypeBuilder withShortCode(String... shortCodes) {
         for (String shortCode : shortCodes)
             this.shortCodes.add(shortCode);
-        return this;
-    }
-
-    public ProgramTypeBuilder withFee(Money fee) {
-        this.fee = fee;
         return this;
     }
 

@@ -4,7 +4,10 @@ import org.ektorp.DbPath;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.ghana.mtn.domain.*;
+import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.ghana.mtn.domain.Subscriber;
+import org.motechproject.ghana.mtn.domain.Subscription;
+import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
 import org.motechproject.ghana.mtn.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.matchers.SubscriberMatcher;
@@ -18,7 +21,8 @@ import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-
+import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
+import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
 
 public class RegistrationIntegrationTest extends BaseIntegrationTest {
 
@@ -30,8 +34,6 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
         addSeedData();
         addAndMarkForDeletion(allProgramTypes, pregnancyProgramType);
         addAndMarkForDeletion(allProgramTypes, childCarePregnancyType);
-
-        addAndMarkForDeletion(allMtnMock, mtnMockUser);
     }
 
     @Test
@@ -63,8 +65,8 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
     
     @Test
     public void ShouldCheckTheCampaignProgramJsonForKeysDefinedInProgramType() throws IOException {
-        assertNotNull(allMessageCampaigns.get(IProgramType.PREGNANCY));
-        assertNotNull(allMessageCampaigns.get(IProgramType.CHILDCARE));
+        assertNotNull(allMessageCampaigns.get(PREGNANCY));
+        assertNotNull(allMessageCampaigns.get(CHILDCARE));
     }
 
     @After
