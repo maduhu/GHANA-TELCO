@@ -30,7 +30,6 @@ public class Subscription extends MotechAuditableDataObject {
 
     private DateTime registrationDate;
     private DateTime cycleStartDate;
-    private DateTime billingStartDate;
     private DateUtils dateUtils = new DateUtils();
     @JsonProperty("subscriptionEndDate")
     private DateTime subscriptionEndDate;
@@ -123,14 +122,6 @@ public class Subscription extends MotechAuditableDataObject {
         return new ProgramMessageCycle().nearestCycleDate(getRegistrationDate()).withTimeAtStartOfDay();
     }
 
-    public DateTime billingStartDate(DateTime startDateOfCycle) {
-        List<Integer> forDaysToMoveToFirstOfMonth = asList(29, 30, 31);
-        startDateOfCycle = startDateOfCycle.withTimeAtStartOfDay();
-        if (forDaysToMoveToFirstOfMonth.contains(startDateOfCycle.getDayOfMonth()))
-            return startDateOfCycle.monthOfYear().addToCopy(1).withDayOfMonth(1);
-        return startDateOfCycle;
-    }
-
     public Subscription updateCycleInfo() {
         updateStartCycle();
         updateCycleEndDate();
@@ -141,7 +132,6 @@ public class Subscription extends MotechAuditableDataObject {
         DateTime startDateOfCycle = cycleStartDate();
         this.getStartWeekAndDay().setDay(dateUtils.day(startDateOfCycle));
         this.cycleStartDate = startDateOfCycle;
-        this.billingStartDate = billingStartDate(startDateOfCycle);
     }
 
     private void updateCycleEndDate() {
@@ -175,9 +165,6 @@ public class Subscription extends MotechAuditableDataObject {
         return subscriber.getNumber();
     }
 
-    public DateTime getBillingStartDate() {
-        return setTimeZone(billingStartDate);
-    }
 
     public DateTime getCycleStartDate() {
         return setTimeZone(cycleStartDate);
@@ -188,9 +175,6 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
 
-    public void setBillingStartDate(DateTime billingStartDate) {
-        this.billingStartDate = billingStartDate;
-    }
 
     @JsonIgnore
     public Boolean isCompleted() {
@@ -202,11 +186,6 @@ public class Subscription extends MotechAuditableDataObject {
         return programType.canRollOff();
     }
 
-    @JsonIgnore
-    public Boolean isPaymentDefaulted() {
-        return SubscriptionStatus.PAYMENT_DEFAULT.equals(status);
-    }
-
     public ProgramType rollOverProgramType() {
         return programType.getRollOverProgramType();
     }
@@ -215,7 +194,4 @@ public class Subscription extends MotechAuditableDataObject {
         return subscriptionEndDate;
     }
 
-    public DateTime nextBillingDate() {
-        return getBillingStartDate().monthOfYear().addToCopy(1);
-    }
 }

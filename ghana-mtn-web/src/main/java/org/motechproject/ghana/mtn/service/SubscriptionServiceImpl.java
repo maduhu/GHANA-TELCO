@@ -123,7 +123,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscription != null ? new Subscription(
                 subscription.getSubscriber(),
                 subscription.rollOverProgramType(),
-                subscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE,
+                SubscriptionStatus.ACTIVE,
                 new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
                 DateUtil.now()).updateCycleInfo() : null;
     }

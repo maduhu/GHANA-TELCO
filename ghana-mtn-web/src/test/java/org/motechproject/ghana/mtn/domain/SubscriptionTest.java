@@ -122,29 +122,6 @@ public class SubscriptionTest {
     }
 
     @Test
-    public void shouldReturnStartBillingDateAsFirstOfNextMonthIfBillingCycleDateEndsOn29or30or31OfMonth() {
-        DateTime feb28Mon = date(2011, 2, 28);
-        DateTime sep30Fri = date(2011, 9, 30);
-        DateTime oct1Sat_CycleDateWillBe_oct3Mon = date(2011, 10, 1);
-        DateTime oct29Sat = date(2011, 10, 29);
-        DateTime dec31Sat_CycleDateWillBe_jan2Mon = date(2011, 12, 31);
-
-        String mobileNumber = "9999933333";
-        ProgramType pregnancyProgram = programType("Pregnancy");
-        Subscription registeredOn_feb28Mon = subscription(mobileNumber, feb28Mon, new Week(10), pregnancyProgram);
-        Subscription registeredOn_sep30Fri = subscription(mobileNumber, sep30Fri, new Week(6), pregnancyProgram);
-        Subscription registeredOn_oct1Sat_CycleDateWillBe_oct3Mon = subscription(mobileNumber, oct1Sat_CycleDateWillBe_oct3Mon, new Week(6), programType("Child"));
-        Subscription registeredOn_oct29Sat = subscription(mobileNumber, oct29Sat, new Week(8), programType("Child"));
-        Subscription registeredOn_dec31Sat_CycleDateWillBe_jan2Mon = subscription(mobileNumber, dec31Sat_CycleDateWillBe_jan2Mon, new Week(9), programType("Child"));
-
-        assertEquals(date(2011, 3, 2), registeredOn_feb28Mon.updateCycleInfo().getBillingStartDate());
-        assertEquals(date(2011, 10, 3), registeredOn_sep30Fri.updateCycleInfo().getBillingStartDate());
-        assertEquals(date(2011, 10, 3), registeredOn_oct1Sat_CycleDateWillBe_oct3Mon.updateCycleInfo().getBillingStartDate());
-        assertEquals(date(2011, 11, 1), registeredOn_oct29Sat.updateCycleInfo().getBillingStartDate());
-        assertEquals(date(2012, 1, 2), registeredOn_dec31Sat_CycleDateWillBe_jan2Mon.updateCycleInfo().getBillingStartDate());
-    }
-
-    @Test
     public void shouldReturnCurrentDay() {
         Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), programType("Pregnancy"));
         mockCurrentDate(new DateTime(2012, 1, 1, 1, 1));

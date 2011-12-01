@@ -121,9 +121,8 @@ public class SubscriptionServiceImplTest {
         String subscriberNumber = "1234567890";
 
         DateTime registrationDate = DateUtil.newDate(2011, 10, 21).toDateTimeAtCurrentTime();
-        DateTime cycleStartDateAsBillingDate = DateUtil.newDate(2011, 10, 24).toDateTimeAtCurrentTime();
         Subscription subscription = new SubscriptionBuilder().withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType)
-                .withRegistrationDate(registrationDate).withBillingStartDate(cycleStartDateAsBillingDate).build();
+                .withRegistrationDate(registrationDate).build();
         when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(subscription);
 
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
@@ -136,7 +135,6 @@ public class SubscriptionServiceImplTest {
         ArgumentCaptor<Subscription> childCareCaptor = ArgumentCaptor.forClass(Subscription.class);
         verify(validation).rollOver(eq(subscription), childCareCaptor.capture());
 
-        assertNotNull(childCareCaptor.getValue().getBillingStartDate().toLocalDate());
         verify(campaign).rollOver(eq(subscription), Matchers.<Subscription>any());
         verify(persistence).rollOver(eq(subscription), Matchers.<Subscription>any());
     }
@@ -239,7 +237,6 @@ public class SubscriptionServiceImplTest {
         when(source.currentDay()).thenReturn(DayOfWeek.Sunday);
         when(source.isCompleted()).thenReturn(true);
         when(source.canRollOff()).thenReturn(true);
-        when(source.isPaymentDefaulted()).thenReturn(false);
         when(programType.getRollOverProgramType()).thenReturn(programType);
 
         when(validation.rollOver(any(Subscription.class), any(Subscription.class))).thenReturn(true);

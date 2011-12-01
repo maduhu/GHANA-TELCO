@@ -13,7 +13,6 @@ public class SubscriptionBuilder extends Builder<Subscription> {
     private SubscriptionStatus status;
     private WeekAndDay startWeekAndDay;
     private DateTime registrationDate;
-    private DateTime billingStartDate;
     private DateTime cycleStartDate;
 
     public SubscriptionBuilder() {
@@ -42,11 +41,6 @@ public class SubscriptionBuilder extends Builder<Subscription> {
 
     public SubscriptionBuilder withRegistrationDate(DateTime dateTime) {
         this.registrationDate = dateTime;
-        return this;
-    }
-
-    public SubscriptionBuilder withBillingStartDate(DateTime dateTime) {
-        this.billingStartDate = dateTime;
         return this;
     }
 

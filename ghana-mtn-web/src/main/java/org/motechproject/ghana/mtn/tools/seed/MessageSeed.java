@@ -18,7 +18,6 @@ public class MessageSeed extends Seed {
         save(INVALID_MOBILE_NUMBER, "Invalid Phone Number");
         save(NOT_ENROLLED, "You are not subscribed to this program.");
         addEnrolment();
-        addBilling();
         addStop();
         addRollover();
     }
@@ -31,13 +30,6 @@ public class MessageSeed extends Seed {
         save(ACTIVE_SUBSCRIPTION_PRESENT, "You already have an active ${p} Program Subscription. Please wait for the program to complete, or stop it to start a new one.");
     }
 
-    private void addBilling() {
-        save(BILLING_SUCCESS, "Your account has been charged with %s amount for the Mobile Midwife ${p} Service. Thank You for continuing to use the service.");
-        save(DEFAULTED_BILLING_SUCCESS, "Thanks for you payment. Your ${p} subscription has been reactivated. The subsequent billing checks will happen on %s of the every month.");
-        save(BILLING_FAILURE, "Sorry we are having trouble processing your request.");
-        save(BILLING_STOPPED, "Your account will be no longer charged for Mobile Midwife ${p} Program.");
-        save(BILLING_ROLLOVER, "Your account will be now charged for the Mobile Midwife ${p} Program.");
-    }
 
     private void addStop() {
         save(STOP_SPECIFY_PROGRAM, "Sorry we are having trouble processing your request. Please specify your enrolled program with your stop request.");
@@ -52,7 +44,6 @@ public class MessageSeed extends Seed {
 
         save(PENDING_ROLLOVER_RETAIN_CHILDCARE, "Your pregnancy care program was terminated based on your input. Your existing child care program will continue to be active. Thanks for using the Mobile Midwife service.");
         save(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE, "Your pregnancy care program was rolled over to child care program. Your existing child care program was terminated. Thanks for using the Mobile Midwife service.");
-        save(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING, "Your account will be no longer charged for your previous Mobile Midwife Child Care Program. Your account will be now charged for the new Mobile Midwife Child Care Program instead of your pregnancy program.");
     }
 
     private void save(String messageKey, String message) {

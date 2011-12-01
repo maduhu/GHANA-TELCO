@@ -39,7 +39,7 @@ public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
     }
 
     @View(name = "find_all_Active_Subscriptions", map = "function(doc) {" +
-            "if (doc.status === 'ACTIVE' || doc.status === 'SUSPENDED' || doc.status === 'PAYMENT_DEFAULT' || doc.status === 'WAITING_FOR_ROLLOVER_RESPONSE')" +
+            "if (doc.status === 'ACTIVE' || doc.status === 'SUSPENDED' || doc.status === 'WAITING_FOR_ROLLOVER_RESPONSE')" +
             "  emit( doc.programType.programKey, [doc.registrationDate, doc.subscriber.number] );  }")
     public List<Subscription> getAllActiveSubscriptions(String programKey) {
         ViewQuery viewQuery = createQuery("find_all_Active_Subscriptions").key(programKey).includeDocs(true);

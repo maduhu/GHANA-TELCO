@@ -14,12 +14,6 @@ public class MessageBundle {
     public static final String ENROLLMENT_ROLLOVER = "enrollment.rollover";
     public static final String ACTIVE_SUBSCRIPTION_PRESENT = "enrollment.active.subscription.present";
 
-    public static final String BILLING_SUCCESS = "billing.success";
-    public static final String DEFAULTED_BILLING_SUCCESS = "defaulted.billing.success";
-    public static final String BILLING_FAILURE = "billing.failure";
-    public static final String BILLING_STOPPED = "billing.stopped";
-    public static final String BILLING_ROLLOVER = "billing.rollover";
-
     public static final String INVALID_MOBILE_NUMBER = "enrollment.invalid.mobile.number";
     public static final String NOT_ENROLLED = "not.enrolled";
     public static final String STOP_SPECIFY_PROGRAM = "stop.specify.program";
@@ -31,8 +25,7 @@ public class MessageBundle {
     public static final String ROLLOVER_NO_PENDING_PREGNANCY_PROGRAM = "rollover.no.pending.pregnancy.program";
     public static final String PENDING_ROLLOVER_RETAIN_CHILDCARE = "pending.rollover.retain.childcare.success";
     public static final String PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE = "pending.rollover.pregnancy.to.childcare.success";
-    public static final String PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE_BILLING = "pending.rollover.pregnancy.to.childcare.billing";
-        
+
     private AllMessages allMessages;
 
     @Autowired

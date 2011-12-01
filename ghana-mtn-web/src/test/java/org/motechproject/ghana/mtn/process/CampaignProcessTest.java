@@ -191,7 +191,7 @@ public class CampaignProcessTest {
 
     private SubscriptionBuilder subscriptionBuilder(String subscriberNumber, ProgramType programType, SubscriptionStatus status) {
         DateTime now = DateUtil.now();
-        return new SubscriptionBuilder().withBillingStartDate(now).withRegistrationDate(now)
+        return new SubscriptionBuilder().withRegistrationDate(now)
                 .withSubscriber(new Subscriber(subscriberNumber))
                 .withType(programType).withStatus(status);
     }

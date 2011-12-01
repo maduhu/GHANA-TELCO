@@ -92,10 +92,6 @@ th {
     overflow-y: scroll;
 }
 
-#mtn_bill_table_box {
-    overflow-x: auto;
-    overflow-y: auto;
-}
 
 #server_time {
     color: red;

@@ -70,7 +70,7 @@ public class PersistenceProcess extends BaseSubscriptionProcess implements ISubs
 
     private void performRollOver(Subscription fromSubscription, Subscription toSubscription) {
         fromSubscription.setStatus(SubscriptionStatus.ROLLED_OFF);
-        toSubscription.setStatus(fromSubscription.isPaymentDefaulted() ? SubscriptionStatus.PAYMENT_DEFAULT : SubscriptionStatus.ACTIVE);
+        toSubscription.setStatus(SubscriptionStatus.ACTIVE);
         allSubscriptions.add(toSubscription);
         allSubscriptions.update(fromSubscription);
     }

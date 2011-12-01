@@ -39,3 +39,8 @@ $.Enrollment = function() {
 
     $(bootstrap);
 };
+
+$(document).ready(function() {
+    $("#tabs").tabs();
+    new $.Enrollment();
+});

@@ -73,7 +73,6 @@ public class PersistenceProcessTest {
     public void shouldUpdateSubscriptionStateOfSourceAndTargetSubscription() {
         Subscription source = mock(Subscription.class);
         Subscription target = mock(Subscription.class);
-        when(source.isPaymentDefaulted()).thenReturn(false);
 
         Boolean reply = persistence.rollOver(source, target);
 
@@ -115,7 +114,6 @@ public class PersistenceProcessTest {
         Subscription pregnancySubscriptionWaitingForRollOver = mock(Subscription.class);
         Subscription newChildCareSubscriptionToRollOver = mock(Subscription.class);
         Subscription existingChildCareSubscrition = mock(Subscription.class);
-        when(pregnancySubscriptionWaitingForRollOver.isPaymentDefaulted()).thenReturn(false);
 
         Boolean reply = persistence.rollOverToNewChildCareProgram(pregnancySubscriptionWaitingForRollOver, newChildCareSubscriptionToRollOver, existingChildCareSubscrition);
 

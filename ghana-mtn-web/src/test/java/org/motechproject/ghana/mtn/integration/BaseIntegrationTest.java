@@ -147,8 +147,8 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         return replace(text, DATE_MARKER, CampaignProcess.friendlyDateFormatter.format(date));
     }
 
-    private String messageFor(String billingSuccess, Object... params) {
-        return format(allMessages.findBy(billingSuccess).getContent(), params);
+    private String messageFor(String message, Object... params) {
+        return format(allMessages.findBy(message).getContent(), params);
     }
 
 
