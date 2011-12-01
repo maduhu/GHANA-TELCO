@@ -31,9 +31,10 @@ public class ProgramMessageEventHandler {
         String subscriberNumber = (String) params.get(EventKeys.EXTERNAL_ID_KEY);
 
         Subscription subscription = service.findActiveSubscriptionFor(subscriberNumber, programKey);
-        if(subscription != null) {
-            messenger.process(subscription);
-            service.rollOverByEvent(subscription);
+        if (subscription != null) {
+            messenger.process(subscription, (String) event.getParameters().get(EventKeys.MESSAGE_KEY));
+            if (event.isLastEvent())
+                service.rollOverByEvent(subscription);
         }
     }
 }

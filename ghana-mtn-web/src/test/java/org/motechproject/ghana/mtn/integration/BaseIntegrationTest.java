@@ -18,10 +18,9 @@ import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
-import org.quartz.CronTrigger;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
+import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
@@ -39,6 +38,7 @@ import static org.motechproject.ghana.mtn.domain.MessageBundle.PROGRAM_NAME_MARK
 import static org.motechproject.ghana.mtn.process.CampaignProcess.DATE_MARKER;
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
+import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.*;
 
 public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
@@ -173,25 +173,26 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         String subscriberNumber = subscription.subscriberNumber();
         CampaignRequest campaignRequest = subscription.createCampaignRequest();
 
-        String cronMessageKey = "cron-message";
-        String prefix = String.format("%s%s.%s.%s", BASE_SUBJECT, campaignRequest.campaignName(), campaignRequest.externalId(), cronMessageKey);
-        String jobId = format("%s-%s", MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, prefix, subscriberNumber);
+        String messageKey = getMessageKey(subscription);
+        String jobId = String.format("%s-%s%s.%s.%s-%s", INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, EventKeys.BASE_SUBJECT, campaignRequest.campaignName(), campaignRequest.externalId(), messageKey, "repeat");
         try {
             JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
-            CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
-
             JobDataMap map = jobDetail.getJobDataMap();
             assertThat(map.get(EventKeys.EXTERNAL_ID_KEY).toString(), Matchers.is(subscriberNumber));
             assertThat(map.get(EventKeys.CAMPAIGN_NAME_KEY).toString(), Matchers.is(subscription.programKey()));
-            assertThat(map.get(EventKeys.SCHEDULE_JOB_ID_KEY).toString(), Matchers.is(prefix));
-            assertThat(map.get("eventType").toString(), Matchers.is(MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT));
-
-            CronBasedCampaignMessage campaignMessage = (CronBasedCampaignMessage) allMessageCampaigns.get(subscription.programKey(), cronMessageKey);
-            assertThat(cronTrigger.getCronExpression(), Matchers.is(campaignMessage.cron()));
-
+            assertThat(map.get("eventType").toString(), Matchers.is(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT));
         } catch (SchedulerException e) {
             throw new AssertionError(e);
         }
+    }
+
+    private String getMessageKey(Subscription subscription) {
+        String messageKey = null;
+        if (subscription.programName().equals("Pregnancy"))
+            messageKey = "pregnancy-calendar-week-{Offset}-{WeekDay}";
+        else
+            messageKey = "childcare-calendar-week-{Offset}-{WeekDay}";
+        return messageKey;
     }
 
     protected void assertSMS(String expected, SMSAudit smsAudit) {

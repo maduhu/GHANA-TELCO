@@ -1,29 +1,35 @@
 [
     {
         "name" : "PREGNANCY",
-        "type" : "CRON",
+        "type" : "REPEATING",
+        "maxDuration" : "35 Weeks",
         "messages" : [
             {
-                "name" : "cron-trigger",
+                "name" : "Pregnancy Message",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
-                "messageKey": "cron-message",
-                "cron" : "0/5 * * 1/1 * ? *"
+                "messageKey": "pregnancy-calendar-week-{Offset}-{WeekDay}",
+                "calendarStartOfWeek" : "Sunday",
+                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
             }
+
         ]
     },
 
     {
         "name" : "CHILDCARE",
-        "type" : "CRON",
+        "type" : "REPEATING",
+        "maxDuration" : "52 Weeks",
         "messages" : [
             {
-                "name" : "cron-trigger",
+                "name" : "ChildCare Message",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
-                "messageKey": "cron-message",
-                "cron" : "0/5 * * 1/1 * ? *"
+                "messageKey": "childcare-calendar-week-{Offset}-{WeekDay}",
+                "calendarStartOfWeek" : "Sunday",
+                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
             }
+
         ]
     }
 

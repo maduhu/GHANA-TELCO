@@ -14,6 +14,8 @@ import java.util.Arrays;
 public class ProgramMessage extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "ProgramMessage";
+    @JsonProperty
+    private String messageKey;
     private String programKey;
     private String content;
     private WeekAndDay weekAndDay;
@@ -21,10 +23,19 @@ public class ProgramMessage extends MotechAuditableDataObject {
     public ProgramMessage() {
     }
 
-    public ProgramMessage(String programKey, String content, WeekAndDay weekAndDay) {
+    public ProgramMessage(String messageKey, String programKey, String content, WeekAndDay weekAndDay) {
+        this.messageKey = messageKey;
         this.programKey = programKey;
         this.content = content;
         this.weekAndDay = weekAndDay;
+    }
+
+    public String getMessageKey() {
+        return messageKey;
+    }
+
+    public void setMessageKey(String messageKey) {
+        this.messageKey = messageKey;
     }
 
     public String getProgramKey() {

@@ -43,13 +43,14 @@ public class MessengerProcessorTest {
 
         when(subscription.currentWeek()).thenReturn(null);
 
-        messenger.process(subscription);
+        messenger.process(subscription, "");
         verify(allProgramMessages, never()).findBy(Matchers.<ProgramType>any(), Matchers.<Week>any(), Matchers.<DayOfWeek>any());
         verifyZeroInteractions(allSubscriptions);
     }
-    
-     @Test
+
+    @Test
     public void shouldSMSRightMessageAndUpdateSubscriptionState() {
+        String messageKey = "key";
         Subscription subscription = mock(Subscription.class);
         ProgramType programType = mock(ProgramType.class);
         ProgramMessage programMessage = mock(ProgramMessage.class);
@@ -64,17 +65,17 @@ public class MessengerProcessorTest {
         when(subscription.subscriberNumber()).thenReturn(mobileNumber);
         when(subscription.alreadySent(programMessage)).thenReturn(false);
         when(programMessage.getContent()).thenReturn(content);
-        when(allProgramMessages.findBy(programType, currentWeek, currentDay)).thenReturn(programMessage);
+        when(allProgramMessages.findBy(messageKey)).thenReturn(programMessage);
 
-        messenger.process(subscription);
+        messenger.process(subscription, messageKey);
 
         verify(subscription).updateLastMessageSent();
 
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());
         SMSServiceRequest captured = captor.getValue();
-        assertEquals(mobileNumber,captured.getMobileNumber());
-        assertEquals(content,captured.getMessage());
+        assertEquals(mobileNumber, captured.getMobileNumber());
+        assertEquals(content, captured.getMessage());
     }
 }
 

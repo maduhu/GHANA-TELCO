@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.repository;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.motechproject.dao.MotechAuditableRepository;
@@ -28,9 +29,19 @@ public class AllProgramMessages extends MotechAuditableRepository<ProgramMessage
         return null;
     }
 
+    public ProgramMessage findBy(String messageKey) {
+        List<ProgramMessage> messages = findByMessageKey(messageKey);
+        return CollectionUtils.isEmpty(messages) ? null : messages.get(0);
+    }
+
     @GenerateView
-    public List<ProgramMessage> findByProgramKey(String programKey) {
-        return queryView("by_programKey", programKey);
+    public List<ProgramMessage> findByMessageKey(String messageKey) {
+        return queryView("by_messageKey", messageKey);
+    }
+
+    @GenerateView
+    public List<ProgramMessage> findByProgramKey(String value) {
+        return queryView("by_programKey", value);
     }
 
 }

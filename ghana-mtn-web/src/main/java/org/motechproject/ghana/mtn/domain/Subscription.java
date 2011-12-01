@@ -93,7 +93,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public CampaignRequest createCampaignRequest() {
-        return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), null, null);
+        return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), null, cycleStartDate.toLocalDate(), startWeekAndDay.getWeek().getNumber());
     }
 
     public Week currentWeek() {

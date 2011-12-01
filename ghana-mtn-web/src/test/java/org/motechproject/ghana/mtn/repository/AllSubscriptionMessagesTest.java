@@ -27,7 +27,7 @@ public class AllSubscriptionMessagesTest extends BaseSpringTestContext {
         addAndMarkForDeletion(allProgramTypes, type);
 
         Week week = new Week(12);
-        ProgramMessage subscriptionMessage = new ProgramMessage(programKey,"content", new WeekAndDay(week, DayOfWeek.Friday));
+        ProgramMessage subscriptionMessage = new ProgramMessage("",programKey,"content", new WeekAndDay(week, DayOfWeek.Friday));
         addAndMarkForDeletion(allSubscriptionMessages, subscriptionMessage);
 
         ProgramMessage dbSubscriptionMessage = allSubscriptionMessages.findBy(type, week, DayOfWeek.Friday);

@@ -10,6 +10,8 @@ import org.motechproject.model.DayOfWeek;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static java.lang.String.format;
+
 @Component
 public class ProgramMessageSeed extends Seed {
     public static final String DUMMY = "message content for ";
@@ -38,9 +40,9 @@ public class ProgramMessageSeed extends Seed {
         for (int i = programType.getMinWeek(); i <= programType.getMaxWeek(); i++) {
             String programKey = programType.getProgramKey();
             Week week = new Week(i);
-            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + DayOfWeek.Monday.name(), new WeekAndDay(week, DayOfWeek.Monday)));
-            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + DayOfWeek.Wednesday.name(), new WeekAndDay(week, DayOfWeek.Wednesday)));
-            allSubscriptionMessages.add(new ProgramMessage(programKey, DUMMY + week + "-" + DayOfWeek.Friday.name(), new WeekAndDay(week, DayOfWeek.Friday)));
+            allSubscriptionMessages.add(new ProgramMessage(format("pregnancy-calendar-week-%s-Monday", i),programKey, DUMMY + week + "-" + DayOfWeek.Monday.name(), new WeekAndDay(week, DayOfWeek.Monday)));
+            allSubscriptionMessages.add(new ProgramMessage(format("pregnancy-calendar-week-%s-Wednesday", i), programKey, DUMMY + week + "-" + DayOfWeek.Wednesday.name(), new WeekAndDay(week, DayOfWeek.Wednesday)));
+            allSubscriptionMessages.add(new ProgramMessage(format("pregnancy-calendar-week-%s-Friday", i), programKey, DUMMY + week + "-" + DayOfWeek.Friday.name(), new WeekAndDay(week, DayOfWeek.Friday)));
         }
     }
 

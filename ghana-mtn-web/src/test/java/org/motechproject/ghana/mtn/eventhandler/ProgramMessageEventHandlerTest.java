@@ -40,12 +40,13 @@ public class ProgramMessageEventHandlerTest {
         params.put(EventKeys.CAMPAIGN_NAME_KEY, programKey);
         params.put(EventKeys.EXTERNAL_ID_KEY, subscriberNumber);
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
+        motechEvent.setLastEvent(true);
 
         when(service.findActiveSubscriptionFor(subscriberNumber, programKey)).thenReturn(subscription);
 
         programMessageEventHandler.sendMessageReminder(motechEvent);
 
-        verify(messenger).process(subscription);
+        verify(messenger).process(subscription, (String) params.get(EventKeys.MESSAGE_KEY));
         verify(service).rollOverByEvent(subscription);
     }
 }

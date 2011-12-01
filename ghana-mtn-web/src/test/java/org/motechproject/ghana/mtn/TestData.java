@@ -9,7 +9,7 @@ public class TestData {
         return new ProgramTypeBuilder()
                 .withProgramKey(ProgramType.PREGNANCY)
                 .withMinWeek(1).withMaxWeek(35)
-                .withProgramName("Child Care")
+                .withProgramName("Pregnancy")
                 .withShortCode("C").withShortCode("c");
     }
 
@@ -17,6 +17,6 @@ public class TestData {
         return new ProgramTypeBuilder()
                 .withProgramKey(ProgramType.CHILDCARE)
                 .withMinWeek(5)
-                .withMaxWeek(52).withProgramName("Pregnancy").withShortCode("P").withShortCode("p");
+                .withMaxWeek(52).withProgramName("Child Care").withShortCode("P").withShortCode("p");
     }
 }
