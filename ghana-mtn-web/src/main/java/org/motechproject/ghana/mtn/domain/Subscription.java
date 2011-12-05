@@ -9,11 +9,9 @@ import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
 import static org.joda.time.DateTimeConstants.SATURDAY;
 import static org.motechproject.util.DateUtil.setTimeZone;
 
@@ -91,6 +89,10 @@ public class Subscription extends MotechAuditableDataObject {
         this.registrationDate = registrationDate;
     }
 
+    public CampaignRequest createCampaignRegistrationRequest(Time reminderTime) {
+        return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), reminderTime, cycleStartDate.toLocalDate(), startWeekAndDay.getWeek().getNumber());
+    }
+
     public CampaignRequest createCampaignRequest() {
         return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), null, cycleStartDate.toLocalDate(), startWeekAndDay.getWeek().getNumber());
     }
@@ -161,20 +163,20 @@ public class Subscription extends MotechAuditableDataObject {
         return lastMsgSentWeekAndDay != null && subscriptionMessage.getWeekAndDay().isBefore(lastMsgSentWeekAndDay);
     }
 
+
     public String subscriberNumber() {
         return subscriber.getNumber();
     }
-
 
     public DateTime getCycleStartDate() {
         return setTimeZone(cycleStartDate);
     }
 
+
+
     public void setCycleStartDate(DateTime cycleStartDate) {
         this.cycleStartDate = cycleStartDate;
     }
-
-
 
     @JsonIgnore
     public Boolean isCompleted() {
@@ -193,5 +195,4 @@ public class Subscription extends MotechAuditableDataObject {
     public DateTime getSubscriptionEndDate() {
         return subscriptionEndDate;
     }
-
 }

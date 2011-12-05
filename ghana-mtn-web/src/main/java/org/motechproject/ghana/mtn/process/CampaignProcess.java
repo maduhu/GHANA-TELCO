@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,10 +30,19 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     @Override
     public Boolean startFor(Subscription subscription) {
-        campaignService.startFor(subscription.createCampaignRequest());
+        Time reminderTime = getReminderTime();
+        campaignService.startFor(subscription.createCampaignRegistrationRequest(reminderTime));
         sendMessage(subscription, getSuccessMessage(subscription));
         return true;
     }
+
+    private Time getReminderTime() {
+        return new Time(10, 20); //TODO: Will be implemented by AllAppConfigs
+    }
+
+//    private Time getReminderTime() {
+//        return Time
+//    }
 
     private String getSuccessMessage(Subscription subscription) {
         return StringUtils.replace(messageFor(ENROLLMENT_SUCCESS), DATE_MARKER, friendlyDateFormatter.format(subscription.getCycleStartDate().toDate()));
@@ -79,7 +89,7 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     private boolean performRollOver(Subscription fromSubscription, Subscription toSubscription, String message) {
         campaignService.stopFor(fromSubscription.createCampaignRequest());
-        campaignService.startFor(toSubscription.createCampaignRequest());
+        campaignService.startFor(toSubscription.createCampaignRegistrationRequest(getReminderTime()));
         sendMessage(toSubscription, message);
         return true;
     }

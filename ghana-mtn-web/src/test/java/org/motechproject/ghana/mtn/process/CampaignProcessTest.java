@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.TestData;
 import org.motechproject.ghana.mtn.domain.*;
@@ -13,6 +14,7 @@ import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 import org.motechproject.util.DateUtil;
@@ -53,7 +55,7 @@ public class CampaignProcessTest {
         String message = "indie";
         Subscription subscription = mockSubscription(subscriberNumber);
         CampaignRequest campaignRequest = new CampaignRequest();
-        when(subscription.createCampaignRequest()).thenReturn(campaignRequest);
+        when(subscription.createCampaignRegistrationRequest(Matchers.<Time>any())).thenReturn(campaignRequest);
         when(subscription.getCycleStartDate()).thenReturn(DateUtil.now());
         when(messageBundle.get(MessageBundle.ENROLLMENT_SUCCESS)).thenReturn(message);
 
@@ -101,7 +103,7 @@ public class CampaignProcessTest {
 
         when(messageBundle.get(MessageBundle.ENROLLMENT_ROLLOVER)).thenReturn(message);
         when(source.createCampaignRequest()).thenReturn(sourceRequest);
-        when(target.createCampaignRequest()).thenReturn(targetRequest);
+        when(target.createCampaignRegistrationRequest(Matchers.<Time>any())).thenReturn(targetRequest);
 
         Boolean reply = campaign.rollOver(source, target);
 
