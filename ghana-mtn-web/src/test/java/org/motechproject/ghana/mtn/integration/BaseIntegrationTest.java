@@ -11,16 +11,17 @@ import org.motechproject.ghana.mtn.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.mtn.parser.RegisterProgramMessageParser;
 import org.motechproject.ghana.mtn.process.CampaignProcess;
 import org.motechproject.ghana.mtn.repository.*;
+import org.motechproject.ghana.mtn.tools.seed.AppConfigSeed;
 import org.motechproject.ghana.mtn.tools.seed.MessageSeed;
 import org.motechproject.ghana.mtn.tools.seed.ShortCodeSeed;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
-import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
-import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
-import org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler;
-import org.quartz.*;
+import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
@@ -37,8 +38,7 @@ import static org.motechproject.ghana.mtn.domain.MessageBundle.ENROLLMENT_SUCCES
 import static org.motechproject.ghana.mtn.domain.MessageBundle.PROGRAM_NAME_MARKER;
 import static org.motechproject.ghana.mtn.process.CampaignProcess.DATE_MARKER;
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
-import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
-import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.*;
+import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
 
 public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
@@ -64,10 +64,12 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     @Autowired
     ShortCodeSeed shortCodeSeed;
     @Autowired
+    private AppConfigSeed appconfigSeed;
+    @Autowired
     MessageSeed messageSeed;
+
     @Autowired
     RegisterProgramMessageParser registerProgramMessageParser;
-
     public final ProgramType childCarePregnancyType = new ProgramTypeBuilder().withMinWeek(1)
             .withMaxWeek(52).withProgramKey(ProgramType.CHILDCARE).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
     public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withMinWeek(5).withMaxWeek(35)
@@ -76,6 +78,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     protected void addSeedData() {
         shortCodeSeed.run();
         messageSeed.run();
+        appconfigSeed.run();
     }
 
     protected void cleanData() {

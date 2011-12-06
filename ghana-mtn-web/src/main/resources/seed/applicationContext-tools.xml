@@ -11,6 +11,7 @@
                 <ref bean="programMessageSeed"/>
                 <ref bean="shortCodeSeed"/>                
                 <ref bean="messageSeed"/>
+                <ref bean="appConfigSeed"/>
             </list>
         </constructor-arg>
     </bean>

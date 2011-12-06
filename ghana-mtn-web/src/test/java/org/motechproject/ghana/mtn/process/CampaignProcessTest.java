@@ -12,6 +12,7 @@ import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
+import org.motechproject.ghana.mtn.repository.AllAppConfigs;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
@@ -23,6 +24,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.ghana.mtn.domain.AppConfig.WINDOW_END_TIME_KEY;
+import static org.motechproject.ghana.mtn.domain.AppConfig.WINDOW_START_TIME_KEY;
 import static org.motechproject.ghana.mtn.domain.MessageBundle.PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE;
 import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
 import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
@@ -36,6 +39,8 @@ public class CampaignProcessTest {
     @Mock
     private MessageBundle messageBundle;
     @Mock
+    private AllAppConfigs allAppConfigs;
+    @Mock
     private MessageCampaignService campaignService;
 
     public final ProgramType childCarePregnancyType = TestData.childProgramType().build();
@@ -47,14 +52,18 @@ public class CampaignProcessTest {
     @Before
     public void setUp() {
         initMocks(this);
-        campaign = new CampaignProcess(smsService, messageBundle, campaignService, rollOverWaitHandler);
+        campaign = new CampaignProcess(smsService, messageBundle, campaignService, rollOverWaitHandler, allAppConfigs);
     }
 
     @Test
     public void shouldAskSubscriptionForCampaignRequestAndSendToCampaignServiceForStart() {
         String message = "indie";
+        int startHour = 10;
+        int endHour = 11;
         Subscription subscription = mockSubscription(subscriberNumber);
         CampaignRequest campaignRequest = new CampaignRequest();
+        when(allAppConfigs.findByKey(WINDOW_START_TIME_KEY)).thenReturn(new AppConfig(WINDOW_START_TIME_KEY, startHour + ":30"));
+        when(allAppConfigs.findByKey(WINDOW_END_TIME_KEY)).thenReturn(new AppConfig(WINDOW_END_TIME_KEY, endHour + ":30"));
         when(subscription.createCampaignRegistrationRequest(Matchers.<Time>any())).thenReturn(campaignRequest);
         when(subscription.getCycleStartDate()).thenReturn(DateUtil.now());
         when(messageBundle.get(MessageBundle.ENROLLMENT_SUCCESS)).thenReturn(message);
@@ -62,6 +71,10 @@ public class CampaignProcessTest {
         Boolean reply = campaign.startFor(subscription);
         assertTrue(reply);
         verify(campaignService).startFor(campaignRequest);
+        ArgumentCaptor<Time> reminderCaptor = ArgumentCaptor.forClass(Time.class);
+        verify(subscription).createCampaignRegistrationRequest(reminderCaptor.capture());
+        assertTrue(reminderCaptor.getValue().getHour() >= startHour);
+        assertTrue(reminderCaptor.getValue().getHour() <= endHour);
         assertSMS(subscriberNumber, message);
     }
 
@@ -103,7 +116,10 @@ public class CampaignProcessTest {
 
         when(messageBundle.get(MessageBundle.ENROLLMENT_ROLLOVER)).thenReturn(message);
         when(source.createCampaignRequest()).thenReturn(sourceRequest);
+        when(source.getCycleStartDate()).thenReturn(DateTime.now());
         when(target.createCampaignRegistrationRequest(Matchers.<Time>any())).thenReturn(targetRequest);
+        when(allAppConfigs.findByKey(WINDOW_START_TIME_KEY)).thenReturn(new AppConfig(WINDOW_START_TIME_KEY, "10:30"));
+        when(allAppConfigs.findByKey(WINDOW_END_TIME_KEY)).thenReturn(new AppConfig(WINDOW_END_TIME_KEY, "11:30"));
 
         Boolean reply = campaign.rollOver(source, target);
 
@@ -158,6 +174,8 @@ public class CampaignProcessTest {
 
         String successMsg = "Your pregnancy care program was rolled over to child care program. Your existing child care program was terminated. Thanks for using the Mobile Midwife service.";
         when(messageBundle.get(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE)).thenReturn(successMsg);
+        when(allAppConfigs.findByKey(WINDOW_START_TIME_KEY)).thenReturn(new AppConfig(WINDOW_START_TIME_KEY, "10:30"));
+        when(allAppConfigs.findByKey(WINDOW_END_TIME_KEY)).thenReturn(new AppConfig(WINDOW_END_TIME_KEY, "11:30"));
 
         Boolean reply = campaign.rollOverToNewChildCareProgram(pregnancySubscriptionToRollOver, newChildCareSubscriptionForRollOver, existingChildCareSubscription);
 

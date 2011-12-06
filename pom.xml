@@ -16,9 +16,9 @@
     </properties>
 
     <modules>
-        <module>ghana-mtn-billing-api</module>
-        <module>ghana-mtn-billing</module>
-        <module>ghana-mtn-common</module>
+        <!--<module>ghana-mtn-billing-api</module>-->
+        <!--<module>ghana-mtn-billing</module>-->
+        <!--<module>ghana-mtn-common</module>-->
         <module>ghana-mtn-web</module>
     </modules>
 
