@@ -56,6 +56,6 @@ public class BillingEventHandlerTest {
 
         eventHandler.chargeCustomer(event);
 
-        verify(feeCharger).chargeFeeAndHandleResponse(subscription);
+        verify(feeCharger).chargeMonthlyFeeAndHandleIfDefaulted(subscription);
     }
 }

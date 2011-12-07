@@ -35,10 +35,11 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
         this.allSubscriptions = allSubscriptions;
     }
 
-    public void chargeFeeAndHandleResponse(Subscription subscription) {
+    public void chargeMonthlyFeeAndHandleIfDefaulted(Subscription subscription) {
         BillingServiceResponse<CustomerBill> response = chargeFee(subscription);
         if (response.hasErrors()) {
             sendMessage(subscription, messageFor(response.getValidationErrors()));
+            billingService.stopBilling(new BillingCycleRequest(subscription.subscriberNumber(), subscription.getProgramType(), subscription.getCycleStartDate()));
             createDefaultedDailyAndWeeklyBillingSchedule(subscription, response);
             updateSubscriptionStatus(subscription);
         } else {

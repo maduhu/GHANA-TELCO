@@ -65,9 +65,10 @@ public class BillingServiceMediatorTest {
         when(billingService.chargeProgramFee(any(BillingServiceRequest.class))).thenReturn(response);
         when(messageBundle.get(Arrays.asList(INSUFFICIENT_FUNDS))).thenReturn(errorMsg);
 
-        billingServiceMediator.chargeFeeAndHandleResponse(subscription);
+        billingServiceMediator.chargeMonthlyFeeAndHandleIfDefaulted(subscription);
 
         assertSmsRequest(mobileNumber, errorMsg);
+        assertStopBillingRequest(new BillingCycleRequest(mobileNumber, programType, subscription.getCycleStartDate()));
 
         DateTime now = new DateUtils().startOfDay(DateUtil.now());
         ArgumentCaptor<DefaultedBillingRequest> defaultedBillingRequestCaptor = ArgumentCaptor.forClass(DefaultedBillingRequest.class);
@@ -171,6 +172,17 @@ public class BillingServiceMediatorTest {
         SMSServiceRequest captured = captor.getValue();
         assertEquals(errorMsg, captured.getMessage());
         assertEquals(mobileNumber, captured.getMobileNumber());
+    }
+
+    private void assertStopBillingRequest(BillingCycleRequest expected) {
+
+        ArgumentCaptor<BillingCycleRequest> billingCycleCaptor = ArgumentCaptor.forClass(BillingCycleRequest.class);
+        verify(billingService).stopBilling(billingCycleCaptor.capture());
+
+        BillingCycleRequest actual = billingCycleCaptor.getValue();
+        assertEquals(expected.getCycleStartDate(), actual.getCycleStartDate());
+        assertEquals(expected.getMobileNumber(), actual.getMobileNumber());
+        assertEquals(expected.getProgramType(), actual.getProgramType());
     }
 
     private void assertDefaultBillingRequest(DefaultedBillingRequest expected, DefaultedBillingRequest actual) {

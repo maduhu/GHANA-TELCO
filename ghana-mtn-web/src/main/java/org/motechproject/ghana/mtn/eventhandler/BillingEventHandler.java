@@ -30,6 +30,6 @@ public class BillingEventHandler {
         String subscriberNumber = (String) params.get(EXTERNAL_ID_KEY);
 
         Subscription subscription = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, programKey);
-        billingServiceMediator.chargeFeeAndHandleResponse(subscription);
+        billingServiceMediator.chargeMonthlyFeeAndHandleIfDefaulted(subscription);
     }
 }

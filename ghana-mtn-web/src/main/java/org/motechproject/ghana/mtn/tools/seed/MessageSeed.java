@@ -58,7 +58,7 @@ public class MessageSeed extends Seed {
 
     private void addValidationError() {
         save(ValidationError.INVALID_CUSTOMER.key(), "This service is for MTN Customers only. This is not a valid MTN Mobile Number.");
-        save(ValidationError.INSUFFICIENT_FUNDS.key(), "There are not sufficient funds to proceed with the registration.");
+        save(ValidationError.INSUFFICIENT_FUNDS.key(), "There are no sufficient funds to proceed with the registration.");
     }
 
     private void save(String messageKey, String message) {

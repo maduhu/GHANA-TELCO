@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Long.valueOf;
 import static java.lang.String.format;
 
 @Component
@@ -102,8 +103,9 @@ public class BillingScheduler {
         return map;
     }
 
-    private int getRepeatingIntervalForPeriod(Period period) {
-        return period.toStandardSeconds().getSeconds() * 1000;
+    private long getRepeatingIntervalForPeriod(Period period) {
+        return valueOf(period.toStandardSeconds().
+                getSeconds()) * 1000L;
     }
 
     private String jobId(String mobileNumber, String programName) {
