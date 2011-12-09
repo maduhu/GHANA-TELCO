@@ -25,13 +25,9 @@ public class MessengerProcess extends BaseSubscriptionProcess {
         this.allSubscriptions = allSubscriptions;
     }
 
-        public void process(Subscription subscription, String messageKey) {
+    public void process(Subscription subscription, String messageKey) {
         ProgramMessage message = allProgramMessages.findBy(messageKey);
         if (message == null) return;
-        if (subscription.alreadySent(message)) return;
-
-        subscription.updateLastMessageSent();
-        allSubscriptions.update(subscription);
         sendMessage(subscription, message.getContent());
     }
 }

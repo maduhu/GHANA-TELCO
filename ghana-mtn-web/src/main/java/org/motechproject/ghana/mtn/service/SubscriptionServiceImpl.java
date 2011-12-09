@@ -79,7 +79,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void rollOverByEvent(Subscription subscription) {
-        if (!subscription.isCompleted()) return;
         if (!subscription.canRollOff()) stopExpired(subscription);
 
         performRollOver(subscription);

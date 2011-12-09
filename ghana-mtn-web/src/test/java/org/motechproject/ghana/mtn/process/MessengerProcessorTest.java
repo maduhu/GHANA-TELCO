@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.process;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.ProgramMessage;
@@ -38,17 +37,6 @@ public class MessengerProcessorTest {
     }
 
     @Test
-    public void shouldNotSendSMSForTheWeekAndIfCurrentWeekIsWeek() {
-        Subscription subscription = mock(Subscription.class);
-
-        when(subscription.currentWeek()).thenReturn(null);
-
-        messenger.process(subscription, "");
-        verify(allProgramMessages, never()).findBy(Matchers.<ProgramType>any(), Matchers.<Week>any(), Matchers.<DayOfWeek>any());
-        verifyZeroInteractions(allSubscriptions);
-    }
-
-    @Test
     public void shouldSMSRightMessageAndUpdateSubscriptionState() {
         String messageKey = "key";
         Subscription subscription = mock(Subscription.class);
@@ -60,16 +48,12 @@ public class MessengerProcessorTest {
         String content = "content";
 
         when(subscription.getProgramType()).thenReturn(programType);
-        when(subscription.currentWeek()).thenReturn(currentWeek);
         when(subscription.currentDay()).thenReturn(currentDay);
         when(subscription.subscriberNumber()).thenReturn(mobileNumber);
-        when(subscription.alreadySent(programMessage)).thenReturn(false);
         when(programMessage.getContent()).thenReturn(content);
         when(allProgramMessages.findBy(messageKey)).thenReturn(programMessage);
 
         messenger.process(subscription, messageKey);
-
-        verify(subscription).updateLastMessageSent();
 
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());

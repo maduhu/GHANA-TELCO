@@ -3,8 +3,9 @@ package org.motechproject.ghana.mtn.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.joda.time.*;
-import org.motechproject.ghana.mtn.domain.vo.Week;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeFieldType;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.utils.DateUtils;
 import org.motechproject.model.DayOfWeek;
@@ -97,24 +98,6 @@ public class Subscription extends MotechAuditableDataObject {
         return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), null, cycleStartDate.toLocalDate(), startWeekAndDay.getWeek().getNumber());
     }
 
-    public Week currentWeek() {
-
-        DateTime cycleStartDate = getCycleStartDate();
-        DateTime currentDateStartDayTime = dateUtils.now().withTimeAtStartOfDay();
-        if(cycleStartDate.compareTo(currentDateStartDayTime) > 0) return null;
-
-        DateTime cycleStartDateWithStartDayTime = cycleStartDate.withTimeAtStartOfDay();
-        int daysDiff = new Period(cycleStartDateWithStartDayTime, currentDateStartDayTime, PeriodType.days()).getDays();
-
-        if (daysDiff > 0) {
-            int daysToSaturday = daysToSaturday(cycleStartDateWithStartDayTime);
-            int daysAfterFirstSaturday = daysDiff > daysToSaturday ? daysDiff - daysToSaturday : 0;
-            int weeksAfterFirstSaturday = daysAfterFirstSaturday / 7 + (daysAfterFirstSaturday % 7 > 0 ? 1 : 0);
-            return startWeekAndDay.getWeek().add(weeksAfterFirstSaturday);
-        }
-        return startWeekAndDay.getWeek();
-    }
-
     private int daysToSaturday(DateTime cycleStartDateWithStartDayTime) {
         int dayOfWeek = cycleStartDateWithStartDayTime.get(DateTimeFieldType.dayOfWeek());
         return (dayOfWeek == DateTimeConstants.SUNDAY) ? 6 : SATURDAY - dayOfWeek;
@@ -155,15 +138,6 @@ public class Subscription extends MotechAuditableDataObject {
         return programType.getProgramKey();
     }
 
-    public void updateLastMessageSent() {
-        lastMsgSentWeekAndDay = new WeekAndDay(currentWeek(), currentDay());
-    }
-
-    public boolean alreadySent(ProgramMessage subscriptionMessage) {
-        return lastMsgSentWeekAndDay != null && subscriptionMessage.getWeekAndDay().isBefore(lastMsgSentWeekAndDay);
-    }
-
-
     public String subscriberNumber() {
         return subscriber.getNumber();
     }
@@ -172,16 +146,8 @@ public class Subscription extends MotechAuditableDataObject {
         return setTimeZone(cycleStartDate);
     }
 
-
-
     public void setCycleStartDate(DateTime cycleStartDate) {
         this.cycleStartDate = cycleStartDate;
-    }
-
-    @JsonIgnore
-    public Boolean isCompleted() {
-        Week week = currentWeek();
-        return week != null && week.getNumber() >= programType.getMaxWeek() && DayOfWeek.Friday.equals(currentDay());
     }
 
     public Boolean canRollOff() {
