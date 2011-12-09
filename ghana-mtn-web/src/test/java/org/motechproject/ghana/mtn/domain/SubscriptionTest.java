@@ -24,74 +24,6 @@ public class SubscriptionTest {
     }
 
     @Test
-    public void shouldReturnCurrentRunningWeekAsNull_IfCycleStartDateFallsOnFuture() {
-
-        DateTime satOct8 = date(2011, 10, 8);
-        Subscription registeredOn_satOct8 = subscription("9999933333", satOct8, new Week(10), programType("Pregnancy"));
-
-        mockCurrentDate(date(2011, 2, 5)); // sat
-        assertEquals(date(2011, 10, 10).toLocalDate(), registeredOn_satOct8.getCycleStartDate().toLocalDate());
-        assertNull(registeredOn_satOct8.currentWeek());
-    }
-
-    @Test
-    public void shouldReturnCurrentRunningWeekAsRegisteredWeek_IfRegisteredOnFridayOrAfter() {
-
-        DateTime friOct14 = date(2011, 10, 14);
-        Subscription registeredOn_satOct14 = subscription("9999933333", friOct14, new Week(10), programType("Pregnancy"));
-
-        mockCurrentDate(date(2011, 10, 15)); // sat
-        assertEquals(date(2011, 10, 17).toLocalDate(), registeredOn_satOct14.getCycleStartDate().toLocalDate());
-        assertNull(registeredOn_satOct14.currentWeek());
-
-        mockCurrentDate(date(2011, 10, 17)); // mon
-        assertWeek(new Week(10), registeredOn_satOct14.currentWeek());
-    }
-
-    @Test
-    public void shouldReturnCurrentRunningWeekForSubscriptionProgramBased_OnCycleStartDateAndSundayAsStartOfWeek() {
-        DateTime monJan31 = date(2011, 1, 31);
-        DateTime wedFeb2 = date(2011, 2, 2);
-        DateTime satFeb5 = date(2011, 2, 5);
-        DateTime sunFeb6 = date(2011, 2, 6);
-        DateTime wedFeb24 = date(2011, 2, 24);
-
-        Subscription registeredOn_monJan31 = subscription("9999933333", monJan31, new Week(10), programType("Pregnancy"));
-        Subscription registeredOn_wedFeb2 = subscription("9999933333", wedFeb2, new Week(6), programType("Pregnancy"));
-        Subscription registeredOn_satFeb5 = subscription("9999933333", satFeb5, new Week(6), programType("Child"));
-        Subscription registeredOn_sunFeb6 = subscription("9999933333", sunFeb6, new Week(8), programType("Child"));
-        Subscription registeredOn_wedFeb24 = subscription("9999933333", wedFeb24, new Week(9), programType("Child"));
-
-        mockCurrentDate(date(2011, 2, 5)); // sat
-        assertWeek(new Week(10), registeredOn_monJan31.currentWeek());
-        assertWeek(new Week(6), registeredOn_wedFeb2.currentWeek());
-        assertNull(registeredOn_satFeb5.currentWeek());
-        assertNull(registeredOn_wedFeb24.currentWeek());
-
-        mockCurrentDate(date(2011, 2, 6)); // sun
-        Week weekIsNullSinceCycleStartDateIsInFuture = null;
-        assertWeek(new Week(11), registeredOn_monJan31.currentWeek());
-        assertWeek(new Week(7), registeredOn_wedFeb2.currentWeek());
-        assertWeek(weekIsNullSinceCycleStartDateIsInFuture, registeredOn_satFeb5.currentWeek());
-        assertWeek(weekIsNullSinceCycleStartDateIsInFuture, registeredOn_sunFeb6.currentWeek());
-        assertWeek(weekIsNullSinceCycleStartDateIsInFuture, registeredOn_wedFeb24.currentWeek());
-
-        mockCurrentDate(date(2011, 2, 19)); // sat
-        assertWeek(new Week(12), registeredOn_monJan31.currentWeek());
-        assertWeek(new Week(8), registeredOn_wedFeb2.currentWeek());
-        assertWeek(new Week(7), registeredOn_satFeb5.currentWeek());
-        assertWeek(new Week(9), registeredOn_sunFeb6.currentWeek());
-        assertNull(registeredOn_wedFeb24.currentWeek());
-
-        mockCurrentDate(date(2011, 2, 27)); // sun
-        assertWeek(new Week(14), registeredOn_monJan31.currentWeek());
-        assertWeek(new Week(10), registeredOn_wedFeb2.currentWeek());
-        assertWeek(new Week(9), registeredOn_satFeb5.currentWeek());
-        assertWeek(new Week(11), registeredOn_sunFeb6.currentWeek());
-        assertWeek(new Week(10), registeredOn_wedFeb24.currentWeek());
-    }
-
-    @Test
     public void shouldComputeEndDate_BasedOnCycleStartDate() {
 
         Subscription registeredOn_MonJan31 = subscription("9999933333", date(2011, 1, 31), new Week(10), programType("Pregnancy"));
@@ -153,12 +85,6 @@ public class SubscriptionTest {
         ReflectionTestUtils.setField(subscription, "dateUtils", dateUtils);
         subscription.updateCycleInfo();
         return subscription;
-    }
-
-    @Test
-    public void shouldCheckIfMessageAlreadySent() {
-        Subscription sub1 = new Subscription();
-        assertFalse(sub1.alreadySent(new ProgramMessage()));
     }
 
     private DateTime date(int year, int month, int date) {

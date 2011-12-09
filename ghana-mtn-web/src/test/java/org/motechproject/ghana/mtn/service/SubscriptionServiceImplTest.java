@@ -25,7 +25,6 @@ import org.motechproject.util.DateUtil;
 import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -88,7 +87,6 @@ public class SubscriptionServiceImplTest {
         Subscription subscription = spy(new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
                 .withSubscriber(new Subscriber("9850012345")).withType(pregnancyProgramType).withStartWeekAndDay(new WeekAndDay(new Week(36), DayOfWeek.Friday))
                 .build().updateCycleInfo());
-        when(subscription.isCompleted()).thenReturn(true);
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(campaign.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(persistence.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
@@ -196,21 +194,11 @@ public class SubscriptionServiceImplTest {
 
 
     @Test
-    public void shouldDoNothingIfSubscriptionIsNotCompletedDuringProcessAfterEvent() {
-        Subscription subscription = mock(Subscription.class);
-        when(subscription.isCompleted()).thenReturn(false);
-
-        service.rollOverByEvent(subscription);
-        verify(subscription, never()).canRollOff();
-    }
-
-    @Test
     public void shouldStopIfSubscriptionIsCompletedAndCannotRollOffDuringProcessAfterEvent() {
         Subscription subscription = mock(Subscription.class);
         ProgramType programType = mock(ProgramType.class);
 
         when(programType.getMaxWeek()).thenReturn(35);
-        when(subscription.isCompleted()).thenReturn(true);
         when(subscription.canRollOff()).thenReturn(false);
         when(subscription.getProgramType()).thenReturn(programType);
         when(subscription.rollOverProgramType()).thenReturn(programType);
@@ -228,14 +216,11 @@ public class SubscriptionServiceImplTest {
         Subscription source = mock(Subscription.class);
         Subscriber subscriber = mock(Subscriber.class);
         ProgramType programType = mock(ProgramType.class);
-        Week week = new Week(4);
 
         when(source.getSubscriber()).thenReturn(subscriber);
         when(source.getProgramType()).thenReturn(programType);
         when(source.rollOverProgramType()).thenReturn(programType);
-        when(source.currentWeek()).thenReturn(week);
         when(source.currentDay()).thenReturn(DayOfWeek.Sunday);
-        when(source.isCompleted()).thenReturn(true);
         when(source.canRollOff()).thenReturn(true);
         when(programType.getRollOverProgramType()).thenReturn(programType);
 
