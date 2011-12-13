@@ -20,7 +20,7 @@
         <!--<module>ghana-mtn-billing</module>-->
         <!--<module>ghana-mtn-common</module>-->
         <module>ghana-mtn-web</module>
-        <module>ghana-mtn-performance-input</module>
+        <!-- <module>ghana-mtn-performance-input</module>-->
     </modules>
 
     <build>
