@@ -7,10 +7,9 @@ import org.motechproject.ghana.mtn.billing.service.BillingService;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
-import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.ghana.mtn.service.sms.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 public class SubscriptionBilling extends BaseSubscriptionProcess {

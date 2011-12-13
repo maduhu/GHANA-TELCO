@@ -1,4 +1,4 @@
-package org.motechproject.ghana.mtn.service;
+package org.motechproject.ghana.mtn.service.sms;
 
 import org.springframework.stereotype.Component;
 

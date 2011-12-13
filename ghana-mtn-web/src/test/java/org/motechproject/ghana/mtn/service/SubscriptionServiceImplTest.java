@@ -21,6 +21,7 @@ import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.exception.UserRegistrationFailureException;
 import org.motechproject.ghana.mtn.repository.AllSubscribers;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
+import org.motechproject.ghana.mtn.service.sms.SMSService;
 import org.motechproject.ghana.mtn.testbuilders.TestProgramType;
 import org.motechproject.ghana.mtn.testbuilders.TestSubscription;
 import org.motechproject.ghana.mtn.testbuilders.TestSubscriptionRequest;

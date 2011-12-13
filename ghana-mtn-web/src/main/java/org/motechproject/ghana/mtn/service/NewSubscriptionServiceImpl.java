@@ -32,7 +32,7 @@ public class NewSubscriptionServiceImpl {
         this.inputMessageParser = parser;
     }
 
-    public void start(SubscriptionServiceRequest subscriptionRequest) {
+    public void startFor(SubscriptionServiceRequest subscriptionRequest) {
         Subscriber subscriber = new Subscriber(subscriptionRequest.getSubscriberNumber());
         Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
         subscription.setSubscriber(subscriber);
@@ -44,7 +44,7 @@ public class NewSubscriptionServiceImpl {
         }
     }
 
-    public void stop(SubscriptionServiceRequest subscriptionRequest) {
+    public void stopFor(SubscriptionServiceRequest subscriptionRequest) {
         Subscriber subscriber = new Subscriber(subscriptionRequest.getSubscriberNumber());
         Subscription subscription = inputMessageParser.parse(subscriptionRequest.getInputMessage());
         subscription.setSubscriber(subscriber);
