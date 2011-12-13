@@ -17,10 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 @ContextConfiguration(locations = "classpath:test_applicationContext.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SMSAuditAnalyzerTest {
@@ -40,9 +36,10 @@ public class SMSAuditAnalyzerTest {
         allActiveSubscriptions.addAll(allSubscriptions.getAllActiveSubscriptions(ProgramType.CHILDCARE));
         allActiveSubscriptions.addAll(allSubscriptions.getAllActiveSubscriptions(ProgramType.PREGNANCY));
 
-        assertThat(allActiveSubscriptions.size(), is(equalTo(9959))); // TODO: Update to actual number from couchdb
+        //assertThat(allActiveSubscriptions.size(), is(equalTo(9959))); // TODO: Update to actual number from couchdb
 
-        List<SMSAudit> smsAuditForDate = smsAuditAnalyzer.getSmsAuditForDate("2011-12-16");
+        List<SMSAudit> smsAuditForDate = smsAuditAnalyzer.getSmsAuditForDate("2011-12-19");
+        diff(allActiveSubscriptions,smsAuditForDate);
        // assertThat(9943, is(equalTo(smsAuditForDate.size())));
 
     }
@@ -58,17 +55,17 @@ public class SMSAuditAnalyzerTest {
             allNumbers.add(s.subscriberNumber());
         }
 
-        writeToFile(allNumbers, "allNumbers.txt");
+        writeToFile(allNumbers, "/home/sanjana/allNumbers.txt");
         allNumbers.removeAll(sentNumbers);
-        writeToFile(sentNumbers, "sentNumbers.txt");
-        writeToFile(allNumbers, "failedNumbers.txt");
+        writeToFile(sentNumbers, "/home/sanjana/sentNumbers.txt");
+        writeToFile(allNumbers, "/home/sanjana/failedNumbers.txt");
 
 
     }
 
     private void writeToFile(List<String> allNumbersBackUp, String fileName) {
         try {
-            FileWriter fstream = new FileWriter(fileName, false);
+            FileWriter fstream = new FileWriter(fileName);
             BufferedWriter out = new BufferedWriter(fstream);
             for (String num : allNumbersBackUp) {
                 out.write(num);

@@ -38,11 +38,11 @@ public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
         return subscriptions.size() > 0 ? subscriptions.get(0) : null;
     }
 
-    @View(name = "find_all_Active_Subscriptions", map = "function(doc) {" +
-            "if (doc.status === 'ACTIVE' || doc.status === 'SUSPENDED' || doc.status === 'WAITING_FOR_ROLLOVER_RESPONSE')" +
+    @View(name = "find_all_active_subscriptions", map = "function(doc) {" +
+            "if (doc.status === 'ACTIVE' || doc.status === 'WAITING_FOR_ROLLOVER_RESPONSE')" +
             "  emit( doc.programType.programKey, [doc.registrationDate, doc.subscriber.number] );  }")
     public List<Subscription> getAllActiveSubscriptions(String programKey) {
-        ViewQuery viewQuery = createQuery("find_all_Active_Subscriptions").key(programKey).includeDocs(true);
+        ViewQuery viewQuery = createQuery("find_all_active_subscriptions").key(programKey).includeDocs(true);
         return db.queryView(viewQuery, Subscription.class);
     }
 }
