@@ -79,9 +79,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void rollOverByEvent(Subscription subscription) {
-        if (!subscription.canRollOff()) stopExpired(subscription);
-
-        performRollOver(subscription);
+        if (!subscription.canRollOff())
+            stopExpired(subscription);
+        else
+            performRollOver(subscription);
     }
 
     @Override
@@ -94,7 +95,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             }
         } else {
             for (ISubscriptionFlowProcess process : asList(validation, campaign, persistence)) {
-                if (!process.rollOverToNewChildCareProgram(pregnancyProgramWaitingForRollOver, rollOverSubscriptionFrom(pregnancyProgramWaitingForRollOver), existingChildCare)) break;
+                if (!process.rollOverToNewChildCareProgram(pregnancyProgramWaitingForRollOver, rollOverSubscriptionFrom(pregnancyProgramWaitingForRollOver), existingChildCare))
+                    break;
             }
         }
     }

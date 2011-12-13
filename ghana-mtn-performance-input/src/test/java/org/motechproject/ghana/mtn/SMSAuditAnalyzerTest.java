@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +31,7 @@ public class SMSAuditAnalyzerTest {
 
     @Before
     public void setUp() {
-        smsAuditAnalyzer = new SMSAuditAnalyzer();
+
     }
 
     @Test
@@ -37,14 +40,44 @@ public class SMSAuditAnalyzerTest {
         allActiveSubscriptions.addAll(allSubscriptions.getAllActiveSubscriptions(ProgramType.CHILDCARE));
         allActiveSubscriptions.addAll(allSubscriptions.getAllActiveSubscriptions(ProgramType.PREGNANCY));
 
-        assertThat(allActiveSubscriptions.size(), is(equalTo(9478))); // TODO: Update to actual number from couchdb
+        assertThat(allActiveSubscriptions.size(), is(equalTo(9959))); // TODO: Update to actual number from couchdb
 
-        List<SMSAudit> smsAuditForDate = smsAuditAnalyzer.getSmsAuditForDate("2011-12-09");
-        assertThat(9943, is(equalTo(smsAuditForDate.size())));
-
-        // TODO: Take all the subscriberNumbers from smsAudits and compare with the subscribers from allActiveSubscriptions.
-        // See if the missedout subscribers are of all same program type.  etc
-        // basically try to do some analysis on this data.
+        List<SMSAudit> smsAuditForDate = smsAuditAnalyzer.getSmsAuditForDate("2011-12-16");
+       // assertThat(9943, is(equalTo(smsAuditForDate.size())));
 
     }
+
+    public void diff(List<Subscription> allSubscriptions, List<SMSAudit> smsAuditForDate) {
+        List<String> sentNumbers = new ArrayList<String>();
+        List<String> allNumbers = new ArrayList<String>();
+        for (SMSAudit sa : smsAuditForDate) {
+            sentNumbers.add(sa.getSubscriberNumber());
+        }
+
+        for (Subscription s : allSubscriptions) {
+            allNumbers.add(s.subscriberNumber());
+        }
+
+        writeToFile(allNumbers, "allNumbers.txt");
+        allNumbers.removeAll(sentNumbers);
+        writeToFile(sentNumbers, "sentNumbers.txt");
+        writeToFile(allNumbers, "failedNumbers.txt");
+
+
+    }
+
+    private void writeToFile(List<String> allNumbersBackUp, String fileName) {
+        try {
+            FileWriter fstream = new FileWriter(fileName, false);
+            BufferedWriter out = new BufferedWriter(fstream);
+            for (String num : allNumbersBackUp) {
+                out.write(num);
+                out.write("\n");
+            }
+            out.close();
+        } catch (IOException e) {
+
+        }
+    }
+
 }

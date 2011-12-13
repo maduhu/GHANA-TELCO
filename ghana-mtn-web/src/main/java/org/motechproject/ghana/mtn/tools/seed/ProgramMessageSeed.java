@@ -37,12 +37,13 @@ public class ProgramMessageSeed extends Seed {
     }
 
     private void persistMessagesFor(ProgramType programType) {
+        String program = programType.getProgramKey().toLowerCase();
         for (int i = programType.getMinWeek(); i <= programType.getMaxWeek(); i++) {
             String programKey = programType.getProgramKey();
             Week week = new Week(i);
-            allSubscriptionMessages.add(new ProgramMessage(format("pregnancy-calendar-week-%s-Monday", i),programKey, DUMMY + week + "-" + DayOfWeek.Monday.name(), new WeekAndDay(week, DayOfWeek.Monday)));
-            allSubscriptionMessages.add(new ProgramMessage(format("pregnancy-calendar-week-%s-Wednesday", i), programKey, DUMMY + week + "-" + DayOfWeek.Wednesday.name(), new WeekAndDay(week, DayOfWeek.Wednesday)));
-            allSubscriptionMessages.add(new ProgramMessage(format("pregnancy-calendar-week-%s-Friday", i), programKey, DUMMY + week + "-" + DayOfWeek.Friday.name(), new WeekAndDay(week, DayOfWeek.Friday)));
+            allSubscriptionMessages.add(new ProgramMessage(format(program + "-calendar-week-%s-Monday", i),programKey, DUMMY + week + "-" + DayOfWeek.Monday.name(), new WeekAndDay(week, DayOfWeek.Monday)));
+            allSubscriptionMessages.add(new ProgramMessage(format(program + "-calendar-week-%s-Wednesday", i), programKey, DUMMY + week + "-" + DayOfWeek.Wednesday.name(), new WeekAndDay(week, DayOfWeek.Wednesday)));
+            allSubscriptionMessages.add(new ProgramMessage(format(program + "-calendar-week-%s-Friday", i), programKey, DUMMY + week + "-" + DayOfWeek.Friday.name(), new WeekAndDay(week, DayOfWeek.Friday)));
         }
     }
 
