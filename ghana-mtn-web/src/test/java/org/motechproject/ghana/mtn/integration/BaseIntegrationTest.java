@@ -42,7 +42,6 @@ import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgra
 
 public abstract class BaseIntegrationTest extends BaseSpringTestContext {
 
-    public static final String REPEAT = "-repeat";
     @Autowired
     protected SubscriptionController subscriptionController;
     @Autowired
@@ -177,9 +176,11 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         CampaignRequest campaignRequest = subscription.createCampaignRequest();
 
         String messageKey = getMessageKey(subscription);
-        String jobId = String.format("%s-%s%s.%s.%s-%s", INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, EventKeys.BASE_SUBJECT, campaignRequest.campaignName(), campaignRequest.externalId(), messageKey, "repeat");
+        String jobId = String.format("%s-%s%s.%s.%s", INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, EventKeys.BASE_SUBJECT, campaignRequest.campaignName(), campaignRequest.externalId(), messageKey);
         try {
             JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
+            CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");
+            assertNotNull(cronTrigger.getCronExpression());
             JobDataMap map = jobDetail.getJobDataMap();
             assertThat(map.get(EventKeys.EXTERNAL_ID_KEY).toString(), Matchers.is(subscriberNumber));
             assertThat(map.get(EventKeys.CAMPAIGN_NAME_KEY).toString(), Matchers.is(subscription.programKey()));

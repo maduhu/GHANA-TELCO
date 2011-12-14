@@ -90,8 +90,12 @@ public class Subscription extends MotechAuditableDataObject {
         this.registrationDate = registrationDate;
     }
 
-    public CampaignRequest createCampaignRegistrationRequest(Time reminderTime) {
-        return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), reminderTime, cycleStartDate.toLocalDate(), startWeekAndDay.getWeek().getNumber());
+    public CampaignRequest createCampaignRegistrationRequest() {
+        return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), reminderTime(), cycleStartDate.toLocalDate(), startWeekAndDay.getWeek().getNumber());
+    }
+
+    private Time reminderTime() {
+        return new Time(cycleStartDate.get(DateTimeFieldType.hourOfDay()), cycleStartDate.get(DateTimeFieldType.minuteOfHour()));
     }
 
     public CampaignRequest createCampaignRequest() {

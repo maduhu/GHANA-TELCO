@@ -1,13 +1,9 @@
 package org.motechproject.ghana.mtn.process;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.motechproject.ghana.mtn.domain.AppConfig;
 import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.repository.AllAppConfigs;
 import org.motechproject.ghana.mtn.service.SMSService;
-import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,35 +19,19 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
     private RollOverWaitSchedule rollOverWaitSchedule;
     public static final String DATE_MARKER = "${d}";
     public static SimpleDateFormat friendlyDateFormatter = new SimpleDateFormat("EEE, MMM d, ''yy");
-    private AllAppConfigs allAppConfigs;
 
     @Autowired
-    public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService, RollOverWaitSchedule rollOverWaitSchedule, AllAppConfigs allAppConfigs) {
+    public CampaignProcess(SMSService smsService, MessageBundle messageBundle, MessageCampaignService campaignService, RollOverWaitSchedule rollOverWaitSchedule) {
         super(smsService, messageBundle);
         this.campaignService = campaignService;
         this.rollOverWaitSchedule = rollOverWaitSchedule;
-        this.allAppConfigs = allAppConfigs;
     }
 
     @Override
     public Boolean startFor(Subscription subscription) {
-        campaignService.startFor(subscription.createCampaignRegistrationRequest(getReminderTime(subscription.getCycleStartDate())));
+        campaignService.startFor(subscription.createCampaignRegistrationRequest());
         sendMessage(subscription, getSuccessMessage(subscription));
         return true;
-    }
-
-    private Time getReminderTime(DateTime cycleStartDate) {
-        Time startTime = Time.parseTime(allAppConfigs.findByKey(AppConfig.WINDOW_START_TIME_KEY).value().toString(), ":");
-        Time endTime = Time.parseTime(allAppConfigs.findByKey(AppConfig.WINDOW_END_TIME_KEY).value().toString(), ":");
-
-        DateTime startDateTime = cycleStartDate.withTime(startTime.getHour(), startTime.getMinute(), 0, 0);
-        DateTime endDateTime = cycleStartDate.withTime(endTime.getHour(), startTime.getMinute(), 0, 0);
-
-        long reminderTimeInMillis = startDateTime.toDate().getTime() + cycleStartDate.toDate().getTime() % (endDateTime.toDate().getTime() - startDateTime.toDate().getTime());
-        int reminderHour = DateTime.now().withMillis(reminderTimeInMillis).getHourOfDay();
-        int reminderMinute = DateTime.now().withMillis(reminderTimeInMillis).getMinuteOfHour();
-
-        return new Time(reminderHour, reminderMinute);
     }
 
     private String getSuccessMessage(Subscription subscription) {
@@ -99,7 +79,7 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     private boolean performRollOver(Subscription fromSubscription, Subscription toSubscription, String message) {
         campaignService.stopFor(fromSubscription.createCampaignRequest());
-        campaignService.startFor(toSubscription.createCampaignRegistrationRequest(getReminderTime(fromSubscription.getCycleStartDate())));
+        campaignService.startFor(toSubscription.createCampaignRegistrationRequest());
         sendMessage(toSubscription, message);
         return true;
     }
