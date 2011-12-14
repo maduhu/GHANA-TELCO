@@ -44,7 +44,7 @@ public class BillingAuditorTest {
 
         BillAudit captured = captor.getValue();
         assertEquals("123", captured.getMobileNumber());
-        assertEquals(fee, captured.getAmountToCharge());
+        assertEquals(fee, captured.getAmountCharged());
         assertEquals(BillStatus.SUCCESS, captured.getBillStatus());
         assertEquals(StringUtils.EMPTY, captured.getFailureReason());
 
@@ -65,7 +65,7 @@ public class BillingAuditorTest {
 
         BillAudit captured = captor.getValue();
         assertEquals("123", captured.getMobileNumber());
-        assertEquals(fee, captured.getAmountToCharge());
+        assertEquals(fee, captured.getAmountCharged());
         assertEquals(BillStatus.FAILURE, captured.getBillStatus());
         assertEquals(ValidationError.INSUFFICIENT_FUNDS.name(), captured.getFailureReason());
 

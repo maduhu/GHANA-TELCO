@@ -13,7 +13,7 @@ public class BillAuditMatcher extends ArgumentMatcher<BillAudit> {
     @Override
     public boolean matches(Object o) {
         BillAudit billAudit = (BillAudit) o;
-        return billAudit.getAmountToCharge().getValue().equals(this.billAudit.getAmountToCharge().getValue())
+        return billAudit.getAmountCharged().getValue().equals(this.billAudit.getAmountCharged().getValue())
                 && billAudit.getBillStatus().equals(this.billAudit.getBillStatus())
                 && billAudit.getMobileNumber().equals(this.billAudit.getMobileNumber())
                 && billAudit.getFailureReason().equals(this.billAudit.getFailureReason());

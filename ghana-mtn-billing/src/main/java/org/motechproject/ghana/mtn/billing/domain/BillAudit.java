@@ -3,7 +3,6 @@ package org.motechproject.ghana.mtn.billing.domain;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.motechproject.ghana.mtn.vo.Money;
 import org.motechproject.model.MotechAuditableDataObject;
 
@@ -12,16 +11,19 @@ public class BillAudit extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "BillAudit";
     private String mobileNumber;
-    private Money amountToCharge;
+    private Money amountCharged;
     private BillStatus billStatus;
     private String failureReason;
     private DateTime date;
+    private String program;
+
     public BillAudit() {
     }
 
-    public BillAudit(String mobileNumber, Money amountToCharge, BillStatus billStatus, String failureReason) {
+    public BillAudit(String mobileNumber, String program, Money amountCharged, BillStatus billStatus, String failureReason) {
         this.mobileNumber = mobileNumber;
-        this.amountToCharge = amountToCharge;
+        this.program = program;
+        this.amountCharged = amountCharged;
         this.billStatus = billStatus;
         this.failureReason = failureReason;
         this.date = DateTime.now();
@@ -31,8 +33,8 @@ public class BillAudit extends MotechAuditableDataObject {
         return mobileNumber;
     }
 
-    public Money getAmountToCharge() {
-        return amountToCharge;
+    public Money getAmountCharged() {
+        return amountCharged;
     }
 
     public BillStatus getBillStatus() {
@@ -47,8 +49,8 @@ public class BillAudit extends MotechAuditableDataObject {
         this.mobileNumber = mobileNumber;
     }
 
-    public void setAmountToCharge(Money amountToCharge) {
-        this.amountToCharge = amountToCharge;
+    public void setAmountCharged(Money amountCharged) {
+        this.amountCharged = amountCharged;
     }
 
     public void setBillStatus(BillStatus billStatus) {
@@ -65,5 +67,13 @@ public class BillAudit extends MotechAuditableDataObject {
 
     public void setDate(DateTime date) {
         this.date = date;
+    }
+
+    public String getProgram() {
+        return program;
+    }
+
+    public void setProgram(String program) {
+        this.program = program;
     }
 }

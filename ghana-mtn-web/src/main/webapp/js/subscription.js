@@ -40,7 +40,8 @@ function submitEventRequest() {
 }
 
 function refreshAudit(){
-    http('audits', updateAuditResponse);
+    var selected_option = document.getElementById('audit_options').value
+    http('audits/' + selected_option, updateAuditResponse);
     return false;
 }
 

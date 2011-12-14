@@ -8,13 +8,14 @@
 <div class="title_box">
     <img src="images/mobile.png" class="icon"/>
     <span>Ghana MTN Test Screen</span>
+
 </div>
 <div class="enrollment_box">
     <fieldset>
         <legend>Enrollment of subscribers</legend>
         <form id="sms-form">
             <label for="subNo">Mobile Number:</label>
-            <input id="subNo" name="subscriberNumber" type="text" value="9512395123"/>
+            <input id="subNo" name="subscriberNumber" type="text" value="9500012345"/>
             <label for="smsText">SMS (eg. P 27, C 5):</label>
             <input id="smsText" type="text"/>
             <input type="submit" onclick="return submitRequest(); return false;" value="Submit Request"/>
@@ -43,6 +44,10 @@
     <fieldset>
         <legend>Message Audit</legend>
         <form id="audit-form">
+            <select id="audit_options">
+                <option value="sms">SMSAudit</option>
+                <option value="bill">BillAudit</option>
+            </select>
             <input type="submit" onclick="return refreshAudit(); return false;" value="Refresh"/>
         </form>
         <div id="audit_table"></div>
