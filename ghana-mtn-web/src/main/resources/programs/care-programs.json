@@ -10,7 +10,8 @@
                 "languages" : ["en"],
                 "messageKey": "pregnancy-calendar-week-{Offset}-{WeekDay}",
                 "calendarStartOfWeek" : "Sunday",
-                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
+                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
+                "messageSendTime" : "10:30"
             }
 
         ]
@@ -27,7 +28,8 @@
                 "languages" : ["en"],
                 "messageKey": "childcare-calendar-week-{Offset}-{WeekDay}",
                 "calendarStartOfWeek" : "Sunday",
-                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
+                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
+                "messageSendTime" : "10:30"
             }
 
         ]
