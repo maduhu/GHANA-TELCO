@@ -11,7 +11,7 @@
                 "messageKey": "pregnancy-calendar-week-{Offset}-{WeekDay}",
                 "calendarStartOfWeek" : "Sunday",
                 "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
-                "messageSendTime" : "10:30"
+                "deliverTime" : "10:30"
             }
 
         ]
@@ -29,7 +29,7 @@
                 "messageKey": "childcare-calendar-week-{Offset}-{WeekDay}",
                 "calendarStartOfWeek" : "Sunday",
                 "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
-                "messageSendTime" : "10:30"
+                "deliverTime" : "10:30"
             }
 
         ]

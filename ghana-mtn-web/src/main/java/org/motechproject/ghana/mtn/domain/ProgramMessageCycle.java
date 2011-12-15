@@ -17,16 +17,16 @@ public class ProgramMessageCycle {
     }
 
     public DateTime nearestCycleDate(DateTime fromDate) {
-        return APPLICABLE_DAYS.contains(fromDate.getDayOfWeek()) ?  calculateNextPossible(fromDate.dayOfMonth().addToCopy(1)) : calculateNextPossible(fromDate);
+        return APPLICABLE_DAYS.contains(fromDate.getDayOfWeek()) ? calculateNextPossible(fromDate.dayOfMonth().addToCopy(1)) : calculateNextPossible(fromDate);
     }
 
     private DateTime calculateNextPossible(DateTime fromDate) {
         int dayOfWeek = fromDate.getDayOfWeek();
-        int noOfDaysToNearestCycleDate  = 0;
-        for (int currentDayOfWeek = dayOfWeek, dayCount = 0; dayCount <= SUNDAY ; dayCount++) {
-            if(APPLICABLE_DAYS.contains(currentDayOfWeek)) {
-               noOfDaysToNearestCycleDate = dayCount;
-               break;
+        int noOfDaysToNearestCycleDate = 0;
+        for (int currentDayOfWeek = dayOfWeek, dayCount = 0; dayCount <= SUNDAY; dayCount++) {
+            if (APPLICABLE_DAYS.contains(currentDayOfWeek)) {
+                noOfDaysToNearestCycleDate = dayCount;
+                break;
             }
             if (currentDayOfWeek == SUNDAY) currentDayOfWeek = 1;
             else currentDayOfWeek++;
