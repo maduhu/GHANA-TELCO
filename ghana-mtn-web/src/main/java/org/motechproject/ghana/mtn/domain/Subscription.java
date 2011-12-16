@@ -91,11 +91,11 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     public CampaignRequest createCampaignRegistrationRequest() {
-        return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), reminderTime(), cycleStartDate.toLocalDate(), startWeekAndDay.getWeek().getNumber());
+        return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), reminderTime(), getRegistrationDate().toLocalDate(), startWeekAndDay.getWeek().getNumber());
     }
 
     private Time reminderTime() {
-        return new Time(cycleStartDate.get(DateTimeFieldType.hourOfDay()), cycleStartDate.get(DateTimeFieldType.minuteOfHour()));
+        return new Time(cycleStartDate.get(DateTimeFieldType.hourOfDay()), cycleStartDate.get(DateTimeFieldType.minuteOfHour()) + 1);
     }
 
     public CampaignRequest createCampaignRequest() {
@@ -107,18 +107,18 @@ public class Subscription extends MotechAuditableDataObject {
         return (dayOfWeek == DateTimeConstants.SUNDAY) ? 6 : SATURDAY - dayOfWeek;
     }
 
-    private DateTime cycleStartDate() {
-        return new ProgramMessageCycle().nearestCycleDate(getRegistrationDate()).withTimeAtStartOfDay();
+    private DateTime cycleStartDate(ProgramMessageCycle programMessageCycle) {
+        return programMessageCycle.nearestCycleDate(this);
     }
 
-    public Subscription updateCycleInfo() {
-        updateStartCycle();
+    public Subscription updateCycleInfo(ProgramMessageCycle programMessageCycle) {
+        updateStartCycle(programMessageCycle);
         updateCycleEndDate();
         return this;
     }
 
-    private void updateStartCycle() {
-        DateTime startDateOfCycle = cycleStartDate();
+    private void updateStartCycle(ProgramMessageCycle programMessageCycle) {
+        DateTime startDateOfCycle = cycleStartDate(programMessageCycle);
         this.getStartWeekAndDay().setDay(dateUtils.day(startDateOfCycle));
         this.cycleStartDate = startDateOfCycle;
     }

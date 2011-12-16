@@ -1,28 +1,54 @@
 package org.motechproject.ghana.mtn.domain;
 
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.model.DayOfWeek.*;
 
 public class ProgramMessageCycleTest {
+
+    @Mock
+    private Subscription subscription;
+    @Mock
+    private AllMessageCampaigns allMessageCampaigns;
+    private ProgramMessageCycle programMessageCycle;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        programMessageCycle = new ProgramMessageCycle();
+        ReflectionTestUtils.setField(programMessageCycle, "allMessageCampaigns", allMessageCampaigns);
+        when(subscription.programKey()).thenReturn(ProgramType.PREGNANCY);
+        when(allMessageCampaigns.getApplicableDaysForRepeatingCampaign(ProgramType.PREGNANCY, "Pregnancy Message")).thenReturn(asList(Monday, Wednesday, Friday));
+    }
 
     @Test
     public void shouldReturnStartOfCycleDate_IfGivenDateExactlyFallsOnCycleEndOrAfter() {
 
         DateTime thuFeb232012 = new DateTime(2012, 2, 23, 0, 1);
-        DateTime friFeb242012 = new DateTime(2012, 2, 24, 0, 1);
-        DateTime satFeb252012 = new DateTime(2012, 2, 25, 0, 2);
-        DateTime sunFeb262012 = new DateTime(2012, 2, 26, 10, 0);
-        DateTime monFeb272012 = new DateTime(2012, 2, 27, 0, 10);
+        assertNearestCycleDate(thuFeb232012, new DateTime(2012, 2, 24, 0, 1));
 
-        assertEquals(new DateTime(2012, 2, 24, 0, 1), new ProgramMessageCycle().nearestCycleDate(thuFeb232012));
-        assertEquals(new DateTime(2012, 2, 27, 0, 1), new ProgramMessageCycle().nearestCycleDate(friFeb242012));
-        assertEquals(new DateTime(2012, 2, 27, 0, 2), new ProgramMessageCycle().nearestCycleDate(satFeb252012));
-        assertEquals(new DateTime(2012, 2, 27, 10, 0), new ProgramMessageCycle().nearestCycleDate(sunFeb262012));
-        assertEquals(new DateTime(2012, 2, 29, 0, 10), new ProgramMessageCycle().nearestCycleDate(monFeb272012));
+        DateTime friFeb242012 = new DateTime(2012, 2, 24, 0, 1);
+        assertNearestCycleDate(friFeb242012, new DateTime(2012, 2, 27, 0, 1));
+
+        DateTime satFeb252012 = new DateTime(2012, 2, 25, 0, 2);
+        assertNearestCycleDate(satFeb252012, new DateTime(2012, 2, 27, 0, 2));
+
+        DateTime sunFeb262012 = new DateTime(2012, 2, 26, 10, 0);
+        assertNearestCycleDate(sunFeb262012, new DateTime(2012, 2, 27, 10, 0));
+
+        DateTime monFeb272012 = new DateTime(2012, 2, 27, 0, 10);
+        assertNearestCycleDate(monFeb272012, new DateTime(2012, 2, 29, 0, 10));
     }
-    
+
     @Test
     public void shouldGetNearestCycleDateBasedOnCurrentDayOfWeek() {
 
@@ -41,23 +67,25 @@ public class ProgramMessageCycleTest {
         DateTime oct13Thu = new DateTime(2011, 10, 13, 0, 6);
         DateTime oct14Fri = new DateTime(2011, 10, 14, 0, 6);
 
-        assertEquals(new DateTime(2011, 10, 3, 0, 0), new ProgramMessageCycle().nearestCycleDate(oct1Sat));
-        assertEquals(new DateTime(2011, 10, 3, 2, 0), new ProgramMessageCycle().nearestCycleDate(oct2Sun));
-        assertEquals(new DateTime(2011, 10, 5, 0, 0), new ProgramMessageCycle().nearestCycleDate(oct3Mon));
-        assertEquals(new DateTime(2011, 10, 5, 5, 0), new ProgramMessageCycle().nearestCycleDate(oct4Tue));
-        assertEquals(new DateTime(2011, 10, 7, 6, 0), new ProgramMessageCycle().nearestCycleDate(oct5Wed));
-        assertEquals(new DateTime(2011, 10, 7, 3, 0), new ProgramMessageCycle().nearestCycleDate(oct6Thu));
+        assertNearestCycleDate(oct1Sat, new DateTime(2011, 10, 3, 0, 0));
+        assertNearestCycleDate(oct2Sun, new DateTime(2011, 10, 3, 2, 0));
+        assertNearestCycleDate(oct3Mon, new DateTime(2011, 10, 5, 0, 0));
+        assertNearestCycleDate(oct4Tue, new DateTime(2011, 10, 5, 5, 0));
+        assertNearestCycleDate(oct5Wed, new DateTime(2011, 10, 7, 6, 0));
+        assertNearestCycleDate(oct6Thu, new DateTime(2011, 10, 7, 3, 0));
 
-        DateTime fridayToMonOct10 = new DateTime(2011, 10, 10, 0, 1);
-        assertEquals(fridayToMonOct10, new ProgramMessageCycle().nearestCycleDate(oct7Fri));
-        assertEquals(new DateTime(2011, 10, 10, 0, 3), new ProgramMessageCycle().nearestCycleDate(oct8Sat));
-        assertEquals(new DateTime(2011, 10, 10, 0, 4), new ProgramMessageCycle().nearestCycleDate(oct9Sun));
-        assertEquals(new DateTime(2011, 10, 12, 5, 5), new ProgramMessageCycle().nearestCycleDate(oct10Mon));
-        assertEquals(new DateTime(2011, 10, 12, 0, 6), new ProgramMessageCycle().nearestCycleDate(oct11Tue));
-        assertEquals(new DateTime(2011, 10, 14, 0, 6), new ProgramMessageCycle().nearestCycleDate(oct12Wed));
-        assertEquals(new DateTime(2011, 10, 14, 0, 6), new ProgramMessageCycle().nearestCycleDate(oct13Thu));
+        assertNearestCycleDate(oct7Fri, new DateTime(2011, 10, 10, 0, 1));
+        assertNearestCycleDate(oct8Sat, new DateTime(2011, 10, 10, 0, 3));
+        assertNearestCycleDate(oct9Sun, new DateTime(2011, 10, 10, 0, 4));
+        assertNearestCycleDate(oct10Mon, new DateTime(2011, 10, 12, 5, 5));
+        assertNearestCycleDate(oct11Tue, new DateTime(2011, 10, 12, 0, 6));
+        assertNearestCycleDate(oct12Wed, new DateTime(2011, 10, 14, 0, 6));
+        assertNearestCycleDate(oct13Thu, new DateTime(2011, 10, 14, 0, 6));
+        assertNearestCycleDate(oct14Fri, new DateTime(2011, 10, 17, 0, 6));
+    }
 
-        DateTime fridayToMonOct17 = new DateTime(2011, 10, 17, 0, 6);
-        assertEquals(fridayToMonOct17, new ProgramMessageCycle().nearestCycleDate(oct14Fri));
+    private void assertNearestCycleDate(DateTime dateTime, DateTime expectedDateTime) {
+        when(subscription.getRegistrationDate()).thenReturn(dateTime);
+        assertEquals(expectedDateTime, programMessageCycle.nearestCycleDate(subscription));
     }
 }

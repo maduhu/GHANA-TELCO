@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.service;
 
+import org.motechproject.ghana.mtn.domain.ProgramMessageCycle;
 import org.motechproject.ghana.mtn.domain.ProgramType;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
@@ -27,21 +28,23 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private ValidationProcess validation;
     private PersistenceProcess persistence;
     private CampaignProcess campaign;
+    private ProgramMessageCycle programMessageCycle;
 
     @Autowired
     public SubscriptionServiceImpl(AllSubscriptions allSubscriptions,
                                    ValidationProcess validation,
                                    PersistenceProcess persistence,
-                                   CampaignProcess campaign) {
+                                   CampaignProcess campaign, ProgramMessageCycle programMessageCycle) {
         this.allSubscriptions = allSubscriptions;
         this.validation = validation;
         this.persistence = persistence;
         this.campaign = campaign;
+        this.programMessageCycle = programMessageCycle;
     }
 
     @Override
     public void start(Subscription subscription) {
-        subscription.updateCycleInfo();
+        subscription.updateCycleInfo(programMessageCycle);
         for (ISubscriptionFlowProcess process : asList(validation, persistence, campaign)) {
             if (process.startFor(subscription)) continue;
             break;
@@ -126,6 +129,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscription.rollOverProgramType(),
                 SubscriptionStatus.ACTIVE,
                 new WeekAndDay(new Week(subscription.rollOverProgramType().getMinWeek()), new DateUtils().today()),
-                DateUtil.now()).updateCycleInfo() : null;
+                DateUtil.now()).updateCycleInfo(programMessageCycle) : null;
     }
 }

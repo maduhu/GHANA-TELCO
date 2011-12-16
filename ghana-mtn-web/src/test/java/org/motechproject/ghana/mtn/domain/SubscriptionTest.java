@@ -1,20 +1,27 @@
 package org.motechproject.ghana.mtn.domain;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
 import org.motechproject.ghana.mtn.utils.DateUtils;
-import org.motechproject.model.DayOfWeek;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
+import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
+import org.motechproject.util.DateUtil;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static junit.framework.Assert.*;
+import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+import static org.motechproject.model.DayOfWeek.*;
 
 public class SubscriptionTest {
     DateUtils dateUtils = spy(new DateUtils());
@@ -26,14 +33,16 @@ public class SubscriptionTest {
     @Test
     public void shouldComputeEndDate_BasedOnCycleStartDate() {
 
-        Subscription registeredOn_MonJan31 = subscription("9999933333", date(2011, 1, 31), new Week(10), programType("Pregnancy"));
-        Subscription registeredOn_TueFeb1 = subscription("9999933333", date(2011, 2, 1), new Week(10), programType("Pregnancy"));
-        Subscription registeredOn_WedFeb2 = subscription("9999933333", date(2011, 2, 2), new Week(10), programType("Pregnancy"));
-        Subscription registeredOn_ThurFeb3 = subscription("9999933333", date(2011, 2, 3), new Week(10), programType("Pregnancy"));
-        Subscription registeredOn_FriFeb4 = subscription("9999933333", date(2011, 2, 4), new Week(10), programType("Pregnancy"));
-        Subscription registeredOn_SatFeb5 = subscription("9999933333", date(2011, 2, 5), new Week(10), programType("Pregnancy"));
-        Subscription registeredOn_SunFeb6 = subscription("9999933333", date(2011, 2, 6), new Week(10), programType("Pregnancy"));
-        Subscription registeredOn_MonFeb7 = subscription("9999933333", date(2011, 2, 7), new Week(10), programType("Pregnancy"));
+        String mobileNumber = "9999933333";
+        String pregnancy = "Pregnancy";
+        Subscription registeredOn_MonJan31 = subscription(mobileNumber, date(2011, 1, 31), new Week(10), programType(pregnancy));
+        Subscription registeredOn_TueFeb1 = subscription(mobileNumber, date(2011, 2, 1), new Week(10), programType(pregnancy));
+        Subscription registeredOn_WedFeb2 = subscription(mobileNumber, date(2011, 2, 2), new Week(10), programType(pregnancy));
+        Subscription registeredOn_ThurFeb3 = subscription(mobileNumber, date(2011, 2, 3), new Week(10), programType(pregnancy));
+        Subscription registeredOn_FriFeb4 = subscription(mobileNumber, date(2011, 2, 4), new Week(10), programType(pregnancy));
+        Subscription registeredOn_SatFeb5 = subscription(mobileNumber, date(2011, 2, 5), new Week(10), programType(pregnancy));
+        Subscription registeredOn_SunFeb6 = subscription(mobileNumber, date(2011, 2, 6), new Week(10), programType(pregnancy));
+        Subscription registeredOn_MonFeb7 = subscription(mobileNumber, date(2011, 2, 7), new Week(10), programType(pregnancy));
 
         int noOfDaysForRemainingWeeks = 25 * 7;
         int daysToSaturdayForMonJan31 = 3;
@@ -57,14 +66,23 @@ public class SubscriptionTest {
     public void shouldReturnCurrentDay() {
         Subscription sub1 = subscription("9999933333", new DateTime(2012, 2, 2, 10, 0), new Week(6), programType("Pregnancy"));
         mockCurrentDate(new DateTime(2012, 1, 1, 1, 1));
-        assertEquals(DayOfWeek.Sunday, sub1.currentDay());
+        assertEquals(Sunday, sub1.currentDay());
 
+    }
+
+    @Test
+    public void shouldCreateCampaignRegistrationRequest() {
+        DateTime registeredDate = DateUtil.now();
+        Subscription subscription = subscription("0987654321", registeredDate, new Week(6), programType("Pregnancy"));
+        CampaignRequest registrationRequest = subscription.createCampaignRegistrationRequest();
+        assertThat(registrationRequest.reminderTime().getMinute(), is(equalTo(registeredDate.get(DateTimeFieldType.minuteOfHour()) + 1)));
     }
 
     private ProgramType programType(String programName) {
         ProgramType programType = new ProgramType().setProgramName(programName);
         programType.setMinWeek(5);
         programType.setMaxWeek(35);
+        programType.setProgramKey(ProgramType.PREGNANCY);
         return programType;
     }
 
@@ -79,11 +97,15 @@ public class SubscriptionTest {
     }
 
     private Subscription subscription(String mobileNumber, DateTime registeredDate, Week startWeek, ProgramType program) {
-        Subscription subscription = new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, DayOfWeek.Monday))
+        Subscription subscription = new SubscriptionBuilder().withRegistrationDate(registeredDate).withStartWeekAndDay(new WeekAndDay(startWeek, Monday))
                 .withStatus(SubscriptionStatus.ACTIVE).withSubscriber(new Subscriber(mobileNumber))
                 .withType(program).build();
         ReflectionTestUtils.setField(subscription, "dateUtils", dateUtils);
-        subscription.updateCycleInfo();
+        AllMessageCampaigns allMessageCampaigns = mock(AllMessageCampaigns.class);
+        when(allMessageCampaigns.getApplicableDaysForRepeatingCampaign(anyString(), anyString())).thenReturn(asList(Monday, Wednesday, Friday));
+        ProgramMessageCycle programMessageCycle = new ProgramMessageCycle();
+        ReflectionTestUtils.setField(programMessageCycle, "allMessageCampaigns", allMessageCampaigns);
+        subscription.updateCycleInfo(programMessageCycle);
         return subscription;
     }
 

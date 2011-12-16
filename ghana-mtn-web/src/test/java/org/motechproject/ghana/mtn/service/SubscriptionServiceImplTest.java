@@ -8,10 +8,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.TestData;
-import org.motechproject.ghana.mtn.domain.ProgramType;
-import org.motechproject.ghana.mtn.domain.Subscriber;
-import org.motechproject.ghana.mtn.domain.Subscription;
-import org.motechproject.ghana.mtn.domain.SubscriptionStatus;
+import org.motechproject.ghana.mtn.domain.*;
 import org.motechproject.ghana.mtn.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.mtn.domain.vo.Week;
 import org.motechproject.ghana.mtn.domain.vo.WeekAndDay;
@@ -19,11 +16,13 @@ import org.motechproject.ghana.mtn.process.CampaignProcess;
 import org.motechproject.ghana.mtn.process.PersistenceProcess;
 import org.motechproject.ghana.mtn.process.ValidationProcess;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
-import org.motechproject.model.DayOfWeek;
+import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.util.DateUtil;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Date;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -32,6 +31,7 @@ import static org.motechproject.ghana.mtn.domain.ProgramType.CHILDCARE;
 import static org.motechproject.ghana.mtn.domain.ProgramType.PREGNANCY;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.ACTIVE;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.WAITING_FOR_ROLLOVER_RESPONSE;
+import static org.motechproject.model.DayOfWeek.*;
 
 public class SubscriptionServiceImplTest {
 
@@ -44,6 +44,7 @@ public class SubscriptionServiceImplTest {
     private CampaignProcess campaign;
     @Mock
     private AllSubscriptions allSubscriptions;
+    private ProgramMessageCycle programMessageCycle = new ProgramMessageCycle();
 
     public final ProgramType childCareProgramType = TestData.childProgramType().build();
     public final ProgramType pregnancyProgramType = TestData.pregnancyProgramType().withRollOverProgramType(childCareProgramType).build();
@@ -51,7 +52,10 @@ public class SubscriptionServiceImplTest {
     @Before
     public void setUp() {
         initMocks(this);
-        service = new SubscriptionServiceImpl(allSubscriptions, validation, persistence, campaign);
+        AllMessageCampaigns allMessageCampaigns = mock(AllMessageCampaigns.class);
+        when(allMessageCampaigns.getApplicableDaysForRepeatingCampaign(anyString(), anyString())).thenReturn(asList(Monday, Wednesday, Friday));
+        ReflectionTestUtils.setField(programMessageCycle, "allMessageCampaigns", allMessageCampaigns);
+        service = new SubscriptionServiceImpl(allSubscriptions, validation, persistence, campaign, programMessageCycle);
     }
 
     @Test
@@ -64,7 +68,7 @@ public class SubscriptionServiceImplTest {
 
         service.start(subscription);
 
-        verify(subscription).updateCycleInfo();
+        verify(subscription).updateCycleInfo(programMessageCycle);
         verify(validation).startFor(subscription);
         verify(persistence).startFor(subscription);
         verify(campaign).startFor(subscription);
@@ -85,8 +89,9 @@ public class SubscriptionServiceImplTest {
     @Test
     public void shouldInvokeAllProcessInvolvedInRollOverProcessForEvent() {
         Subscription subscription = spy(new SubscriptionBuilder().withRegistrationDate(DateUtil.now())
-                .withSubscriber(new Subscriber("9850012345")).withType(pregnancyProgramType).withStartWeekAndDay(new WeekAndDay(new Week(36), DayOfWeek.Friday))
-                .build().updateCycleInfo());
+                .withSubscriber(new Subscriber("9850012345")).withType(pregnancyProgramType).withStartWeekAndDay(new WeekAndDay(new Week(36), Friday))
+                .build().updateCycleInfo(programMessageCycle));
+
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(campaign.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(persistence.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
@@ -99,7 +104,7 @@ public class SubscriptionServiceImplTest {
     }
 
     @Test
-    public void shouldNotInvokeRollOverIfValidationIsNotSuccessful(){
+    public void shouldNotInvokeRollOverIfValidationIsNotSuccessful() {
         Date deliveryDate = null;
         String subscriberNumber = "1234567890";
 
@@ -114,7 +119,7 @@ public class SubscriptionServiceImplTest {
     }
 
     @Test
-    public void shouldInvokeRollOverIfValidationIsSuccessful(){
+    public void shouldInvokeRollOverIfValidationIsSuccessful() {
         Date deliveryDate = null;
         String subscriberNumber = "1234567890";
 
@@ -219,8 +224,9 @@ public class SubscriptionServiceImplTest {
 
         when(source.getSubscriber()).thenReturn(subscriber);
         when(source.getProgramType()).thenReturn(programType);
+        when(programType.getProgramKey()).thenReturn(ProgramType.PREGNANCY);
         when(source.rollOverProgramType()).thenReturn(programType);
-        when(source.currentDay()).thenReturn(DayOfWeek.Sunday);
+        when(source.currentDay()).thenReturn(Sunday);
         when(source.canRollOff()).thenReturn(true);
         when(programType.getRollOverProgramType()).thenReturn(programType);
 
@@ -244,7 +250,7 @@ public class SubscriptionServiceImplTest {
 
         Subscription pregnancySubscriptionWaitingForRollOver = subscriptionB(subscriberNumber, pregnancyProgramType, WAITING_FOR_ROLLOVER_RESPONSE).build();
         Subscription newChildCareSubscriptionForRollOver = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
-        when(service.rollOverSubscriptionFrom(pregnancySubscriptionWaitingForRollOver)).thenReturn(newChildCareSubscriptionForRollOver);
+        doReturn(newChildCareSubscriptionForRollOver).when(service).rollOverSubscriptionFrom(pregnancySubscriptionWaitingForRollOver);
 
         Subscription existingChildCareSubscription = subscriptionB(subscriberNumber, childCareProgramType, ACTIVE).build();
 
