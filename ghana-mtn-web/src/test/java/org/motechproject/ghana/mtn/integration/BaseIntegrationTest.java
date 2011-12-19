@@ -176,7 +176,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         CampaignRequest campaignRequest = subscription.createCampaignRequest();
 
         String messageKey = getMessageKey(subscription);
-        String jobId = String.format("%s-%s%s.%s.%s", INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, EventKeys.BASE_SUBJECT, campaignRequest.campaignName(), campaignRequest.externalId(), messageKey);
+        String jobId = String.format("%s-%s.%s.%s", INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, campaignRequest.campaignName(), campaignRequest.externalId(), messageKey);
         try {
             JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
             CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");

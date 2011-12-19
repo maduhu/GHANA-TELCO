@@ -40,14 +40,14 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     @Override
     public Boolean stopExpired(Subscription subscription) {
-        campaignService.stopFor(subscription.createCampaignRequest());
+        campaignService.stopAll(subscription.createCampaignRequest());
         sendMessage(subscription, messageFor(ENROLLMENT_STOPPED));
         return true;
     }
 
     @Override
     public Boolean stopByUser(Subscription subscription) {
-        campaignService.stopFor(subscription.createCampaignRequest());
+        campaignService.stopAll(subscription.createCampaignRequest());
         sendMessage(subscription, messageFor(STOP_PROGRAM_SUCCESS));
         return true;
     }
@@ -64,7 +64,7 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
     @Override
     public Boolean retainExistingChildCare(Subscription pregnancySubscriptionWaitingForRollOver, Subscription childCareSubscription) {
         unScheduleRollOverWait(pregnancySubscriptionWaitingForRollOver);
-        campaignService.stopFor(pregnancySubscriptionWaitingForRollOver.createCampaignRequest());
+        campaignService.stopAll(pregnancySubscriptionWaitingForRollOver.createCampaignRequest());
         sendMessage(childCareSubscription.subscriberNumber(), messageFor(PENDING_ROLLOVER_RETAIN_CHILDCARE));
         return true;
     }
@@ -72,13 +72,13 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
     @Override
     public Boolean rollOverToNewChildCareProgram(Subscription pregnancyProgramWaitingForRollOver, Subscription newChildCareToRollOver, Subscription existingChildCare) {
         unScheduleRollOverWait(pregnancyProgramWaitingForRollOver);
-        campaignService.stopFor(existingChildCare.createCampaignRequest());
+        campaignService.stopAll(existingChildCare.createCampaignRequest());
         performRollOver(pregnancyProgramWaitingForRollOver, newChildCareToRollOver, messageFor(PENDING_ROLLOVER_SWITCH_TO_NEW_CHILDCARE));
         return true;
     }
 
     private boolean performRollOver(Subscription fromSubscription, Subscription toSubscription, String message) {
-        campaignService.stopFor(fromSubscription.createCampaignRequest());
+        campaignService.stopAll(fromSubscription.createCampaignRequest());
         campaignService.startFor(toSubscription.createCampaignRegistrationRequest());
         sendMessage(toSubscription, message);
         return true;
