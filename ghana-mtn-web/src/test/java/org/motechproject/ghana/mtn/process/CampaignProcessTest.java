@@ -73,7 +73,7 @@ public class CampaignProcessTest {
 
         Boolean reply = campaign.stopExpired(subscription);
         assertTrue(reply);
-        verify(campaignService).stopFor(campaignRequest);
+        verify(campaignService).stopAll(campaignRequest);
         assertSMS(subscriberNumber, message);
     }
 
@@ -87,7 +87,7 @@ public class CampaignProcessTest {
 
         Boolean reply = campaign.stopByUser(subscription);
         assertTrue(reply);
-        verify(campaignService).stopFor(campaignRequest);
+        verify(campaignService).stopAll(campaignRequest);
         assertSMS(subscriberNumber, message);
     }
 
@@ -107,7 +107,7 @@ public class CampaignProcessTest {
         Boolean reply = campaign.rollOver(source, target);
 
         assertTrue(reply);
-        verify(campaignService).stopFor(sourceRequest);
+        verify(campaignService).stopAll(sourceRequest);
         verify(campaignService).startFor(targetRequest);
         assertSMS(subscriberNumber, message);
     }
@@ -139,7 +139,7 @@ public class CampaignProcessTest {
 
         assertTrue(reply);
         verify(rollOverWaitHandler).stopScheduleWaitFor(source);
-        verify(campaignService).stopFor(sourceRequest);
+        verify(campaignService).stopAll(sourceRequest);
         verifyNoMoreInteractions(campaignService);
         assertSMS(subscriberNumber, successMsg);
         verifyZeroInteractions(campaignService, smsService);
@@ -163,7 +163,7 @@ public class CampaignProcessTest {
         assertTrue(reply);
         ArgumentCaptor<CampaignRequest> captor = ArgumentCaptor.forClass(CampaignRequest.class);
         verify(rollOverWaitHandler).stopScheduleWaitFor(pregnancySubscriptionToRollOver);
-        verify(campaignService, times(2)).stopFor(captor.capture());
+        verify(campaignService, times(2)).stopAll(captor.capture());
 
         assertEquals(CHILDCARE, captor.getAllValues().get(0).campaignName());
         assertEquals(subscriberNumber, captor.getAllValues().get(0).externalId());
