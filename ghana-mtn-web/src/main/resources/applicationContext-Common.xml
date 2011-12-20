@@ -18,6 +18,8 @@
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
+    <util:properties id="messageContentProperties" location="classpath:seed.properties"/>
+
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
 
     <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
