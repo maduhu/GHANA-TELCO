@@ -6,6 +6,7 @@ import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.model.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,9 +26,9 @@ public class MessengerProcess extends BaseSubscriptionProcess {
         this.allSubscriptions = allSubscriptions;
     }
 
-    public void process(Subscription subscription, String messageKey) {
+    public void process(Subscription subscription, String messageKey, Time deliveryTime) {
         ProgramMessage message = allProgramMessages.findBy(messageKey);
         if (message == null) return;
-        sendMessage(subscription, message.getContent());
+        sendMessage(subscription, message.getContent(), deliveryTime);
     }
 }

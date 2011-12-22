@@ -29,7 +29,7 @@ public class SMSService {
         String program = request.programKey();
         DateTime now = DateUtil.now();
 
-        smsProvider.send(mobileNumber, message);
+        smsProvider.send(mobileNumber, message, request.getDeliveryTime());
         log.info("Subscriber: " + mobileNumber + ":" + message + " : @" + now);
 
         allSMSAudits.add(new SMSAudit(mobileNumber, program, now, message));

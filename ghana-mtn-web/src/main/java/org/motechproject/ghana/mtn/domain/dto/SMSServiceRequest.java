@@ -1,10 +1,12 @@
 package org.motechproject.ghana.mtn.domain.dto;
 
 import org.motechproject.ghana.mtn.domain.ProgramType;
+import org.motechproject.model.Time;
 
 public class SMSServiceRequest {
     String mobileNumber;
     String message;
+    Time deliveryTime;
     ProgramType programType;
 
     public SMSServiceRequest(String mobileNumber, String message) {
@@ -19,6 +21,14 @@ public class SMSServiceRequest {
 
     public String getMobileNumber() {
         return mobileNumber;
+    }
+
+    public void setDeliveryTime(Time deliveryTime) {
+        this.deliveryTime = deliveryTime;
+    }
+
+    public Time getDeliveryTime() {
+        return deliveryTime;
     }
 
     public String getMessage() {

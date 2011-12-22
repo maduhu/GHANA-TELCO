@@ -11,6 +11,7 @@ import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceResponse;
 import org.motechproject.ghana.mtn.repository.AllSMSAudits;
 import org.motechproject.ghana.mtn.sms.SMSProvider;
+import org.motechproject.model.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static junit.framework.Assert.*;
@@ -41,12 +42,15 @@ public class SMSServiceTest {
         ProgramType programType = new ProgramTypeBuilder().withProgramName("Pregnancy").build();
         String message = "Registration successful.";
 
-        SMSServiceResponse smsServiceResponse = service.send(new SMSServiceRequest(mobileNumber, message, programType));
+        SMSServiceRequest smsServiceRequest = new SMSServiceRequest(mobileNumber, message, programType);
+        Time deliveryTime = new Time(10, 30);
+        smsServiceRequest.setDeliveryTime(deliveryTime);
+        SMSServiceResponse smsServiceResponse = service.send(smsServiceRequest);
 
         assertTrue(smsServiceResponse.isSuccessful());
 
         ArgumentCaptor<SMSAudit> captor = ArgumentCaptor.forClass(SMSAudit.class);
-        verify(smsProvider).send(mobileNumber, message);
+        verify(smsProvider).send(mobileNumber, message, deliveryTime);
         verify(allProgramMessageAudits).add(captor.capture());
         SMSAudit capturedSMSAudit = captor.getValue();
         assertEquals(programType.getProgramKey(), capturedSMSAudit.getProgramKey());
@@ -58,12 +62,15 @@ public class SMSServiceTest {
         String mobileNumber = "9876543210";
         String message = "Registration successful.";
 
-        SMSServiceResponse smsServiceResponse = service.send(new SMSServiceRequest(mobileNumber, message, null));
+        Time deliveryTime = new Time(10, 30);
+        SMSServiceRequest smsServiceRequest = new SMSServiceRequest(mobileNumber, message, null);
+        smsServiceRequest.setDeliveryTime(deliveryTime);
+        SMSServiceResponse smsServiceResponse = service.send(smsServiceRequest);
 
         assertTrue(smsServiceResponse.isSuccessful());
 
         ArgumentCaptor<SMSAudit> captor = ArgumentCaptor.forClass(SMSAudit.class);
-        verify(smsProvider).send(mobileNumber, message);
+        verify(smsProvider).send(mobileNumber, message, deliveryTime);
         verify(allProgramMessageAudits).add(captor.capture());
         SMSAudit capturedSMSAudit = captor.getValue();
         assertNull(capturedSMSAudit.getProgramKey());

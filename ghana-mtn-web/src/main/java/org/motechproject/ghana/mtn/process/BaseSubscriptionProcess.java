@@ -5,6 +5,7 @@ import org.motechproject.ghana.mtn.domain.MessageBundle;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.mtn.service.SMSService;
+import org.motechproject.model.Time;
 
 import static org.apache.commons.lang.StringUtils.replace;
 
@@ -25,6 +26,13 @@ public abstract class BaseSubscriptionProcess {
     protected void sendMessage(Subscription subscription, String content) {
         String message = replace(content, MessageBundle.PROGRAM_NAME_MARKER, subscription.programName());
         SMSServiceRequest smsServiceRequest = new SMSServiceRequest(subscription.subscriberNumber(), message, subscription.getProgramType());
+        smsService.send(smsServiceRequest);
+    }
+
+    protected void sendMessage(Subscription subscription, String content, Time deliveryTime) {
+        String message = replace(content, MessageBundle.PROGRAM_NAME_MARKER, subscription.programName());
+        SMSServiceRequest smsServiceRequest = new SMSServiceRequest(subscription.subscriberNumber(), message, subscription.getProgramType());
+        smsServiceRequest.setDeliveryTime(deliveryTime);
         smsService.send(smsServiceRequest);
     }
 

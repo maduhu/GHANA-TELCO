@@ -14,6 +14,7 @@ import org.motechproject.ghana.mtn.repository.AllProgramMessages;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
 import org.motechproject.ghana.mtn.service.SMSService;
 import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -46,14 +47,14 @@ public class MessengerProcessorTest {
         DayOfWeek currentDay = DayOfWeek.Friday;
         String mobileNumber = "123";
         String content = "content";
-
+        Time deliveryTime = new Time(10, 30);
         when(subscription.getProgramType()).thenReturn(programType);
         when(subscription.currentDay()).thenReturn(currentDay);
         when(subscription.subscriberNumber()).thenReturn(mobileNumber);
         when(programMessage.getContent()).thenReturn(content);
         when(allProgramMessages.findBy(messageKey)).thenReturn(programMessage);
 
-        messenger.process(subscription, messageKey);
+        messenger.process(subscription, messageKey, deliveryTime);
 
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());
