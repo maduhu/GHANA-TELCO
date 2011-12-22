@@ -15,12 +15,18 @@
     <context:annotation-config/>
     <context:spring-configured/>
     <context:component-scan base-package="org.motechproject.ghana.mtn"/>
+    <context:component-scan base-package="org.motechproject.sms"/>
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
     <util:properties id="messageContentProperties" location="classpath:seed.properties"/>
 
+    <util:properties id="smppProperties" location="classpath:smpp.properties"/>
+    <util:properties id="smsProperties" location="classpath:sms.properties"/>
+
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
+
+    <bean id="smslibService" class="org.smslib.Service" factory-method="getInstance"/>
 
     <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
         <constructor-arg ref="httpClient"/>

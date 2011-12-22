@@ -37,7 +37,6 @@ public class ProgramMessageSeed extends Seed {
 
     @Override
     protected void load() {
-       // allSubscriptionMessages.getAll().clear();
         loadPregnancyCareMessages();
         loadChildCareMessages();
     }
