@@ -26,8 +26,9 @@ public class MTNService implements SMSProvider {
                 deliveryDateTime = deliveryDateTime.plusDays(1);
             }
             smsService.sendSMS(mobileNumber, payload, deliveryDateTime);
+        } else {
+            smsService.sendSMS(mobileNumber, payload);
         }
-        smsService.sendSMS(mobileNumber, payload);
         return true;
     }
 }
