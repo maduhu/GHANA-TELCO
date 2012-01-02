@@ -34,7 +34,7 @@ public class SMSService {
         smsProvider.send(mobileNumber, message, deliveryTime);
         log.info("Subscriber: " + mobileNumber + ":" + message + " : @" + now);
 
-        allSMSAudits.add(new SMSAudit(mobileNumber, program, now, message, deliveryTime.toString()));
+        allSMSAudits.add(new SMSAudit(mobileNumber, program, now, message, (deliveryTime != null) ? deliveryTime.toString() : null));
         return new SMSServiceResponse();
     }
 }
