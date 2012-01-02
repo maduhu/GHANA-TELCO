@@ -7,6 +7,7 @@ import org.motechproject.ghana.telco.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.telco.domain.dto.SMSServiceResponse;
 import org.motechproject.ghana.telco.repository.AllSMSAudits;
 import org.motechproject.ghana.telco.sms.SMSProvider;
+import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,10 +30,11 @@ public class SMSService {
         String program = request.programKey();
         DateTime now = DateUtil.now();
 
-        smsProvider.send(mobileNumber, message, request.getDeliveryTime());
+        Time deliveryTime = request.getDeliveryTime();
+        smsProvider.send(mobileNumber, message, deliveryTime);
         log.info("Subscriber: " + mobileNumber + ":" + message + " : @" + now);
 
-        allSMSAudits.add(new SMSAudit(mobileNumber, program, now, message));
+        allSMSAudits.add(new SMSAudit(mobileNumber, program, now, message, deliveryTime.toString()));
         return new SMSServiceResponse();
     }
 }

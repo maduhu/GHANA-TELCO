@@ -35,7 +35,6 @@ public class SMSServiceTest {
         this.service = new SMSService(smsProvider,allProgramMessageAudits);
     }
 
-
     @Test
     public void ShouldSendSMSAndAudit() {
         String mobileNumber = "9876543210";
@@ -55,6 +54,7 @@ public class SMSServiceTest {
         SMSAudit capturedSMSAudit = captor.getValue();
         assertEquals(programType.getProgramKey(), capturedSMSAudit.getProgramKey());
         assertEquals(mobileNumber, capturedSMSAudit.getSubscriberNumber());
+        assertEquals(deliveryTime.toString(), capturedSMSAudit.getDeliveryTime());
     }
 
     @Test

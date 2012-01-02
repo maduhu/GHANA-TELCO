@@ -15,15 +15,17 @@ public class SMSAudit extends MotechAuditableDataObject {
     private String programKey;
     private DateTime sentTime;
     private String content;
+    private String deliveryTime;
 
     public SMSAudit() {
     }
 
-    public SMSAudit(String subscriberNumber, String programKey, DateTime sentTime, String content) {
+    public SMSAudit(String subscriberNumber, String programKey, DateTime sentTime, String content, String deliveryTime) {
         this.subscriberNumber = subscriberNumber;
         this.programKey = programKey;
         this.sentTime = sentTime;
         this.content = content;
+        this.deliveryTime = deliveryTime;
     }
 
     public String getSubscriberNumber() {
@@ -56,5 +58,13 @@ public class SMSAudit extends MotechAuditableDataObject {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getDeliveryTime() {
+        return deliveryTime;
+    }
+
+    public void setDeliveryTime(String deliveryTime) {
+        this.deliveryTime = deliveryTime;
     }
 }
