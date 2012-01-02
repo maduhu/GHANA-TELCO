@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Ghana MTN</title>
+    <title>Ghana TELCO</title>
     <script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript" src="js/new-subscription.js"></script>
@@ -10,7 +10,7 @@
 <body>
 <div class="title_box">
     <img src="images/mobile.png" class="icon"/>
-    <span>Ghana MTN Test Screen</span>
+    <span>Ghana TELCO Test Screen</span>
 </div>
 <div id="tabs">
     <ul>
