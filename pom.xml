@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
-    <artifactId>ghana-mtn</artifactId>
+    <artifactId>ghana-telco</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>ghana-mtn</name>
+    <name>ghana-telco</name>
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,11 +16,11 @@
     </properties>
 
     <modules>
-        <!--<module>ghana-mtn-billing-api</module>-->
-        <!--<module>ghana-mtn-billing</module>-->
-        <!--<module>ghana-mtn-common</module>-->
-        <module>ghana-mtn-web</module>
-        <!-- <module>ghana-mtn-performance-input</module>-->
+        <!--<module>ghana-telco-billing-api</module>-->
+        <!--<module>ghana-telco-billing</module>-->
+        <!--<module>ghana-telco-common</module>-->
+        <module>ghana-telco-web</module>
+        <!-- <module>ghana-telco-performance-input</module>-->
     </modules>
 
     <build>

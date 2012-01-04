@@ -1,0 +1,126 @@
+div {
+    padding-bottom: 10px;
+    font-size: 15px;
+}
+
+label {
+    width: 400px;
+}
+
+.title_box {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-left: 90px;
+}
+
+.icon {
+    width: 50px;
+    height: 50px;
+}
+
+fieldset {
+    border: none
+}
+
+legend {
+    font-weight: bold;
+    color: #4169e1;
+}
+
+.enrollment_box {
+    height: 90px;
+    width: 25%;
+    float: left;
+    clear: right;
+    margin-top: 30px;
+}
+
+#requestResponse {
+    height: 150px;
+    width: 95%;
+    border: 1px solid black;
+    overflow-y: scroll;
+    font-size: 14px;
+    background-color: white;
+}
+
+.send_event_box {
+    margin-top: 10px;
+    width: 80%;
+    height: 10%;
+    float: left;
+}
+
+.subscriptionStatus {
+    font-size: 10px;
+}
+
+.audit_box {
+    height: 600px;
+    width: 74%;
+    margin-top: 10px;
+    float: right;
+    overflow: hidden;
+    border: 1px solid black;
+    padding: 2px;
+}
+
+#audit_options{
+   margin-left: 22px;
+}
+
+table, tbody {
+    font-size: 14px;
+    border-spacing: 3px;
+}
+
+td, th {
+    width: auto;
+    text-align: left;
+    padding-left: 20px;
+    border: 0 none;
+}
+
+th {
+    text-decoration: underline;
+}
+
+#audit_table {
+    height: 500px;;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+
+#server_time {
+    color: red;
+    float: right;
+    margin: 5px;
+}
+
+#tabs-1, #tabs-2, #tabs-3, #tabs-4 {
+    height: 600px
+}
+
+a {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.85em;
+}
+
+#telco_table_box {
+    width: 500px;
+    float: left;
+    margin-top: 30px;
+}
+
+#telco_user_edit {
+    float: left;
+    margin-top: 30px;
+}
+
+#tabs {
+    width: 90%;
+    margin-left: 100px;
+}

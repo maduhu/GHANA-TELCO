@@ -2,4 +2,4 @@
 (DONE) 2. Instead of using builder consider using constructors and factories.
 (DONE) 3. Use DateUtil from the platform as it takes care of locale, and factory can be mocked in Java, helps in writing tests which don't fail.
 (DONE) 4. Avoid System.Out define logger to log to console.
-(DONE) 5. Do not compile the pattern everytime, org.motechproject.ghana.mtn.validation.InputMessageParser.parse, its CPU intensive keep the pattern object static
+(DONE) 5. Do not compile the pattern everytime, org.motechproject.ghana.telco.validation.InputMessageParser.parse, its CPU intensive keep the pattern object static
