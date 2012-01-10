@@ -95,7 +95,7 @@ public class Subscription extends MotechAuditableDataObject {
     }
 
     private Time reminderTime() {
-        cycleStartDate=cycleStartDate.plusMinutes(1);
+        cycleStartDate = cycleStartDate.plusMinutes(1);
         return new Time(cycleStartDate.get(DateTimeFieldType.hourOfDay()), cycleStartDate.get(DateTimeFieldType.minuteOfHour()));
     }
 
