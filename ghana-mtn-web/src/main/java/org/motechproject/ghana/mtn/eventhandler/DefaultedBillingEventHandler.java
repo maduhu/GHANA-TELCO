@@ -31,7 +31,7 @@ public class DefaultedBillingEventHandler {
         String subscriberNumber = (String) event.getParameters().get(EXTERNAL_ID_KEY);
         Subscription defaultedSubscription = defaultedSubscription(subscriberNumber, programKey);
 
-        if(defaultedSubscription != null )
+        if (defaultedSubscription != null)
             billingServiceMediator.chargeFeeForDefaultedSubscriptionDaily(defaultedSubscription);
         else
             logWarning(programKey, subscriberNumber, DEFAULTED_DAILY_SCHEDULE);
@@ -43,7 +43,7 @@ public class DefaultedBillingEventHandler {
         String subscriberNumber = (String) event.getParameters().get(EXTERNAL_ID_KEY);
         Subscription defaultedSubscription = defaultedSubscription(subscriberNumber, programKey);
 
-        if(defaultedSubscription != null )
+        if (defaultedSubscription != null)
             billingServiceMediator.chargeFeeForDefaultedSubscriptionWeekly(defaultedSubscription);
         else
             logWarning(subscriberNumber, programKey, DEFAULTED_WEEKLY_SCHEDULE);

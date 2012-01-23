@@ -30,6 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.mtn.domain.SubscriptionStatus.PAYMENT_DEFAULT;
+import static org.motechproject.ghana.mtn.process.BillingServiceMediator.DEFAULTED_SUBSCRIPTION_BILLING_HOUR;
 import static org.motechproject.ghana.mtn.validation.ValidationError.INSUFFICIENT_FUNDS;
 import static org.motechproject.valueobjects.WallTimeUnit.Week;
 
@@ -75,13 +76,13 @@ public class BillingServiceMediatorTest {
         verify(billingService, times(2)).startDefaultedBillingSchedule(defaultedBillingRequestCaptor.capture());
         DefaultedBillingRequest dailyDefaultedBillingRequest = defaultedBillingRequestCaptor.getAllValues().get(0);
         assertDefaultBillingRequest(
-                new DefaultedBillingRequest(mobileNumber, programType, now.dayOfMonth().addToCopy(1), WallTimeUnit.Day, now.dayOfMonth().addToCopy(7)),
-                dailyDefaultedBillingRequest);
+                new DefaultedBillingRequest(mobileNumber, programType, now.dayOfMonth().addToCopy(1).withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR),
+                WallTimeUnit.Day, now.dayOfMonth().addToCopy(7).withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR)), dailyDefaultedBillingRequest);
 
         DefaultedBillingRequest weeklyDefaultedBillingRequest = defaultedBillingRequestCaptor.getAllValues().get(1);
         assertDefaultBillingRequest(
-                new DefaultedBillingRequest(mobileNumber, programType, now.dayOfMonth().addToCopy(7 + 1), Week, subscription.getCycleEndDate()),
-                weeklyDefaultedBillingRequest);
+                new DefaultedBillingRequest(mobileNumber, programType, now.dayOfMonth().addToCopy(7 + 1).withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR), Week,
+                subscription.getCycleEndDate().withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR)), weeklyDefaultedBillingRequest);
 
         verify(allSubscriptions).update(subscription);
         assertThat(subscription.getStatus(), is(PAYMENT_DEFAULT));

@@ -2,6 +2,7 @@ package org.motechproject.ghana.mtn.billing.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.Period;
 import org.motechproject.ghana.mtn.billing.dto.BillingCycleRequest;
 import org.motechproject.ghana.mtn.billing.dto.DefaultedBillingRequest;
@@ -20,7 +21,6 @@ import java.util.Map;
 
 import static java.lang.Long.valueOf;
 import static java.lang.String.format;
-import static org.joda.time.Days.days;
 
 @Component
 public class BillingScheduler {
@@ -92,7 +92,7 @@ public class BillingScheduler {
 
         WallTimeUnit unit = request.getFrequency();
         RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob(motechEvent,
-                startTime, request.getCycleEndDate().toDate(), getRepeatingIntervalForPeriod(days(unit.days).toPeriod()));
+                startTime, request.getCycleEndDate().toDate(), getRepeatingIntervalForPeriod(Days.days(unit.days).toPeriod()));
         schedulerService.scheduleRepeatingJob(repeatingSchedulableJob);
         log.info("Defaulted Billing job scheduled for [" + mobileNumber + "|" + programKey + "|" + startTime + "]");
     }

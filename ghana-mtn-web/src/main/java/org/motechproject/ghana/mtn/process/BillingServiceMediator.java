@@ -27,6 +27,9 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
     private BillingService billingService;
     private AllSubscriptions allSubscriptions;
     DateUtils dateUtils = new DateUtils();
+    public static int DEFAULTED_SUBSCRIPTION_BILLING_HOUR = 5;
+    public static int DEFAULTED_DAILY_BILLING_FREQUENCY = 7;
+
 
     @Autowired
     public BillingServiceMediator(SMSService smsService, MessageBundle messageBundle, BillingService billingService, AllSubscriptions allSubscriptions) {
@@ -88,8 +91,8 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
 
     private void createDefaultedDailyAndWeeklyBillingSchedule(Subscription subscription, BillingServiceResponse response) {
         if (response.getValidationErrors().contains(INSUFFICIENT_FUNDS)) {
-            DateTime startDateForDailySchedule = dateUtils.startOfDay(DateUtil.now().dayOfMonth().addToCopy(1));
-            DateTime endDateForDailySchedule = dateUtils.startOfDay(startDateForDailySchedule.dayOfMonth().addToCopy(6));
+            DateTime startDateForDailySchedule = DateUtil.now().dayOfMonth().addToCopy(1).withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR);
+            DateTime endDateForDailySchedule = startDateForDailySchedule.dayOfMonth().addToCopy(DEFAULTED_DAILY_BILLING_FREQUENCY - 1);
 
             DefaultedBillingRequest dailyBillingRequest = createDefaultedSchedule(subscription, Day, startDateForDailySchedule, endDateForDailySchedule);
             billingService.startDefaultedBillingSchedule(dailyBillingRequest);
@@ -99,8 +102,9 @@ public class BillingServiceMediator extends BaseSubscriptionProcess {
     }
 
     private void createWeeklyDefaultBillingScheduleToRunAfterDailySchedule(Subscription subscription, DateTime endDateForDailySchedule) {
-        DateTime startDateForWeeklySchedule = dateUtils.startOfDay(endDateForDailySchedule.dayOfMonth().addToCopy(1));
-        DefaultedBillingRequest weeklyBillingRequestAfterDailySchedule = createDefaultedSchedule(subscription, Week, startDateForWeeklySchedule, subscription.getCycleEndDate());
+        DateTime startDateForWeeklySchedule = endDateForDailySchedule.dayOfMonth().addToCopy(1).withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR);
+        DateTime endDate = subscription.getCycleEndDate().withTimeAtStartOfDay().withHourOfDay(DEFAULTED_SUBSCRIPTION_BILLING_HOUR);
+        DefaultedBillingRequest weeklyBillingRequestAfterDailySchedule = createDefaultedSchedule(subscription, Week, startDateForWeeklySchedule, endDate);
         billingService.startDefaultedBillingSchedule(weeklyBillingRequestAfterDailySchedule);
     }
 
