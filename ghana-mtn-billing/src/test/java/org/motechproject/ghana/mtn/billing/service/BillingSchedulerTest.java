@@ -1,6 +1,7 @@
 package org.motechproject.ghana.mtn.billing.service;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,6 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import static java.lang.Long.valueOf;
 import static java.lang.String.format;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -114,12 +116,17 @@ public class BillingSchedulerTest {
         assertThat(scheduledJob.getStartTime(), is(now.toDate()));
         assertThat(scheduledJob.getEndTime(), is(cycleEndDate.toDate()));
         assertThat(scheduledJob.getMotechEvent().getSubject(), is(DEFAULTED_DAILY_SCHEDULE));
+        assertThat(scheduledJob.getRepeatInterval(), is(getRepeatingInterval(1)));
 
         assertThat((String) parameters.get(EXTERNAL_ID_KEY), is(mobileNumber));
         assertThat((String) parameters.get(PROGRAM_KEY), is(programType.getProgramKey()));
         assertThat((String) parameters.get(JOB_ID_KEY), is(programType.getProgramKey() + "." + mobileNumber));
     }
-                                                                                                                                           
+
+    private Long getRepeatingInterval(int days) {
+        return valueOf(Days.days(days).toPeriod().toStandardSeconds().getSeconds() * 1000);
+    }
+
     @Test
     public void shouldStartDefaultedWeeklyBillingScheduleForWallTimeUnitAsWeek() {
 
@@ -141,7 +148,7 @@ public class BillingSchedulerTest {
         assertThat(scheduledJob.getStartTime(), is(now.toDate()));
         assertThat(scheduledJob.getEndTime(), is(cycleEndDate.toDate()));
         assertThat(scheduledJob.getMotechEvent().getSubject(), is(DEFAULTED_WEEKLY_SCHEDULE));
-
+        assertThat(scheduledJob.getRepeatInterval(), is(getRepeatingInterval(7)));
         assertThat((String) parameters.get(EXTERNAL_ID_KEY), is(mobileNumber));
         assertThat((String) parameters.get(PROGRAM_KEY), is(programType.getProgramKey()));
         assertThat((String) parameters.get(JOB_ID_KEY), is(programType.getProgramKey() + "." + mobileNumber));

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static java.lang.Long.valueOf;
 import static java.lang.String.format;
+import static org.joda.time.Days.days;
 
 @Component
 public class BillingScheduler {
@@ -91,7 +92,7 @@ public class BillingScheduler {
 
         WallTimeUnit unit = request.getFrequency();
         RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob(motechEvent,
-                startTime, request.getCycleEndDate().toDate(), getRepeatingIntervalForPeriod(unit.toPeriod(unit.days)));
+                startTime, request.getCycleEndDate().toDate(), getRepeatingIntervalForPeriod(days(unit.days).toPeriod()));
         schedulerService.scheduleRepeatingJob(repeatingSchedulableJob);
         log.info("Defaulted Billing job scheduled for [" + mobileNumber + "|" + programKey + "|" + startTime + "]");
     }
