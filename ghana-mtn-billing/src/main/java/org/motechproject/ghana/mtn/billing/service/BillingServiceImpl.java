@@ -61,8 +61,9 @@ public class BillingServiceImpl implements BillingService {
         } catch (InsufficientFundsException e) {
             log.debug("Insufficient Funds for " + mobileNumber);
             BillingServiceResponse<CustomerBill> response = new BillingServiceResponse<CustomerBill>();
-            response.addError(ValidationError.INSUFFICIENT_FUNDS);
-            return response;
+            ValidationError insufficientFunds = ValidationError.INSUFFICIENT_FUNDS;
+            auditor.auditError(request, insufficientFunds);
+            return response.addError(insufficientFunds);
         }
 
         auditor.audit(request);

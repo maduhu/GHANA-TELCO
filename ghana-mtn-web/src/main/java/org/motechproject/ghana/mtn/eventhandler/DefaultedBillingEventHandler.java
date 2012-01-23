@@ -34,7 +34,7 @@ public class DefaultedBillingEventHandler {
         if(defaultedSubscription != null )
             billingServiceMediator.chargeFeeForDefaultedSubscriptionDaily(defaultedSubscription);
         else
-            log.warn("DefaultBillingSchedule-" + DEFAULTED_DAILY_SCHEDULE + " : SN-" + subscriberNumber + " |ProgramKey-" + programKey);
+            logWarning(programKey, subscriberNumber, DEFAULTED_DAILY_SCHEDULE);
     }
 
     @MotechListener(subjects = {DEFAULTED_WEEKLY_SCHEDULE})
@@ -46,10 +46,14 @@ public class DefaultedBillingEventHandler {
         if(defaultedSubscription != null )
             billingServiceMediator.chargeFeeForDefaultedSubscriptionWeekly(defaultedSubscription);
         else
-            log.warn("DefaultBillingSchedlule-" + DEFAULTED_WEEKLY_SCHEDULE + " : SN-" + subscriberNumber + " |ProgramKey-" + programKey);
+            logWarning(subscriberNumber, programKey, DEFAULTED_WEEKLY_SCHEDULE);
     }
 
     private Subscription defaultedSubscription(String subscriberNumber, String programKey) {
         return allSubscriptions.findBy(subscriberNumber, programKey, PAYMENT_DEFAULT);
+    }
+
+    private void logWarning(String programKey, String subscriberNumber, String subject) {
+        log.warn("DefaultBillingSchedule-" + subject + " : SN-" + subscriberNumber + " |ProgramKey-" + programKey);
     }
 }

@@ -3,6 +3,7 @@ package org.motechproject.ghana.mtn.billing.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.mtn.billing.dto.*;
 import org.motechproject.ghana.mtn.billing.exception.InsufficientFundsException;
@@ -53,7 +54,7 @@ public class BillingServiceImplTest {
     }
 
     @Test
-    public void shouldReturnErrorResponseIfCustomerHasNoFunds() {
+    public void shouldReturnErrorResponseAndAuditLogsIfCustomerHasNoFunds() {
         BillingServiceRequest request = mock(BillingServiceRequest.class);
         when(request.getMobileNumber()).thenReturn("123");
         when(request.getProgramFeeValue()).thenReturn(12d);
@@ -128,6 +129,11 @@ public class BillingServiceImplTest {
 
         BillingServiceResponse<CustomerBill> response = service.chargeProgramFee(new BillingServiceRequest(mobileNumber, programType));
         assertThat(response.getValidationErrors().get(0), is(ValidationError.INSUFFICIENT_FUNDS));
+
+        ArgumentCaptor<BillingServiceRequest> billingServiceRequestCaptor =  ArgumentCaptor.forClass(BillingServiceRequest.class);
+        verify(auditor).auditError(billingServiceRequestCaptor.capture(), eq(ValidationError.INSUFFICIENT_FUNDS));
+        assertThat(billingServiceRequestCaptor.getValue().getMobileNumber(), is(mobileNumber));
+        assertThat(billingServiceRequestCaptor.getValue().getProgramType(), is(programType));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package org.motechproject.ghana.mtn.eventhandler;
 
+import org.apache.log4j.Logger;
 import org.motechproject.ghana.mtn.domain.Subscription;
 import org.motechproject.ghana.mtn.process.BillingServiceMediator;
 import org.motechproject.ghana.mtn.repository.AllSubscriptions;
@@ -16,6 +17,7 @@ import static org.motechproject.ghana.mtn.billing.service.BillingScheduler.*;
 public class BillingEventHandler {
     private AllSubscriptions allSubscriptions;
     private BillingServiceMediator billingServiceMediator;
+    private final Logger log = Logger.getLogger(BillingEventHandler.class);
 
     @Autowired
     public BillingEventHandler(AllSubscriptions allSubscriptions, BillingServiceMediator billingServiceMediator) {
@@ -31,5 +33,6 @@ public class BillingEventHandler {
 
         Subscription subscription = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, programKey);
         billingServiceMediator.chargeMonthlyFeeAndHandleIfDefaulted(subscription);
+        log.info("Billing Scheduler - monthy for subscriber:" + subscriberNumber  +" |Program:" + programKey);
     }
 }
