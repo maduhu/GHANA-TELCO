@@ -4,7 +4,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.ghana.telco.vo.Money;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 import static ch.lambdaj.Lambda.*;
 
 @TypeDiscriminator("doc.type === 'BillAccount'")
-public class BillAccount extends MotechAuditableDataObject {
+public class BillAccount extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "BillAccount";
     private String mobileNumber;

@@ -2,10 +2,10 @@ package org.motechproject.ghana.telco.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 @TypeDiscriminator("doc.type === 'Subscriber'")
-public class Subscriber extends MotechAuditableDataObject {
+public class Subscriber extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "Subscriber";
     private String number;

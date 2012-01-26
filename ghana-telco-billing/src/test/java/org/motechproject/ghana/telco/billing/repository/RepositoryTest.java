@@ -2,18 +2,18 @@ package org.motechproject.ghana.telco.billing.repository;
 
 import org.junit.After;
 import org.junit.runner.RunWith;
-import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.dao.MotechBaseRepository;
+import org.motechproject.model.MotechBaseDataObject;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testApplicationContextBilling.xml"})
-public abstract class RepositoryTest<T extends MotechAuditableDataObject> {
+public abstract class RepositoryTest<T extends MotechBaseDataObject> {
 
-    private MotechAuditableRepository<T> repository;
+    private MotechBaseRepository<T> repository;
 
-    public void setRepository(MotechAuditableRepository<T> repository) {
+    public void setRepository(MotechBaseRepository<T> repository) {
         this.repository = repository;
     }
 

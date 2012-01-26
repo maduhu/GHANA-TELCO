@@ -6,12 +6,12 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.ghana.telco.domain.vo.Week;
 import org.motechproject.ghana.telco.domain.vo.WeekAndDay;
 import org.motechproject.model.DayOfWeek;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.Arrays;
 
 @TypeDiscriminator("doc.type === 'ProgramMessage'")
-public class ProgramMessage extends MotechAuditableDataObject {
+public class ProgramMessage extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "ProgramMessage";
     @JsonProperty

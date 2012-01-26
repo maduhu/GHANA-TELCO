@@ -2,6 +2,8 @@
 .eclipse
 **/*.iml
 *.iml
+*.ipr
+*.iws
 .idea/
 target
 **/**/*.log

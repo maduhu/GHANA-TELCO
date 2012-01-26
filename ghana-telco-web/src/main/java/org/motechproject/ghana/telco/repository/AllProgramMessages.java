@@ -3,7 +3,7 @@ package org.motechproject.ghana.telco.repository;
 import org.apache.commons.collections.CollectionUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.telco.domain.ProgramMessage;
 import org.motechproject.ghana.telco.domain.ProgramType;
 import org.motechproject.ghana.telco.domain.vo.Week;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class AllProgramMessages extends MotechAuditableRepository<ProgramMessage> {
+public class AllProgramMessages extends MotechBaseRepository<ProgramMessage> {
 
     @Autowired
     protected AllProgramMessages(@Qualifier("dbConnector") CouchDbConnector db) {

@@ -3,7 +3,7 @@ package org.motechproject.ghana.telco.repository;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.telco.domain.ShortCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class AllShortCodes extends MotechAuditableRepository<ShortCode> {
+public class AllShortCodes extends MotechBaseRepository<ShortCode> {
     @Autowired
     protected AllShortCodes(@Qualifier("dbConnector") CouchDbConnector db) {
         super(ShortCode.class, db);

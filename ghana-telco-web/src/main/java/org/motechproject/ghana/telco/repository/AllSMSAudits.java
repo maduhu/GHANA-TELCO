@@ -3,7 +3,7 @@ package org.motechproject.ghana.telco.repository;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.telco.domain.SMSAudit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class AllSMSAudits extends MotechAuditableRepository<SMSAudit> {
+public class AllSMSAudits extends MotechBaseRepository<SMSAudit> {
 
     @Autowired
     protected AllSMSAudits(@Qualifier("dbConnector") CouchDbConnector db) {

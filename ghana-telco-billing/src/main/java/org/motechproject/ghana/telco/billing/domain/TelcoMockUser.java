@@ -3,10 +3,10 @@ package org.motechproject.ghana.telco.billing.domain;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.ghana.telco.vo.Money;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 @TypeDiscriminator("doc.type === 'TelcoMockUser'")
-public class TelcoMockUser extends MotechAuditableDataObject {
+public class TelcoMockUser extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "TelcoMockUser";
     private String mobileNumber;

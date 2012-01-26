@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 import static org.motechproject.sms.api.constants.EventKeys.MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventKeys.SENDER;
+import static org.motechproject.sms.smpp.constants.EventDataKey.SENDER;
 
 @Service
 public class IncomingMessageListener {

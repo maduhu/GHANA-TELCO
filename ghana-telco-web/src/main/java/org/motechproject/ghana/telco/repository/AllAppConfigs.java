@@ -2,7 +2,7 @@ package org.motechproject.ghana.telco.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.telco.domain.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,7 +12,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 @Repository
-public class AllAppConfigs extends MotechAuditableRepository<AppConfig> {
+public class AllAppConfigs extends MotechBaseRepository<AppConfig> {
 
     @Autowired
     protected AllAppConfigs(@Qualifier("dbConnector") CouchDbConnector db) {

@@ -4,13 +4,13 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.ghana.telco.vo.Money;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.util.DateUtil;
 
 import static org.motechproject.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type === 'BillAudit'")
-public class BillAudit extends MotechAuditableDataObject {
+public class BillAudit extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "BillAudit";
     private String mobileNumber;

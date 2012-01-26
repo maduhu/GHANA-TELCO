@@ -1,7 +1,7 @@
 package org.motechproject.ghana.telco.repository;
 
 import org.ektorp.CouchDbConnector;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.telco.domain.ProgramType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class AllProgramTypes extends MotechAuditableRepository<ProgramType> {
+public class AllProgramTypes extends MotechBaseRepository<ProgramType> {
     @Autowired
     protected AllProgramTypes(@Qualifier("dbConnector") CouchDbConnector db) {
         super(ProgramType.class, db);

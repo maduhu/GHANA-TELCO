@@ -7,8 +7,7 @@ import org.ektorp.CouchDbInstance;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.model.MotechBaseDataObject;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -99,7 +98,7 @@ public abstract class BaseSpringTestContext implements ApplicationContextAware {
         toDelete.add(BulkDeleteDocument.of(document));
     }
 
-    protected void addAndMarkForDeletion(MotechAuditableRepository repository, MotechAuditableDataObject auditableDataObject) {
+    protected void addAndMarkForDeletion(MotechBaseRepository repository, MotechBaseDataObject auditableDataObject) {
         repository.add(auditableDataObject);
         markForDeletion(auditableDataObject);
     }

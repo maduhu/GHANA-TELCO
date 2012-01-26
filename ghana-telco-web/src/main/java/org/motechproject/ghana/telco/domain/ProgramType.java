@@ -4,12 +4,12 @@ import org.apache.commons.lang.math.IntRange;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.List;
 
 @TypeDiscriminator("doc.type === 'ProgramType'")
-public class ProgramType extends MotechAuditableDataObject {
+public class ProgramType extends MotechBaseDataObject {
 
     @JsonIgnore
     public static final String PREGNANCY = "PREGNANCY";

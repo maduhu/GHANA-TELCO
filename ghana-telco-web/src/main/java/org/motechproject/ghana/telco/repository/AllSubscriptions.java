@@ -4,7 +4,7 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.telco.domain.Subscription;
 import org.motechproject.ghana.telco.domain.SubscriptionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class AllSubscriptions extends MotechAuditableRepository<Subscription> {
+public class AllSubscriptions extends MotechBaseRepository<Subscription> {
     @Autowired
     protected AllSubscriptions(@Qualifier("dbConnector") CouchDbConnector db) {
         super(Subscription.class, db);

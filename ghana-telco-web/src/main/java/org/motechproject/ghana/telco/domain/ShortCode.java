@@ -2,14 +2,14 @@ package org.motechproject.ghana.telco.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.List;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 @TypeDiscriminator("doc.type === 'ShortCode'")
-public class ShortCode extends MotechAuditableDataObject {
+public class ShortCode extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "ShortCode";
     public static final String RELATIVE = "relative";

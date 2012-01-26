@@ -9,7 +9,7 @@ import org.joda.time.DateTimeFieldType;
 import org.motechproject.ghana.telco.domain.vo.WeekAndDay;
 import org.motechproject.ghana.telco.utils.DateUtils;
 import org.motechproject.model.DayOfWeek;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
@@ -17,7 +17,7 @@ import static org.joda.time.DateTimeConstants.SATURDAY;
 import static org.motechproject.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type === 'Subscription'")
-public class Subscription extends MotechAuditableDataObject {
+public class Subscription extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "Subscription";
     private Subscriber subscriber;

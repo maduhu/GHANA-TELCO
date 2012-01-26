@@ -3,7 +3,7 @@ package org.motechproject.ghana.telco.billing.repository;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.telco.billing.domain.BillAccount;
 import org.motechproject.ghana.telco.domain.IProgramType;
 import org.motechproject.ghana.telco.vo.Money;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class AllBillAccounts extends MotechAuditableRepository<BillAccount> {
+public class AllBillAccounts extends MotechBaseRepository<BillAccount> {
 
    @Autowired
    protected AllBillAccounts(@Qualifier("billingDbConnector") CouchDbConnector db) {

@@ -2,13 +2,13 @@ package org.motechproject.ghana.telco.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.join;
 
 @TypeDiscriminator("doc.type === 'Message'")
-public class Message extends MotechAuditableDataObject {
+public class Message extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "Message";
     private String key;

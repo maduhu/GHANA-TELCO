@@ -3,12 +3,12 @@ package org.motechproject.ghana.telco.domain;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 import static org.motechproject.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type === 'SMSAudit'")
-public class SMSAudit extends MotechAuditableDataObject {
+public class SMSAudit extends MotechBaseDataObject {
     @JsonProperty("type")
     private String type = "SMSAudit";
     private String subscriberNumber;
