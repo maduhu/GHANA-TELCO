@@ -7,3 +7,4 @@
 7. Message Split - see the logs in simulator
 8. Check whether messages are delivered when the simulator is down exactly at the deliveryTime
 9. What happens when the SMSLib is taking more time than the deliveryTime, right till the next minute. will it continue sending?
+10. Check the hardcoding done for message retrieval from couchdb.
