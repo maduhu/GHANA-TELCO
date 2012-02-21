@@ -16,6 +16,7 @@
     <ul>
         <li><a id="tab1" href="#tabs-1">Input</a></li>
         <li><a id="tab2" href="#tabs-2">MTN</a></li>
+        <li><a id="tab3" href="#tabs-3">Bill Schedules</a></li>
     </ul>
     <div id="tabs-1">
         <div class="enrollment_box">
@@ -67,6 +68,11 @@
                     </table>
                 </form>
             </div>
+        </div>
+    </div>
+    <div id="tabs-3">
+        <div class="mtn_bill_schedules">
+            <div id="mtn_bill_table_box"></div>
         </div>
     </div>
 </div>

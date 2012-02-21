@@ -73,8 +73,29 @@ $.MTNUsers = function() {
     $(bootstrap);
 };
 
+$.MTNBillSchedules = function() {
+    var hitServer = function() {
+        $.ajax({
+            url:'audits/bill/schedule',
+            dataType:'html',
+            success:updateBillSchedule
+        });
+        return false;
+    };
+
+    var updateBillSchedule = function(response) {
+        $('#mtn_bill_table_box').html(response);
+    };
+
+    var bootstrap = function() {
+        $('#tab3').click(hitServer);
+    };
+    $(bootstrap);
+};
+
 $(document).ready(function() {
     $("#tabs").tabs();
     new $.Enrollment();
     new $.MTNUsers();
+    new $.MTNBillSchedules();
 });
