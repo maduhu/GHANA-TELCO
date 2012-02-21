@@ -249,7 +249,7 @@
         <repository>
             <id>motech.nexus</id>
             <name>Motech Snapshots Repository</name>
-            <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
+            <url>http://nexus.motechproject.org/content/repositories/releases</url>
             <snapshots>
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
