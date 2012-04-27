@@ -24,19 +24,19 @@
       <hashTree/>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group" enabled="false">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-113826695">
-            <stringProp name="1691">50</stringProp>
+          <collectionProp name="-1669227043">
+            <stringProp name="1626587">5000</stringProp>
+            <stringProp name="49">1</stringProp>
+            <stringProp name="1598">20</stringProp>
             <stringProp name="48">0</stringProp>
-            <stringProp name="53">5</stringProp>
-            <stringProp name="60">60</stringProp>
-            <stringProp name="10">10</stringProp>
+            <stringProp name="48">0</stringProp>
           </collectionProp>
-          <collectionProp name="-113826695">
-            <stringProp name="1691">50</stringProp>
+          <collectionProp name="-1644947378">
+            <stringProp name="1626587">5000</stringProp>
+            <stringProp name="50">2</stringProp>
+            <stringProp name="1598">20</stringProp>
             <stringProp name="48">0</stringProp>
-            <stringProp name="53">5</stringProp>
-            <stringProp name="60">60</stringProp>
-            <stringProp name="10">10</stringProp>
+            <stringProp name="48">0</stringProp>
           </collectionProp>
         </collectionProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -52,7 +52,16 @@
           <boolProp name="displaySystemProperties">false</boolProp>
         </DebugSampler>
         <hashTree/>
-        <ResultCollector guiclass="TableVisualizer" testclass="ResultCollector" testname="View Results in Table" enabled="false">
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Module Controller" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="-1227702913">WorkBench</stringProp>
+            <stringProp name="764597751">Test Plan</stringProp>
+            <stringProp name="-1948168983">Thread Group</stringProp>
+            <stringProp name="1323230795">Register Users</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="TableVisualizer" testclass="ResultCollector" testname="View Results in Table" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -89,10 +98,10 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">1</stringProp>
+          <stringProp name="LoopController.loops">1000</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">10000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">30000</stringProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
         <longProp name="ThreadGroup.start_time">1323074334000</longProp>
         <longProp name="ThreadGroup.end_time">1323074334000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -102,7 +111,7 @@
       <hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Register Users" enabled="true"/>
         <hashTree>
-          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/ghana-telco/subscription/handle" enabled="true">
+          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/${web-context}/subscription/handle" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="subscriberNumber" elementType="HTTPArgument">
@@ -127,7 +136,7 @@
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
             <stringProp name="HTTPSampler.protocol">http</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/ghana-telco/subscription/handle</stringProp>
+            <stringProp name="HTTPSampler.path">/${web-context}/subscription/handle</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -213,7 +222,12 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="ipaddress" elementType="Argument">
             <stringProp name="Argument.name">ipaddress</stringProp>
-            <stringProp name="Argument.value">192.168.41.4</stringProp>
+            <stringProp name="Argument.value">localhost</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="web-context" elementType="Argument">
+            <stringProp name="Argument.name">web-context</stringProp>
+            <stringProp name="Argument.value">ghana-telco-web</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
