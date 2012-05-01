@@ -4,17 +4,12 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeFieldType;
 import org.motechproject.ghana.telco.domain.vo.WeekAndDay;
 import org.motechproject.ghana.telco.utils.DateUtils;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
-import org.motechproject.util.DateUtil;
 
-import static org.joda.time.DateTimeConstants.SATURDAY;
 import static org.motechproject.util.DateUtil.daysToCalendarWeekEnd;
 import static org.motechproject.util.DateUtil.setTimeZone;
 
@@ -90,14 +85,6 @@ public class Subscription extends MotechBaseDataObject {
 
     public void setRegistrationDate(DateTime registrationDate) {
         this.registrationDate = registrationDate;
-    }
-
-    public CampaignRequest createCampaignRegistrationRequest() {
-        return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), reminderTime(), getRegistrationDate().toLocalDate(), startWeekAndDay.getWeek().getNumber());
-    }
-
-    private Time reminderTime() {
-        return new Time(cycleStartDate.get(DateTimeFieldType.hourOfDay()), cycleStartDate.get(DateTimeFieldType.minuteOfHour()));
     }
 
     public CampaignRequest createCampaignRequest() {

@@ -1,7 +1,6 @@
 package org.motechproject.ghana.telco.domain;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.ghana.telco.domain.builder.SubscriptionBuilder;
@@ -73,9 +72,12 @@ public class SubscriptionTest {
     @Test
     public void shouldCreateCampaignRegistrationRequest() {
         DateTime registeredDate = DateUtil.now();
-        Subscription subscription = subscription("0987654321", registeredDate, new Week(6), programType("Pregnancy"));
-        CampaignRequest registrationRequest = subscription.createCampaignRegistrationRequest();
-        assertThat(registrationRequest.reminderTime().getMinute(), is(equalTo(registeredDate.get(DateTimeFieldType.minuteOfHour()))));
+        final String mobileNumber = "0987654321";
+        Subscription subscription = subscription(mobileNumber, registeredDate, new Week(6), programType("Pregnancy"));
+        CampaignRequest registrationRequest = subscription.createCampaignRequest();
+        assertThat(registrationRequest.reminderTime(), is(equalTo(null)));
+        assertThat(registrationRequest.startOffset(), is(equalTo(6)));
+        assertThat(registrationRequest.externalId(), is(equalTo(mobileNumber)));
     }
 
     private ProgramType programType(String programName) {
