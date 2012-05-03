@@ -39,7 +39,8 @@
             <form id="audit-form">
                 Audits :
                 <select id="audit_options">
-                    <option value="sms">SMSAudit</option>
+                    <option value="sms/inbound">Inbound SMS</option>
+                    <option value="sms/outbound">Outbound SMS</option>
                 </select>
                 <input id="refresh_audit" type="button" value="Refresh"/>
             </form>

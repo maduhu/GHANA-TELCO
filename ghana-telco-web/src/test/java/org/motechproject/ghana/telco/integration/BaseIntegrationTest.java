@@ -1,10 +1,14 @@
 package org.motechproject.ghana.telco.integration;
 
 import org.hamcrest.Matchers;
+import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.ghana.telco.BaseSpringTestContext;
 import org.motechproject.ghana.telco.controller.SubscriptionController;
-import org.motechproject.ghana.telco.domain.*;
+import org.motechproject.ghana.telco.domain.ProgramType;
+import org.motechproject.ghana.telco.domain.RegisterProgramSMS;
+import org.motechproject.ghana.telco.domain.Subscription;
+import org.motechproject.ghana.telco.domain.SubscriptionStatus;
 import org.motechproject.ghana.telco.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.telco.domain.dto.SubscriptionRequest;
 import org.motechproject.ghana.telco.matchers.ProgramTypeMatcher;
@@ -19,6 +23,8 @@ import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.scheduler.JobIdFactory;
+import org.motechproject.sms.api.SMSRecord;
+import org.motechproject.sms.api.service.SmsAuditService;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -35,7 +41,6 @@ import static org.apache.commons.lang.StringUtils.replace;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.ghana.telco.domain.MessageBundle.ENROLLMENT_SUCCESS;
 import static org.motechproject.ghana.telco.domain.MessageBundle.PROGRAM_NAME_MARKER;
 import static org.motechproject.ghana.telco.process.CampaignProcess.DATE_MARKER;
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
@@ -56,8 +61,6 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     @Autowired
     protected AllShortCodes allShortCodes;
     @Autowired
-    protected AllSMSAudits allSMSAudits;
-    @Autowired
     protected AllMessageCampaigns allMessageCampaigns;
     @Autowired
     protected AllMessages allMessages;
@@ -74,6 +77,8 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
             .withMaxWeek(52).withProgramKey(ProgramType.CHILDCARE).withProgramName("Child Care").withShortCode("C").withShortCode("c").build();
     public final ProgramType pregnancyProgramType = new ProgramTypeBuilder().withMinWeek(5).withMaxWeek(35)
             .withProgramKey(ProgramType.PREGNANCY).withProgramName("Pregnancy").withShortCode("P").withShortCode("p").withRollOverProgramType(childCarePregnancyType).build();
+    @Autowired
+    private SmsAuditService smsAuditService;
 
     protected void addSeedData() {
         shortCodeSeed.run();
@@ -138,8 +143,6 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         assertEquals(registerSms.getFromMobileNumber(), subscription.getSubscriber().getNumber());
 
         assertCampaignSchedule(subscription);
-        List<SMSAudit> smsAudits = lastNSms(1);        
-        assertSMS(replaceDateMarker(messageFor(ENROLLMENT_SUCCESS, programType), subscription.getCycleStartDate().toDate()), smsAudits.get(0));
     }
 
     private String messageFor(String message, ProgramType programType, Object... params) {
@@ -200,17 +203,17 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         return messageKey;
     }
 
-    protected void assertSMS(String expected, SMSAudit smsAudit) {
+    protected void assertSMS(String expected, SMSRecord smsAudit) {
         assertEquals(expected, smsAudit.getContent());
     }
 
     protected void assertSmsSent(String message) {
-        List<SMSAudit> smsAudits = allSMSAudits.getAll();
+        List<SMSRecord> smsAudits = smsAuditService.allOutboundMessagesBetween(DateTime.now().minusMinutes(1), DateTime.now());
         assertThat(smsAudits.get(smsAudits.size() - 1).getContent(), is(message));
     }
 
-    protected List<SMSAudit> lastNSms(int count) {
-        List<SMSAudit> smsAudits = allSMSAudits.getAll();
+    protected List<SMSRecord> lastNSms(int count) {
+        List<SMSRecord> smsAudits = smsAuditService.allInboundMessagesBetween(DateTime.now(), DateTime.now());
         return smsAudits.subList(smsAudits.size() - count, smsAudits.size());
     }
 }

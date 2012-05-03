@@ -1,9 +1,9 @@
 package org.motechproject.ghana.telco.controller;
 
 import org.joda.time.DateTime;
-import org.motechproject.ghana.telco.domain.SMSAudit;
-import org.motechproject.ghana.telco.repository.AllSMSAudits;
 import org.motechproject.ghana.telco.repository.AllSubscriptions;
+import org.motechproject.sms.api.SMSRecord;
+import org.motechproject.sms.api.service.SmsAuditService;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,26 +21,42 @@ import static java.util.Arrays.asList;
 @Controller
 public class AuditController {
     @Autowired
-    private AllSMSAudits allProgramMessageAudits;
+    private SmsAuditService smsAuditService;
     @Autowired
     private AllSubscriptions allSubscriptions;
 
-    @RequestMapping("/audits/sms")
-    public void showAllSMSAudits(HttpServletResponse response) throws IOException {
-        List<SMSAudit> messageAudits = sort(allProgramMessageAudits.getAll(), on(SMSAudit.class).getSentTime(), sortComparator());
+    @RequestMapping("/audits/sms/outbound")
+    public void showAllOutboundSMSAudits(HttpServletResponse response) throws IOException {
+        List<SMSRecord> allOutboundMessages = smsAuditService.allOutboundMessagesBetween(DateTime.now().minusDays(2), DateTime.now());
+        List<SMSRecord> messageAudits = sort(allOutboundMessages, on(SMSRecord.class).getMessageTime(), sortComparator());
 
         StringBuilder builder = new StringBuilder();
         builder.append("<div id='server_time'>" + DateUtil.now() + "</div>");
+        prepareHTMLTable(messageAudits, builder);
+        response.getWriter().write(builder.toString());
+    }
+
+    @RequestMapping("/audits/sms/inbound")
+    public void showAllInboundSMSAudits(HttpServletResponse response) throws IOException {
+        List<SMSRecord> allInboundMessages = smsAuditService.allInboundMessagesBetween(DateTime.now().minusDays(2), DateTime.now());
+        List<SMSRecord> messageAudits = sort(allInboundMessages, on(SMSRecord.class).getMessageTime(), sortComparator());
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("<div id='server_time'>" + DateUtil.now() + "</div>");
+        prepareHTMLTable(messageAudits, builder);
+        response.getWriter().write(builder.toString());
+    }
+
+    private void prepareHTMLTable(List<SMSRecord> messageAudits, StringBuilder builder) {
         builder.append("<table>");
-        row(builder, header("Subscriber", "Program", "Sent on", "Content"));
-        for (SMSAudit messageAudit : messageAudits) {
-            List<? extends Object> dataList = asList(messageAudit.getSubscriberNumber(), messageAudit.getProgramKey(), messageAudit.getSentTime().toString(),
-                    messageAudit.getContent());
+        row(builder, header("Subscriber", "Sent on", "Content"));
+        for (SMSRecord smsRecord : messageAudits) {
+            List<? extends Object> dataList = asList(smsRecord.getPhoneNo(), smsRecord.getMessageTime().toString(),
+                    smsRecord.getContent());
             rowData(builder, dataList);
         }
 
         builder.append("</table>");
-        response.getWriter().write(builder.toString());
     }
 
     private Comparator<DateTime> sortComparator() {

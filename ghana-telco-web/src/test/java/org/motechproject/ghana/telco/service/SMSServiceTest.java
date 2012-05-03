@@ -2,19 +2,16 @@ package org.motechproject.ghana.telco.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.ghana.telco.domain.ProgramType;
-import org.motechproject.ghana.telco.domain.SMSAudit;
 import org.motechproject.ghana.telco.domain.builder.ProgramTypeBuilder;
 import org.motechproject.ghana.telco.domain.dto.SMSServiceRequest;
 import org.motechproject.ghana.telco.domain.dto.SMSServiceResponse;
-import org.motechproject.ghana.telco.repository.AllSMSAudits;
 import org.motechproject.ghana.telco.sms.SMSProvider;
 import org.motechproject.model.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -24,15 +21,12 @@ public class SMSServiceTest {
     SMSService service;
 
     @Mock
-    AllSMSAudits allProgramMessageAudits;
-
-    @Mock
     SMSProvider smsProvider;
 
     @Before
     public void setUp() {
         initMocks(this);
-        this.service = new SMSService(smsProvider,allProgramMessageAudits);
+        this.service = new SMSService(smsProvider);
     }
 
     @Test
@@ -48,13 +42,7 @@ public class SMSServiceTest {
 
         assertTrue(smsServiceResponse.isSuccessful());
 
-        ArgumentCaptor<SMSAudit> captor = ArgumentCaptor.forClass(SMSAudit.class);
         verify(smsProvider).send(mobileNumber, message, deliveryTime);
-        verify(allProgramMessageAudits).add(captor.capture());
-        SMSAudit capturedSMSAudit = captor.getValue();
-        assertEquals(programType.getProgramKey(), capturedSMSAudit.getProgramKey());
-        assertEquals(mobileNumber, capturedSMSAudit.getSubscriberNumber());
-        assertEquals(deliveryTime.toString(), capturedSMSAudit.getDeliveryTime());
     }
 
     @Test
@@ -69,11 +57,6 @@ public class SMSServiceTest {
 
         assertTrue(smsServiceResponse.isSuccessful());
 
-        ArgumentCaptor<SMSAudit> captor = ArgumentCaptor.forClass(SMSAudit.class);
         verify(smsProvider).send(mobileNumber, message, deliveryTime);
-        verify(allProgramMessageAudits).add(captor.capture());
-        SMSAudit capturedSMSAudit = captor.getValue();
-        assertNull(capturedSMSAudit.getProgramKey());
-        assertEquals(mobileNumber, capturedSMSAudit.getSubscriberNumber());
     }
 }

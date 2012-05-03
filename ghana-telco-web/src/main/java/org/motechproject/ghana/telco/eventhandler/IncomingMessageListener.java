@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.INBOUND_MESSAGE;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.SENDER;
 
 @Service
@@ -27,7 +27,7 @@ public class IncomingMessageListener {
     public void processIncomingMessage(MotechEvent event) {
         Map<String,Object> incomingMessageParameters = event.getParameters();
         String messageSender = (String) incomingMessageParameters.get(SENDER);
-        String message = (String) incomingMessageParameters.get(MESSAGE);
+        String message = (String) incomingMessageParameters.get(INBOUND_MESSAGE);
         SubscriptionRequest request = new SubscriptionRequest();
         request.setInputMessage(message);
         request.setSubscriberNumber(messageSender);
