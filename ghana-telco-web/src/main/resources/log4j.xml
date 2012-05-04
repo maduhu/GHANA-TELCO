@@ -29,7 +29,7 @@
         <level value="warn"/>
     </logger>
     <logger name="org.motechproject">
-        <level value="error"/>
+        <level value="info"/>
     </logger>
     <root>
         <priority value="info"/>

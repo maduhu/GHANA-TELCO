@@ -36,7 +36,7 @@ public class IncomingMessageListenerTest {
         String sender = "0923842312";
         String message = "P 20";
         params.put(SENDER, sender);
-        params.put(EventDataKeys.MESSAGE, message);
+        params.put(EventDataKeys.INBOUND_MESSAGE, message);
 
         MotechEvent motechEvent = new MotechEvent(EventSubjects.INBOUND_SMS, params);
 
