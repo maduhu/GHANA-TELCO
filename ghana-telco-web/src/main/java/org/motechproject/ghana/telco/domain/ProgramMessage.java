@@ -3,9 +3,6 @@ package org.motechproject.ghana.telco.domain;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.ghana.telco.domain.vo.Week;
-import org.motechproject.ghana.telco.domain.vo.WeekAndDay;
-import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.Arrays;
@@ -18,16 +15,14 @@ public class ProgramMessage extends MotechBaseDataObject {
     private String messageKey;
     private String programKey;
     private String content;
-    private WeekAndDay weekAndDay;
 
     public ProgramMessage() {
     }
 
-    public ProgramMessage(String messageKey, String programKey, String content, WeekAndDay weekAndDay) {
+    public ProgramMessage(String messageKey, String programKey, String content) {
         this.messageKey = messageKey;
         this.programKey = programKey;
         this.content = content;
-        this.weekAndDay = weekAndDay;
     }
 
     public String getMessageKey() {
@@ -54,20 +49,8 @@ public class ProgramMessage extends MotechBaseDataObject {
         this.content = content;
     }
 
-    public WeekAndDay getWeekAndDay() {
-        return weekAndDay;
-    }
-
-    public void setWeekAndDay(WeekAndDay weekAndDay) {
-        this.weekAndDay = weekAndDay;
-    }
-
-    public boolean isOf(Week week, DayOfWeek day) {
-        return this.weekAndDay.getWeek().equals(week) && this.weekAndDay.getDay().equals(day);
-    }
-
     @Override
     public String toString() {
-        return StringUtils.join(Arrays.asList(programKey, weekAndDay.getWeek(), weekAndDay.getDay(), content), "|");
+        return StringUtils.join(Arrays.asList(programKey, messageKey, content), "|");
     }
 }

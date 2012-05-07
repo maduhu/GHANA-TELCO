@@ -109,6 +109,11 @@
             <artifactId>motech-platform-common</artifactId>
             <version>${motech-api-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-cmslite-api</artifactId>
+            <version>${motech-api-version}</version>
+        </dependency>
         <!--GENERAL-->
         <dependency>
             <groupId>junit</groupId>

@@ -1,83 +1,74 @@
 package org.motechproject.ghana.telco.tools.seed;
 
+import org.motechproject.MotechException;
 import org.motechproject.ghana.telco.domain.ProgramMessage;
 import org.motechproject.ghana.telco.domain.ProgramType;
-import org.motechproject.ghana.telco.domain.vo.Week;
-import org.motechproject.ghana.telco.domain.vo.WeekAndDay;
 import org.motechproject.ghana.telco.repository.AllProgramMessages;
-import org.motechproject.ghana.telco.repository.AllProgramTypes;
 import org.motechproject.model.DayOfWeek;
+import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
+import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
-import static java.lang.String.format;
+import static org.springframework.core.io.support.PropertiesLoaderUtils.loadAllProperties;
 
 @Component
 public class ProgramMessageSeed extends Seed {
-    public static final String DUMMY = "message content for ";
 
     @Autowired
-    private  AllProgramMessages allSubscriptionMessages;
+    private AllProgramMessages allSubscriptionMessages;
 
     @Autowired
-    private AllProgramTypes allProgramTypes;
-
-    @Autowired
-    @Qualifier("messageContentProperties")
-    private Properties messageContentProperty;
-
-    private static final String CHILDCARE_PATH = "childcare.seed.file.path";
-    private static final String PREGNANCY_PATH = "pregnancy.seed.file.path";
+    private AllMessageCampaigns messageCampaigns;
 
     @Override
     protected void load() {
-        loadPregnancyCareMessages();
-        loadChildCareMessages();
-    }
-
-    private void loadPregnancyCareMessages() {
-        ProgramType programType = allProgramTypes.findByCampaignShortCode("P");
-        persistMessagesFor(programType, getPathFor(PREGNANCY_PATH));
-    }
-
-    private void loadChildCareMessages() {
-        ProgramType programType = allProgramTypes.findByCampaignShortCode("C");
-        persistMessagesFor(programType, getPathFor(CHILDCARE_PATH));
-    }
-
-    private void persistMessagesFor(ProgramType programType,String fileName) {
-        String program = programType.getProgramKey().toLowerCase();
-        try{
-        FileReader in=new FileReader(new ClassPathResource(fileName).getFile());
-        BufferedReader br=new BufferedReader(in);
-        String line;
-        String []contents;
-        while((line=br.readLine())!=null) {
-            contents=line.split("\t");
-            String programKey = programType.getProgramKey();
-            String messageContent=contents[0];
-            Integer weekNumber=Integer.parseInt(contents[1]);
-            Week week = new Week(weekNumber);
-            allSubscriptionMessages.add(new ProgramMessage(format(program + "-calendar-week-%s-Monday", weekNumber),programKey,messageContent, new WeekAndDay(week, DayOfWeek.Monday)));
-            allSubscriptionMessages.add(new ProgramMessage(format(program + "-calendar-week-%s-Wednesday", weekNumber), programKey,messageContent, new WeekAndDay(week, DayOfWeek.Wednesday)));
-            allSubscriptionMessages.add(new ProgramMessage(format(program + "-calendar-week-%s-Friday", weekNumber), programKey, messageContent, new WeekAndDay(week, DayOfWeek.Friday)));
-
-        }
-        br.close();
-        } catch (Exception e1) {
-            e1.printStackTrace();
+        try {
+            String[] languages = {"EN"};
+            for (String language : languages) {
+                Properties properties = loadAllProperties("programs/message_" + language + ".properties");
+                saveProperties(properties, language);
+            }
+        } catch (Exception e) {
+            throw new MotechException("Encountered exception while loading seed", e);
         }
     }
 
-    private String getPathFor(String path) {
-        return messageContentProperty.getProperty(path);
+    private void saveProperties(Properties properties, String language) {
+
+        RepeatingCampaignMessage pregnancyCampaignMessage = (RepeatingCampaignMessage) messageCampaigns.getCampaignMessageByMessageName(ProgramType.PREGNANCY, ProgramType.PREGNANCY);
+        RepeatingCampaignMessage childCareCampaignMessage = (RepeatingCampaignMessage) messageCampaigns.getCampaignMessageByMessageName(ProgramType.CHILDCARE, ProgramType.CHILDCARE);
+        Map<String, String> pregnancyDayMap = createDayMap(pregnancyCampaignMessage);
+        Map<String, String> childCareDayMap = createDayMap(childCareCampaignMessage);
+
+        for (Object key : properties.keySet()) {
+            String keyStr = (String) key;
+            String messageContent = (String) properties.get(key);
+            String messageContentKey = null;
+            String[] tokens = keyStr.split("-");
+
+            String weekDay = tokens[2];
+            if (tokens[0].equals(ProgramType.PREGNANCY)) {
+                messageContentKey = keyStr.replace(weekDay, pregnancyDayMap.get(weekDay));
+            } else if (tokens[0].equals(ProgramType.CHILDCARE)) {
+                messageContentKey = keyStr.replace(weekDay, childCareDayMap.get(weekDay));
+            }
+            allSubscriptionMessages.add(new ProgramMessage(messageContentKey, tokens[0], messageContent));
+        }
+    }
+
+    private Map<String, String> createDayMap(RepeatingCampaignMessage campaignMessage) {
+        List<DayOfWeek> weekDayList = campaignMessage.weekDaysApplicable();
+        Map<String, String> weekDayMap = new HashMap<String, String>();
+        int count = 0;
+        for (DayOfWeek dayOfWeek : weekDayList) {
+            weekDayMap.put("{d" + (++count) + "}", dayOfWeek.name());
+        }
+        return weekDayMap;
     }
 }
-
-
