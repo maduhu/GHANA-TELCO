@@ -6,6 +6,7 @@
     <import resource="classpath:applicationPlatformServerAPI.xml"/>
     <import resource="classpath:applicationSmsSmpp.xml"/>
     <import resource="classpath:applicationContext-Common.xml"/>
+    <import resource="classpath:applicationContext-security.xml"/>
     <import resource="classpath:applicationMessageCampaign.xml"/>
 
     <bean id="dbConnector" class="org.ektorp.impl.StdCouchDbConnector">

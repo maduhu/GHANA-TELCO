@@ -12,6 +12,7 @@
                 <ref bean="programMessageSeed"/>
                 <ref bean="shortCodeSeed"/>
                 <ref bean="messageSeed"/>
+                <ref bean="telcoUserSeed"/>
             </list>
         </constructor-arg>
     </bean>

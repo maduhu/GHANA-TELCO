@@ -1,0 +1,25 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                    http://www.springframework.org/schema/security 
+                    http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+    <http use-expressions="true">
+        <form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" default-target-url='/index.jsp' always-use-default-target="true"/>
+        <intercept-url pattern="/**" access="hasAnyRole('SUPERVISOR')" requires-channel="any"/>
+        <logout logout-url="/logout" logout-success-url="/login.jsp"/>
+
+        <intercept-url pattern="/login*" filters="none"/>
+        <intercept-url pattern="/css/**" filters="none"/>
+        <intercept-url pattern="/images/**" filters="none"/>
+        <intercept-url pattern="/js/**" filters="none"/>
+    </http>
+
+    <beans:bean name="authenticationProvider" class="org.motechproject.ghana.telco.security.AuthenticationProvider">
+        <beans:constructor-arg name="userService" ref="userService"/>
+    </beans:bean>
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider ref="authenticationProvider"/>
+    </authentication-manager>
+</beans:beans>

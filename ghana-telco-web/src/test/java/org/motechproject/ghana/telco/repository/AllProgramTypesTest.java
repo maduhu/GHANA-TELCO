@@ -53,6 +53,6 @@ public class AllProgramTypesTest extends BaseSpringTestContext {
 
     @After
     public void destroy() {
-        remove(allProgramTypes.getAll());
+        allProgramTypes.removeAll();
     }
 }
