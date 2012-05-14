@@ -53,7 +53,7 @@ public class CampaignProcessTest {
         String message = "indie";
         Subscription subscription = mockSubscription(subscriberNumber);
         CampaignRequest campaignRequest = new CampaignRequest();
-        when(subscription.createCampaignRegistrationRequest()).thenReturn(campaignRequest);
+        when(subscription.createCampaignRequest()).thenReturn(campaignRequest);
         when(subscription.getCycleStartDate()).thenReturn(DateUtil.now());
         when(messageBundle.get(MessageBundle.ENROLLMENT_SUCCESS)).thenReturn(message);
 
@@ -102,7 +102,7 @@ public class CampaignProcessTest {
         when(messageBundle.get(MessageBundle.ENROLLMENT_ROLLOVER)).thenReturn(message);
         when(source.createCampaignRequest()).thenReturn(sourceRequest);
         when(source.getCycleStartDate()).thenReturn(DateTime.now());
-        when(target.createCampaignRegistrationRequest()).thenReturn(targetRequest);
+        when(target.createCampaignRequest()).thenReturn(targetRequest);
 
         Boolean reply = campaign.rollOver(source, target);
 

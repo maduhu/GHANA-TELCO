@@ -29,7 +29,7 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     @Override
     public Boolean startFor(Subscription subscription) {
-        campaignService.startFor(subscription.createCampaignRegistrationRequest());
+        campaignService.startFor(subscription.createCampaignRequest());
         sendMessage(subscription, getSuccessMessage(subscription));
         return true;
     }
@@ -79,7 +79,7 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
 
     private boolean performRollOver(Subscription fromSubscription, Subscription toSubscription, String message) {
         campaignService.stopAll(fromSubscription.createCampaignRequest());
-        campaignService.startFor(toSubscription.createCampaignRegistrationRequest());
+        campaignService.startFor(toSubscription.createCampaignRequest());
         sendMessage(toSubscription, message);
         return true;
     }

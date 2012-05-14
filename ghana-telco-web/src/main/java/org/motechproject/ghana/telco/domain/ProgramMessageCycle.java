@@ -3,14 +3,12 @@ package org.motechproject.ghana.telco.domain;
 import org.joda.time.DateTime;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
-import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.joda.time.DateTimeConstants.SUNDAY;
-import static org.motechproject.util.DateUtil.*;
+import static org.motechproject.util.DateUtil.nextApplicableWeekDay;
 
 @Component
 public class ProgramMessageCycle {
