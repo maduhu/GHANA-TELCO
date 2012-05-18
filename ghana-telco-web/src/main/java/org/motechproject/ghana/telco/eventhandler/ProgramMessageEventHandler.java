@@ -1,15 +1,12 @@
 package org.motechproject.ghana.telco.eventhandler;
 
-import org.motechproject.ghana.telco.domain.ProgramType;
 import org.motechproject.ghana.telco.domain.Subscription;
 import org.motechproject.ghana.telco.process.MessengerProcess;
 import org.motechproject.ghana.telco.service.SubscriptionService;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.Time;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
-import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,14 +35,9 @@ public class ProgramMessageEventHandler {
 
         Subscription subscription = service.findActiveSubscriptionFor(subscriberNumber, programKey);
         if (subscription != null) {
-            messenger.process(subscription, (String) event.getParameters().get(EventKeys.MESSAGE_KEY), getCampaignDeliveryTime(subscription.programKey()));
+            messenger.process(subscription, (String) event.getParameters().get(EventKeys.GENERATED_MESSAGE_KEY));
             if (event.isLastEvent())
                 service.rollOverByEvent(subscription);
         }
-    }
-
-    private Time getCampaignDeliveryTime(String programKey) {
-        RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) allMessageCampaigns.getCampaignMessageByMessageName(programKey, programKey);
-        return repeatingCampaignMessage.deliverTime();
     }
 }

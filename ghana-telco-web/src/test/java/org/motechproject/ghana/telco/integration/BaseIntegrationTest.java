@@ -15,7 +15,6 @@ import org.motechproject.ghana.telco.matchers.ProgramTypeMatcher;
 import org.motechproject.ghana.telco.parser.RegisterProgramMessageParser;
 import org.motechproject.ghana.telco.process.CampaignProcess;
 import org.motechproject.ghana.telco.repository.*;
-import org.motechproject.ghana.telco.tools.seed.AppConfigSeed;
 import org.motechproject.ghana.telco.tools.seed.MessageSeed;
 import org.motechproject.ghana.telco.tools.seed.ShortCodeSeed;
 import org.motechproject.model.MotechBaseDataObject;
@@ -67,8 +66,6 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     @Autowired
     ShortCodeSeed shortCodeSeed;
     @Autowired
-    private AppConfigSeed appconfigSeed;
-    @Autowired
     MessageSeed messageSeed;
 
     @Autowired
@@ -83,7 +80,6 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
     protected void addSeedData() {
         shortCodeSeed.run();
         messageSeed.run();
-        appconfigSeed.run();
     }
 
     protected void cleanData() {

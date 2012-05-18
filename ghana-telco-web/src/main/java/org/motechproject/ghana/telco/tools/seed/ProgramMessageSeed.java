@@ -21,13 +21,14 @@ import static org.springframework.core.io.support.PropertiesLoaderUtils.loadAllP
 public class ProgramMessageSeed extends Seed {
 
     @Autowired
-    private AllProgramMessages allSubscriptionMessages;
+    private AllProgramMessages allProgramMessages;
 
     @Autowired
     private AllMessageCampaigns messageCampaigns;
 
     @Override
     protected void load() {
+        allProgramMessages.removeAll();
         try {
             String[] languages = {"EN"};
             for (String language : languages) {
@@ -58,7 +59,7 @@ public class ProgramMessageSeed extends Seed {
             } else if (tokens[0].equals(ProgramType.CHILDCARE)) {
                 messageContentKey = keyStr.replace(weekDay, childCareDayMap.get(weekDay));
             }
-            allSubscriptionMessages.add(new ProgramMessage(messageContentKey, tokens[0], messageContent));
+            allProgramMessages.add(new ProgramMessage(messageContentKey, tokens[0], messageContent));
         }
     }
 

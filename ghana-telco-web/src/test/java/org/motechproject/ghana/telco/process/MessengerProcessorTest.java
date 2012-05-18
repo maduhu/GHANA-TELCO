@@ -54,7 +54,7 @@ public class MessengerProcessorTest {
         when(programMessage.getContent()).thenReturn(content);
         when(allProgramMessages.findBy(messageKey)).thenReturn(programMessage);
 
-        messenger.process(subscription, messageKey, deliveryTime);
+        messenger.process(subscription, messageKey);
 
         ArgumentCaptor<SMSServiceRequest> captor = ArgumentCaptor.forClass(SMSServiceRequest.class);
         verify(smsService).send(captor.capture());
