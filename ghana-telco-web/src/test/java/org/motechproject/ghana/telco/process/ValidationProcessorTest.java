@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
 import static org.hamcrest.core.Is.is;
@@ -191,7 +190,7 @@ public class ValidationProcessorTest {
         String subscriberNumber = "9500012345";
         ShortCode codeForRetainChildCare = new ShortCodeBuilder().withShortCode("E").build();
         ShortCode codeForRollOverChildCare = new ShortCodeBuilder().withShortCode("N").build();
-        String decisionMessageToRollOver = format("You can have only one active child care program at a time. Please message \"%s\" to xxxx to retain the existing program and terminate the roll over. \\\n" +
+        String decisionMessageToRollOver = String.format("You can have only one active child care program at a time. Please message \"%s\" to xxxx to retain the existing program and terminate the roll over. " +
                 "  Please message \"%s\" to xxxx to continue with the roll over an terminate the existing program.", codeForRetainChildCare.defaultCode(), codeForRollOverChildCare.defaultCode());
 
         when(allShortCodes.getShortCodeFor(RETAIN_EXISTING_CHILDCARE_PROGRAM)).thenReturn(codeForRetainChildCare);

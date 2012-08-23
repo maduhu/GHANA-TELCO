@@ -57,6 +57,26 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void ShouldEnrollSubscriberToChildCare() throws IOException {
+        String shortCode = "C";
+        SubscriptionRequest subscriptionRequest = request(shortCode + " 7", "9500012345");
+
+        subscriptionController.handle(subscriptionRequest);
+
+        List<Subscription> subscriptions = allSubscriptions.getAll();
+        List<Subscriber> subscribers = allSubscribers.getAll();
+        ProgramType programType = allProgramTypes.findByCampaignShortCode(shortCode);
+        Subscription subscription = subscriptions.get(0);
+
+        assertThat(subscriptions.size(), is(1));
+        assertThat(subscription.getProgramType(), new ProgramTypeMatcher(programType));
+        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(26));
+        assertThat(subscription.getStatus(), is(SubscriptionStatus.ACTIVE));
+        assertThat(subscribers.size(), is(1));
+        assertThat(subscription.getSubscriber(), new SubscriberMatcher(subscribers.get(0)));
+    }
+
+    @Test
     public void ShouldSendFailureResponseForInvalidMessage() throws IOException {
         SubscriptionRequest subscriptionRequest = request("P25", "1234567890");
         subscriptionController.handle(subscriptionRequest);

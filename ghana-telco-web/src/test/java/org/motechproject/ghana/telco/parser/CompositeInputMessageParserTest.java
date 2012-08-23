@@ -46,8 +46,8 @@ public class CompositeInputMessageParserTest {
     public void setUp() {
         initMocks(this);
 
-        pregnancy = new ProgramTypeBuilder().withShortCode("p").withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
-        childCare = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
+        pregnancy = new ProgramTypeBuilder().withShortCode("p").withProgramKey(ProgramType.PREGNANCY).withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
+        childCare = new ProgramTypeBuilder().withShortCode("c").withProgramKey(ProgramType.CHILDCARE).withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
         when(allProgramTypes.getAll()).thenReturn(asList(pregnancy, childCare));
         mockShortCode(ShortCode.STOP, asList("stop"));
         mockShortCode(DELIVERY, asList("dd"));
@@ -92,7 +92,7 @@ public class CompositeInputMessageParserTest {
 
     @Test
     public void ShouldParseChildCareMessage() {
-        String messageText = "C 25";
+        String messageText = "C 7";
 
         when(allProgramTypes.findByCampaignShortCode("C")).thenReturn(childCare);
         SMS sms = messageParser.parse(messageText, senderMobileNumber);
@@ -100,13 +100,13 @@ public class CompositeInputMessageParserTest {
 
         assertMobileNumberAndMessage(sms, messageText);
         assertThat(subscription.getProgramType(), new ProgramTypeMatcher(childCare));
-        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
+        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(26));
     }
 
     @Test
     public void ShouldParseMessagesEvenWithLowerCase() {
-        String messageText = "c 25";
-        ProgramType programType = new ProgramTypeBuilder().withShortCode("c").withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
+        String messageText = "c 7";
+        ProgramType programType = new ProgramTypeBuilder().withShortCode("c").withProgramKey(ProgramType.CHILDCARE).withProgramName("Child Care").withMinWeek(5).withMaxWeek(35).build();
 
         when(allProgramTypes.findByCampaignShortCode("c")).thenReturn(programType);
 
@@ -115,7 +115,7 @@ public class CompositeInputMessageParserTest {
 
         assertMobileNumberAndMessage(sms, messageText);
         assertThat(subscription.getProgramType(), is(programType));
-        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(25));
+        assertThat(subscription.getStartWeekAndDay().getWeek().getNumber(), is(26));
     }
 
     @Test(expected = MessageParseFailException.class)
@@ -127,6 +127,8 @@ public class CompositeInputMessageParserTest {
     @Test
     public void ShouldCreateSubscriptionWithActiveStatusForValidInputMessage() {
         String messageText = "P 10";
+        ProgramType programType = new ProgramTypeBuilder().withShortCode("P").withProgramKey(ProgramType.PREGNANCY).withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
+        when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(programType);
         SMS sms = messageParser.parse(messageText, senderMobileNumber);
         Subscription subscription = (Subscription) sms.getDomain();
 
@@ -137,6 +139,9 @@ public class CompositeInputMessageParserTest {
     @Test
     public void ShouldCreateSubscriptionForWeekWithSingleDigit() {
         String messageText = "P 5";
+        ProgramType programType = new ProgramTypeBuilder().withShortCode("P").withProgramKey(ProgramType.PREGNANCY).withProgramName("Pregnancy").withMinWeek(5).withMaxWeek(35).build();
+        when(allProgramTypes.findByCampaignShortCode("P")).thenReturn(programType);
+
         SMS sms = messageParser.parse(messageText, senderMobileNumber);
         Subscription subscription = (Subscription) sms.getDomain();
         assertMobileNumberAndMessage(sms, messageText);
@@ -146,7 +151,7 @@ public class CompositeInputMessageParserTest {
     @Test
     public void ShouldParseBasedOnNewShortCodes() {
         String shortCode = "CHI";
-        ProgramType childCareProgramType = new ProgramTypeBuilder().withShortCode(shortCode).withShortCode("C").withProgramName("ChildCare").withMinWeek(5).withMaxWeek(35).build();
+        ProgramType childCareProgramType = new ProgramTypeBuilder().withShortCode(shortCode).withProgramKey(ProgramType.CHILDCARE).withShortCode("C").withProgramName("ChildCare").withMinWeek(5).withMaxWeek(35).build();
 
         when(allProgramTypes.findByCampaignShortCode(shortCode)).thenReturn(childCareProgramType);
         when(allProgramTypes.getAll()).thenReturn(Arrays.asList(childCareProgramType));

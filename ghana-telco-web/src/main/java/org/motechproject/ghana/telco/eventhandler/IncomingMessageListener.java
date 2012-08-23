@@ -28,9 +28,13 @@ public class IncomingMessageListener {
         Map<String,Object> incomingMessageParameters = event.getParameters();
         String messageSender = (String) incomingMessageParameters.get(SENDER);
         String message = (String) incomingMessageParameters.get(INBOUND_MESSAGE);
+        controller.handle(subscriptionRequestFor(messageSender, message));
+    }
+
+    private SubscriptionRequest subscriptionRequestFor(String messageSender, String message) {
         SubscriptionRequest request = new SubscriptionRequest();
         request.setInputMessage(message);
         request.setSubscriberNumber(messageSender);
-        controller.handle(request);
+        return request;
     }
 }
