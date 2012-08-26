@@ -4,14 +4,14 @@ import org.motechproject.ghana.telco.controller.SubscriptionController;
 import org.motechproject.ghana.telco.domain.dto.SubscriptionRequest;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
-import org.motechproject.sms.smpp.constants.EventSubject;
+import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static org.motechproject.sms.api.constants.EventKeys.MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventDataKey.SENDER;
+import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.SENDER;
 
 @Service
 public class IncomingMessageListener {
@@ -23,7 +23,7 @@ public class IncomingMessageListener {
         this.controller = controller;
     }
 
-    @MotechListener(subjects = {EventSubject.INBOUND_SMS})
+    @MotechListener(subjects = {EventSubjects.INBOUND_SMS})
     public void processIncomingMessage(MotechEvent event) {
         Map<String,Object> incomingMessageParameters = event.getParameters();
         String messageSender = (String) incomingMessageParameters.get(SENDER);

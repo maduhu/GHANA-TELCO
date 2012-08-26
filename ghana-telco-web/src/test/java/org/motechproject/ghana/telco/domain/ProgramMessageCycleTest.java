@@ -27,7 +27,7 @@ public class ProgramMessageCycleTest {
         programMessageCycle = new ProgramMessageCycle();
         ReflectionTestUtils.setField(programMessageCycle, "allMessageCampaigns", allMessageCampaigns);
         when(subscription.programKey()).thenReturn(ProgramType.PREGNANCY);
-        when(allMessageCampaigns.getApplicableDaysForRepeatingCampaign(ProgramType.PREGNANCY, "Pregnancy Message")).thenReturn(asList(Monday, Wednesday, Friday));
+        when(allMessageCampaigns.getApplicableDaysForRepeatingCampaign(ProgramType.PREGNANCY, ProgramType.PREGNANCY)).thenReturn(asList(Monday, Wednesday, Friday));
     }
 
     @Test

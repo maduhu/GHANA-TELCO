@@ -10,7 +10,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.0.5.RELEASE</spring.version>
-        <motech-api-version>0.7</motech-api-version>
+        <motech-api-version>0.9</motech-api-version>
+        <motech.release.url>http://nexus.motechproject.org/content/repositories/releases</motech.release.url>
         <exec-maven-plugin.version>1.2.1</exec-maven-plugin.version>
         <powermock.version>1.4.10</powermock.version>
     </properties>
@@ -69,10 +70,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
                 <version>2.5.1</version>
-                <configuration>
-                    <instrumentation>
-                    </instrumentation>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -249,7 +246,7 @@
         <repository>
             <id>motech.nexus</id>
             <name>Motech Snapshots Repository</name>
-            <url>http://nexus.motechproject.org/content/repositories/releases</url>
+            <url>${motech.release.url}</url>
             <snapshots>
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>

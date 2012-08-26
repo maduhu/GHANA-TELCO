@@ -29,7 +29,7 @@ public class RollOverWaitSchedule {
     public void startScheduleWaitFor(Subscription subscription) {
         String mobileNumber = subscription.subscriberNumber();
         String programKey = subscription.programKey();
-        Date startTime = new DateUtils().now().hourOfDay().addToCopy(3).toDate();
+        Date startTime = new DateUtils().now().dayOfMonth().addToCopy(3).toDate();
 
         String jobId = jobId(mobileNumber);
         MotechEvent motechEvent = new MotechEvent(ROLLOVER_WAIT_SCHEDULE, new SchedulerParamsBuilder()

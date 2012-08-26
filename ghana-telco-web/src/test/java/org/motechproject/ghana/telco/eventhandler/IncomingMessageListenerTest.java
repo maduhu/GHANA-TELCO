@@ -8,7 +8,8 @@ import org.mockito.Mockito;
 import org.motechproject.ghana.telco.controller.SubscriptionController;
 import org.motechproject.ghana.telco.domain.dto.SubscriptionRequest;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.smpp.constants.EventSubject;
+import org.motechproject.sms.api.constants.EventDataKeys;
+import org.motechproject.sms.smpp.constants.EventSubjects;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.smpp.constants.EventDataKey.SENDER;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.SENDER;
 
 public class IncomingMessageListenerTest {
     private IncomingMessageListener incomingMessageListener;
@@ -35,9 +36,9 @@ public class IncomingMessageListenerTest {
         String sender = "0923842312";
         String message = "P 20";
         params.put(SENDER, sender);
-        params.put(org.motechproject.sms.api.constants.EventKeys.MESSAGE, message);
+        params.put(EventDataKeys.MESSAGE, message);
 
-        MotechEvent motechEvent = new MotechEvent(EventSubject.INBOUND_SMS, params);
+        MotechEvent motechEvent = new MotechEvent(EventSubjects.INBOUND_SMS, params);
 
         incomingMessageListener.processIncomingMessage(motechEvent);
 

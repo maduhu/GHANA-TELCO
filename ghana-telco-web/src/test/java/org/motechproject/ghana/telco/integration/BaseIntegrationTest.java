@@ -18,6 +18,7 @@ import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
+import org.motechproject.server.messagecampaign.scheduler.JobIdFactory;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -176,7 +177,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         CampaignRequest campaignRequest = subscription.createCampaignRequest();
 
         String messageKey = getMessageKey(subscription);
-        String jobId = String.format("%s-%s.%s.%s", INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, campaignRequest.campaignName(), campaignRequest.externalId(), messageKey);
+        String jobId = String.format("%s-%s", INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, new JobIdFactory().getMessageJobIdFor(campaignRequest.campaignName(), campaignRequest.externalId(), messageKey));
         try {
             JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobId, "default");
             CronTrigger cronTrigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(jobId, "default");

@@ -1,5 +1,6 @@
 .classpath
 .eclipse
+queue/
 **/*.iml
 *.iml
 *.ipr

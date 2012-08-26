@@ -75,7 +75,7 @@ public class SubscriptionTest {
         DateTime registeredDate = DateUtil.now();
         Subscription subscription = subscription("0987654321", registeredDate, new Week(6), programType("Pregnancy"));
         CampaignRequest registrationRequest = subscription.createCampaignRegistrationRequest();
-        assertThat(registrationRequest.reminderTime().getMinute(), is(equalTo(registeredDate.get(DateTimeFieldType.minuteOfHour()) + 1)));
+        assertThat(registrationRequest.reminderTime().getMinute(), is(equalTo(registeredDate.get(DateTimeFieldType.minuteOfHour()))));
     }
 
     private ProgramType programType(String programName) {

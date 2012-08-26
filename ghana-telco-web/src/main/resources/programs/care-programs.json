@@ -5,7 +5,7 @@
         "maxDuration" : "35 Weeks",
         "messages" : [
             {
-                "name" : "Pregnancy Message",
+                "name" : "PREGNANCY",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "pregnancy-calendar-week-{Offset}-{WeekDay}",
@@ -23,7 +23,7 @@
         "maxDuration" : "52 Weeks",
         "messages" : [
             {
-                "name" : "ChildCare Message",
+                "name" : "CHILDCARE",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "childcare-calendar-week-{Offset}-{WeekDay}",

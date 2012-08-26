@@ -12,8 +12,10 @@ import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
+import org.motechproject.util.DateUtil;
 
 import static org.joda.time.DateTimeConstants.SATURDAY;
+import static org.motechproject.util.DateUtil.daysToCalendarWeekEnd;
 import static org.motechproject.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type === 'Subscription'")
@@ -95,17 +97,11 @@ public class Subscription extends MotechBaseDataObject {
     }
 
     private Time reminderTime() {
-        cycleStartDate = cycleStartDate.plusMinutes(1);
         return new Time(cycleStartDate.get(DateTimeFieldType.hourOfDay()), cycleStartDate.get(DateTimeFieldType.minuteOfHour()));
     }
 
     public CampaignRequest createCampaignRequest() {
         return new CampaignRequest(subscriber.getNumber(), programType.getProgramKey(), null, cycleStartDate.toLocalDate(), startWeekAndDay.getWeek().getNumber());
-    }
-
-    private int daysToSaturday(DateTime cycleStartDateWithStartDayTime) {
-        int dayOfWeek = cycleStartDateWithStartDayTime.get(DateTimeFieldType.dayOfWeek());
-        return (dayOfWeek == DateTimeConstants.SUNDAY) ? 6 : SATURDAY - dayOfWeek;
     }
 
     private DateTime cycleStartDate(ProgramMessageCycle programMessageCycle) {
@@ -125,7 +121,7 @@ public class Subscription extends MotechBaseDataObject {
     }
 
     private void updateCycleEndDate() {
-        int daysToFirstSaturday = daysToSaturday(this.cycleStartDate);
+        int daysToFirstSaturday = daysToCalendarWeekEnd(cycleStartDate.toLocalDate(), DayOfWeek.Sunday.getValue());
         Integer weeksRemaining = programType.getMaxWeek() - startWeekAndDay.getWeek().getNumber();
         this.subscriptionEndDate = this.cycleStartDate.dayOfMonth().addToCopy(daysToFirstSaturday + weeksRemaining * 7);
     }

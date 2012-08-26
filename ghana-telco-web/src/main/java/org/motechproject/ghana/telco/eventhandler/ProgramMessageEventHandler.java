@@ -45,11 +45,7 @@ public class ProgramMessageEventHandler {
     }
 
     private Time getCampaignDeliveryTime(String programKey) {
-        String messageName = "Pregnancy Message";
-        if (programKey.equals(ProgramType.CHILDCARE)) {
-            messageName = "ChildCare Message";
-        }
-        RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) allMessageCampaigns.getCampaignMessageByMessageName(programKey, messageName);
+        RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) allMessageCampaigns.getCampaignMessageByMessageName(programKey, programKey);
         return repeatingCampaignMessage.deliverTime();
     }
 }
