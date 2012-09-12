@@ -9,7 +9,6 @@ import org.motechproject.ghana.telco.service.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
@@ -111,7 +110,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
         return null;
     }
 
-    public Subscription validateForRollOver(String subscriberNumber, Date deliveryDate) {
+    public Subscription validateForRollOver(String subscriberNumber) {
         Subscription subscription = allSubscriptions.findActiveSubscriptionFor(subscriberNumber, ProgramType.PREGNANCY);
         if (null == subscription)
             sendMessage(subscriberNumber, messageFor(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION));

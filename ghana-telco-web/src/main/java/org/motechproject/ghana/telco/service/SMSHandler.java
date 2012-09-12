@@ -30,7 +30,7 @@ public class SMSHandler {
     }
 
     public void rollOver(DeliverySMS deliverySMS) {
-        service.rollOver(deliverySMS.getFromMobileNumber(), deliverySMS.getDomain());
+        service.rollOver(deliverySMS.getFromMobileNumber());
     }
 
     public void retainOrRollOverChildCare(RetainOrRollOverChildCareProgramSMS retainOrRollOverChildCareProgramSMS) {

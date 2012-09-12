@@ -180,7 +180,7 @@ public class ValidationProcessorTest {
         String errorMess = "error message";
         when(messageBundle.get(MessageBundle.ROLLOVER_INVALID_SUBSCRIPTION)).thenReturn(errorMess);
 
-        Subscription actualSubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
+        Subscription actualSubscription = validation.validateForRollOver(subscriberNumber);
         assertNull(actualSubscription);
         assertSMSRequest(subscriberNumber, errorMess, null);
     }
@@ -217,7 +217,7 @@ public class ValidationProcessorTest {
         Subscription subscription = subscriptionBuilder(subscriberNumber, pregnancyProgramType).build();
         when(allSubscriptions.findActiveSubscriptionFor(subscriberNumber, PREGNANCY)).thenReturn(subscription);
 
-        Subscription actualSubscription = validation.validateForRollOver(subscriberNumber, deliveryDate);
+        Subscription actualSubscription = validation.validateForRollOver(subscriberNumber);
         assertNotNull(actualSubscription);
         verify(smsService, never()).send(Matchers.<SMSServiceRequest>any());
     }

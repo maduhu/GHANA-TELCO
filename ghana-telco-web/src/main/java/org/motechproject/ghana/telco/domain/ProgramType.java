@@ -74,8 +74,9 @@ public class ProgramType extends MotechBaseDataObject {
         return programKey;
     }
 
-    public void setProgramKey(String programKey) {
+    public ProgramType setProgramKey(String programKey) {
         this.programKey = programKey;
+        return this;
     }
 
     public Boolean canRollOff() {

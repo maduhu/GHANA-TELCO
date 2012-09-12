@@ -10,6 +10,7 @@ import org.motechproject.ghana.telco.repository.AllTelcoUsers;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.ghana.telco.utils.Encrypt.encrypt;
@@ -42,5 +43,20 @@ public class UserServiceTest {
 
         userService.findBy("uname", "password");
         verify(mockAllTelcoUsers).findBy(encrypt("uname"), encrypt("password"));
+    }
+
+    @Test
+    public void shouldResetThePassword() {
+        String username = "username";
+        String oldpassword = "oldpassword";
+        String newpassword = "newpassword";
+        TelcoUser user = new TelcoUser();
+
+        doReturn(user).when(mockAllTelcoUsers).findBy(encrypt(username), encrypt(oldpassword));
+        ArgumentCaptor<TelcoUser> userCaptor = ArgumentCaptor.forClass(TelcoUser.class);
+
+        userService.resetPassword(username, oldpassword, newpassword);
+        verify(mockAllTelcoUsers).update(userCaptor.capture());
+        assertThat(userCaptor.getValue().getPassword(), is(encrypt(newpassword)));
     }
 }

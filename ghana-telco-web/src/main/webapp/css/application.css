@@ -66,6 +66,14 @@ legend {
     margin-top: 30px;
 }
 
+.search_box {
+    height: 90px;
+    width: 75%;
+    float: left;
+    clear: right;
+    margin-top: 30px;
+}
+
 #requestResponse {
     height: 150px;
     width: 95%;

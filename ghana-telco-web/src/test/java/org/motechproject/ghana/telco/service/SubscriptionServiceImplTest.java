@@ -20,8 +20,6 @@ import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.util.DateUtil;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Date;
-
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
@@ -105,13 +103,12 @@ public class SubscriptionServiceImplTest {
 
     @Test
     public void shouldNotInvokeRollOverIfValidationIsNotSuccessful() {
-        Date deliveryDate = null;
         String subscriberNumber = "1234567890";
 
-        when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(null);
+        when(validation.validateForRollOver(subscriberNumber)).thenReturn(null);
 
         service = spy(service);
-        service.rollOver(subscriberNumber, deliveryDate);
+        service.rollOver(subscriberNumber);
 
         verify(validation, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
         verify(campaign, never()).rollOver(Matchers.<Subscription>any(), Matchers.<Subscription>any());
@@ -120,20 +117,19 @@ public class SubscriptionServiceImplTest {
 
     @Test
     public void shouldInvokeRollOverIfValidationIsSuccessful() {
-        Date deliveryDate = null;
         String subscriberNumber = "1234567890";
 
         DateTime registrationDate = DateUtil.newDate(2011, 10, 21).toDateTimeAtCurrentTime();
         Subscription subscription = new SubscriptionBuilder().withSubscriber(new Subscriber(subscriberNumber)).withType(pregnancyProgramType)
                 .withRegistrationDate(registrationDate).build();
-        when(validation.validateForRollOver(subscriberNumber, deliveryDate)).thenReturn(subscription);
+        when(validation.validateForRollOver(subscriberNumber)).thenReturn(subscription);
 
         when(validation.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(campaign.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
         when(persistence.rollOver(eq(subscription), Matchers.<Subscription>any())).thenReturn(true);
 
         service = spy(service);
-        service.rollOver(subscriberNumber, deliveryDate);
+        service.rollOver(subscriberNumber);
 
         ArgumentCaptor<Subscription> childCareCaptor = ArgumentCaptor.forClass(Subscription.class);
         verify(validation).rollOver(eq(subscription), childCareCaptor.capture());

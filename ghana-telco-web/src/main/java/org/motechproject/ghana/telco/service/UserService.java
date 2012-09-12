@@ -26,4 +26,14 @@ public class UserService {
     public TelcoUser findBy(String userName, String password) {
         return allTelcoUsers.findBy(encrypt(userName), encrypt(password));
     }
+
+    public boolean resetPassword(String userName, String oldPassword, String newPassword) {
+        TelcoUser telcoUser = findBy(userName, oldPassword);
+        if(telcoUser != null) {
+            telcoUser.setPassword(encrypt(newPassword));
+            allTelcoUsers.update(telcoUser);
+            return true;
+        }
+        return false;
+    }
 }

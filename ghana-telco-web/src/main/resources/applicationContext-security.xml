@@ -6,7 +6,7 @@
                     http://www.springframework.org/schema/security 
                     http://www.springframework.org/schema/security/spring-security-3.0.xsd">
     <http use-expressions="true">
-        <form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" default-target-url='/index.jsp' always-use-default-target="true"/>
+        <form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" default-target-url='/index.jsp' always-use-default-target="true" authentication-success-handler-ref="telcoAuthenticationSuccessHandler"/>
         <intercept-url pattern="/**" access="hasAnyRole('SUPERVISOR')" requires-channel="any"/>
         <logout logout-url="/logout" logout-success-url="/login.jsp"/>
 
@@ -18,6 +18,9 @@
 
     <beans:bean name="authenticationProvider" class="org.motechproject.ghana.telco.security.AuthenticationProvider">
         <beans:constructor-arg name="userService" ref="userService"/>
+    </beans:bean>
+    <beans:bean id="telcoAuthenticationSuccessHandler" class="org.motechproject.ghana.telco.handler.TelcoAuthenticationSuccessHandler">
+        <beans:property name="defaultTargetUrl" value="/index.jsp"/>
     </beans:bean>
     <authentication-manager alias="authenticationManager">
         <authentication-provider ref="authenticationProvider"/>

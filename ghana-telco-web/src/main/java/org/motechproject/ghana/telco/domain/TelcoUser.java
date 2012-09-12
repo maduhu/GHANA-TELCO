@@ -6,7 +6,7 @@ import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.List;
 
-@TypeDiscriminator("doc.type === 'TelcoUser'")
+@TypeDiscriminator("doc.type == 'TelcoUser'")
 public class TelcoUser extends MotechBaseDataObject {
     @JsonProperty
     String userName;
@@ -26,6 +26,10 @@ public class TelcoUser extends MotechBaseDataObject {
 
     public String getUserName() {
         return userName;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPassword() {
