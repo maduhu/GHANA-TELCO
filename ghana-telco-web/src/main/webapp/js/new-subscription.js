@@ -22,7 +22,16 @@ $.Enrollment = function() {
     };
 
     var searchEnrollment = function() {
-        var queryParam = "subscriberNumber=" + $('#subNo').val() + "&programName=" + $("#programName") + "&status=" + $("#status");
+        var programNames = '';
+        $('#programName :checked').each(function() {
+            programNames += '/'+ $(this).val();
+        });
+
+        var status = '';
+        $('#status :checked').each(function() {
+            status += '/' + $(this).val();
+        });
+        var queryParam = "subscriberNumber=" + $('#searchSubNo').val() + "&programName=" + programNames + "&status=" + status;
         var url = 'subscription/search?' + queryParam;
         $.ajax({
             url:url,
@@ -51,6 +60,17 @@ $.Enrollment = function() {
         return false;
     };
 
+    this.getAuditForSubscriber = function(phoneNumber) {
+        var url = 'filter/' + $('#audit_options').val() + '/for/' + phoneNumber;
+        $.ajax({
+            url:url,
+            dataType:'html',
+            success:updateAuditsTable
+        });
+        return false;
+    };
+
+
     var updateAuditsTable = function(response) {
         $('#audit_table').html(response);
     };
@@ -61,6 +81,12 @@ $.Enrollment = function() {
         hitAudit();
         $('#audit_options').change(hitAudit);
         $('#refresh_audit').click(hitAudit);
+        $('input[name = "programName"]').click(function() {
+            searchEnrollment();
+        });
+        $('input[name = "status"]').click(function() {
+            searchEnrollment();
+        });
     };
 
 
@@ -90,8 +116,8 @@ $.Enrollment = function() {
 
     $(bootstrap);
 };
-
+var enrollment;
 $(document).ready(function() {
     $("#tabs").tabs();
-    new $.Enrollment();
+    enrollment = new $.Enrollment();
 });

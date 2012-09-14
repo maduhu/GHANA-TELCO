@@ -1,5 +1,6 @@
 package org.motechproject.ghana.telco.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.ghana.telco.domain.ProgramType;
 import org.motechproject.ghana.telco.domain.SMS;
 import org.motechproject.ghana.telco.domain.Subscription;
@@ -10,30 +11,26 @@ import org.motechproject.ghana.telco.service.SMSHandler;
 import org.motechproject.ghana.telco.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static ch.lambdaj.Lambda.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.isIn;
 
 @Controller
 @RequestMapping("/subscription")
 public class SubscriptionController {
+    @Autowired
     private UserMessageParserProcess subscriptionParser;
+    @Autowired
     private SMSHandler smsHandler;
     @Autowired
     private AllSubscriptions allSubscriptions;
     @Autowired
     SubscriptionService subscriptionService;
-
-    @Autowired
-    public SubscriptionController(UserMessageParserProcess subscriptionParser, SMSHandler smsHandler) {
-        this.subscriptionParser = subscriptionParser;
-        this.smsHandler = smsHandler;
-    }
 
     @RequestMapping("/handle")
     @ResponseBody
@@ -44,10 +41,20 @@ public class SubscriptionController {
     }
 
     @RequestMapping("/search")
-    public ModelAndView search() {
+    public ModelAndView search(@RequestParam String subscriberNumber, @RequestParam String programName, @RequestParam String status) {
         ModelAndView modelAndView = new ModelAndView("searchResults");
-        List<Subscription> allActiveSubscribers = getAllActiveSubscribers();
-        modelAndView.addObject("subscriptions", allActiveSubscribers);
+        List<Subscription> subscriptions = allSubscriptions.getAll();
+        if(!StringUtils.isEmpty(subscriberNumber)) {
+            subscriptions = filter(having(on(Subscription.class).getSubscriber().getNumber(), containsString(subscriberNumber)), subscriptions);
+        }
+        if(!StringUtils.isEmpty(programName)) {
+            subscriptions = filter(having(on(Subscription.class).getProgramType().getProgramKey(), isIn(programName.split("/"))), subscriptions);
+        }
+        if(!StringUtils.isEmpty(status)) {
+            subscriptions = filter(having(on(Subscription.class).getStatusName(), isIn(status.split("/"))), subscriptions);
+        }
+
+        modelAndView.addObject("subscriptions", subscriptions);
         return modelAndView;
     }
 
@@ -63,17 +70,5 @@ public class SubscriptionController {
     public String unRegister(@PathVariable("subscriptionNumber") String subscriptionNumber, @PathVariable("programType") String programType) {
         subscriptionService.stopByUser(subscriptionNumber, new ProgramType().setProgramKey(programType));
         return "success";
-    }
-
-    private List<Subscription> getAllActiveSubscribers() {
-
-        List<Subscription> subscriptionList = new ArrayList<Subscription>();
-        for (Subscription subscription : allSubscriptions.getAllActiveSubscriptions(ProgramType.PREGNANCY)) {
-            subscriptionList.add(subscription);
-        }
-        for (Subscription subscription : allSubscriptions.getAllActiveSubscriptions(ProgramType.CHILDCARE)) {
-            subscriptionList.add(subscription);
-        }
-        return subscriptionList;
     }
 }

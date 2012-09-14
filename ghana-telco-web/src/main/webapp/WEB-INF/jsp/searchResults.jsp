@@ -1,6 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="org.motechproject.ghana.telco.domain.Subscription" %>
-<script type="text/javascript" src="js/search-subscription.js"></script>
 <table id="resultsTable">
     <tr>
         <th>Subscriber Number</th>
@@ -15,9 +13,11 @@
             <td>${subscription.programType.programName}</td>
             <td>${subscription.startWeekAndDay.week}</td>
             <td>${subscription.status}</td>
-            <td><a href="#" onclick="javascript:new $.Enrollment().unRegister(${subscription.subscriber.number}, '${subscription.programType.programKey}')">Unregister</a></td>
-            <c:if test="${subscription.programType.shortCodes[0] == 'P'}">
-                <td><a href="#" onclick="javascript:new $.Enrollment().rollover(${subscription.subscriber.number})">Rollover</a></td>
+            <c:if test="${subscription.status == 'ACTIVE' || subscription.status == 'WAITING_FOR_ROLLOVER_RESPONSE'}">
+                <td><a href="#" onclick="javascript:enrollment.unRegister(${subscription.subscriber.number}, '${subscription.programType.programKey}')">Unregister</a></td>
+            </c:if>
+            <c:if test="${subscription.programType.shortCodes[0] == 'P' && subscription.status == 'ACTIVE'}">
+                <td><a href="#" onclick="javascript:enrollment.rollover(${subscription.subscriber.number})">Rollover</a></td>
             </c:if>
         </tr>
     </c:forEach>
