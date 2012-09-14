@@ -6,7 +6,8 @@
     <script type="text/javascript" src="js/lib/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript" src="js/new-subscription.js"></script>
     <link rel="stylesheet" type="text/css" href="css/application.css" media="screen, projection, print"/>
-    <link rel="stylesheet" type="text/css" href="css/lib/jquery-ui-1.8.16.custom.css" media="screen, projection, print"/>
+    <link rel="stylesheet" type="text/css" href="css/lib/jquery-ui-1.8.16.custom.css"
+          media="screen, projection, print"/>
 </head>
 <body>
 <div class="content">
@@ -17,7 +18,8 @@
     <div>
         <span align="left" class="title">Ghana Telco Admin</span>
         <span style="float:right"><a href="${pageContext.servletContext.contextPath}/logout">Logout</a></span><br>
-        <span style="float:right"><a href="${pageContext.servletContext.contextPath}/password/page">Reset Password</a></span>
+        <span style="float:right"><a href="${pageContext.servletContext.contextPath}/password/page">Reset
+            Password</a></span>
     </div>
     </br>
     <div id="tabs">
@@ -70,20 +72,26 @@
                                     <tr></tr>
                                     <tr></tr>
                                     <tr>
-                                        <td valign="bottom"><input id="search_enrollment" type="button" value="Search"/></td>
+                                        <td valign="bottom"><input id="search_enrollment" type="button" value="Search"/>
+                                        </td>
                                     </tr>
                                 </table>
                             <td valign="top">
                                 <div id="programName">
                                     <table>
                                         <tr>
-                                            <td valign="top" align="left" style="width:10%"><b><label><u>Program:</u></label></b></td>
+                                            <td valign="top" align="left" style="width:10%">
+                                                <b><label><u>Program:</u></label></b></td>
                                         </tr>
                                         <tr>
-                                            <td><input name="programName" type="checkbox" value="PREGNANCY" checked="checked"/>Pregnancy</td>
+                                            <td><input name="programName" type="checkbox" value="PREGNANCY"
+                                                       checked="checked"/>Pregnancy
+                                            </td>
                                         </tr>
                                         <tr>
-                                            <td><input name="programName" type="checkbox" value="CHILDCARE" checked="checked"/>Childcare</td>
+                                            <td><input name="programName" type="checkbox" value="CHILDCARE"
+                                                       checked="checked"/>Childcare
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
@@ -96,12 +104,15 @@
                                             <td valign="top" align="left"><b><label><u>Status:</u></label></b></td>
                                         </tr>
                                         <tr>
-                                            <td><input name="status" type="checkbox" value="ACTIVE" checked="checked"/>Active</td>
+                                            <td><input name="status" type="checkbox" value="ACTIVE" checked="checked"/>Active
+                                            </td>
                                             <td><input name="status" type="checkbox" value="ROLLED_OFF"/>Rolled_off</td>
                                         </tr>
                                         <tr>
                                             <td><input name="status" type="checkbox" value="SUSPENDED"/>Suspended</td>
-                                            <td><input name="status" type="checkbox" value="WAITING_FOR_ROLLOVER_RESPONSE"/>Waiting_for_rollover</td>
+                                            <td><input name="status" type="checkbox"
+                                                       value="WAITING_FOR_ROLLOVER_RESPONSE"/>Waiting_for_rollover
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
@@ -109,7 +120,10 @@
                         </tr>
                     </table>
                 </form>
-                <div id="result_table"></div>
+            </div>
+            <div id="result_table" class="search_result"></div>
+            <div class="audit_box2">
+                <div id="sms_table"></div>
             </div>
         </div>
     </div>

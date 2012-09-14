@@ -24,12 +24,12 @@ public class PasswordController {
     private static final String STATUS = "status";
 
     @RequestMapping(method = RequestMethod.POST, value = "/reset")
-    public ModelAndView resetPassword(@RequestParam String oldPassword, @RequestParam String newPassword, @RequestParam String retypedPassword, HttpSession session) {
+    public ModelAndView resetPassword(@RequestParam String oldPassword, @RequestParam String newPassword, HttpSession session) {
         ModelAndView modelAndView = new ModelAndView("resetPassword");
-        String userName = ((User)session.getAttribute(PRINCIPAL)).getUsername();
+        String userName = ((User) session.getAttribute(PRINCIPAL)).getUsername();
         boolean resetSuccess = userService.resetPassword(userName, oldPassword, newPassword);
 
-        if(resetSuccess) {
+        if (resetSuccess) {
             modelAndView.getModel().put(STATUS, SUCCESS);
         } else {
             modelAndView.getModel().put(STATUS, FAILURE);
@@ -40,7 +40,7 @@ public class PasswordController {
     @RequestMapping(method = RequestMethod.GET, value = "/page")
     public ModelAndView getPasswordResetForm() {
         ModelAndView modelAndView = new ModelAndView("resetPassword");
-        modelAndView.getModel().put("STATUS","");
+        modelAndView.getModel().put("STATUS", "");
         return modelAndView;
     }
 

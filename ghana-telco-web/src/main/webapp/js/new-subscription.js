@@ -1,5 +1,5 @@
-$.Enrollment = function() {
-    var hitServer = function() {
+$.Enrollment = function () {
+    var hitServer = function () {
         var queryParam = "subscriberNumber=" + $('#subNo').val() + "&inputMessage=" + $('#smsText').val();
         var url = 'subscription/handle?' + queryParam;
         $.ajax({
@@ -10,7 +10,7 @@ $.Enrollment = function() {
         return false;
     };
 
-    var submitEnrollment = function() {
+    var submitEnrollment = function () {
         var queryParam = "subscriberNumber=" + $('#subNo').val() + "&inputMessage=" + $('#smsText').val();
         var url = 'subscription/handle?' + queryParam;
         $.ajax({
@@ -21,14 +21,15 @@ $.Enrollment = function() {
         return false;
     };
 
-    var searchEnrollment = function() {
+    var searchEnrollment = function () {
+        $('#sms_table').html('<br>');
         var programNames = '';
-        $('#programName :checked').each(function() {
-            programNames += '/'+ $(this).val();
+        $('#programName :checked').each(function () {
+            programNames += '/' + $(this).val();
         });
 
         var status = '';
-        $('#status :checked').each(function() {
+        $('#status :checked').each(function () {
             status += '/' + $(this).val();
         });
         var queryParam = "subscriberNumber=" + $('#searchSubNo').val() + "&programName=" + programNames + "&status=" + status;
@@ -41,16 +42,40 @@ $.Enrollment = function() {
         return false;
     };
 
-    var showResults = function(response) {
+    this.rollover = function (subscriberNumber) {
+        var url = 'subscription/rollover/' + subscriberNumber;
+        if (confirm('Do you want to Rollover ' + subscriberNumber + ' to Child Care program?')) {
+            $.ajax({
+                url:url,
+                dataType:'html',
+                success:searchEnrollment
+            });
+        }
+        return false;
+    };
+
+    this.unRegister = function (subscriberNumber, programType) {
+        var url = 'subscription/unregister/' + subscriberNumber + '/' + programType;
+        if (confirm('Do you want to Unregister ' + subscriberNumber + ' from ' + programType + ' ?')) {
+            $.ajax({
+                url:url,
+                dataType:'html',
+                success:searchEnrollment
+            });
+        }
+        return false;
+    };
+
+    var showResults = function (response) {
         $('#result_table').html(response);
     }
 
-    var clearInputs = function(response) {
+    var clearInputs = function (response) {
         $('#smsText').val("");
         hitAudit();
     };
 
-    var hitAudit = function() {
+    var hitAudit = function () {
         var url = 'audits/' + $('#audit_options').val();
         $.ajax({
             url:url,
@@ -60,7 +85,7 @@ $.Enrollment = function() {
         return false;
     };
 
-    this.getAuditForSubscriber = function(phoneNumber) {
+    this.getAuditForSubscriber = function (phoneNumber) {
         var url = 'filter/' + $('#audit_options').val() + '/for/' + phoneNumber;
         $.ajax({
             url:url,
@@ -70,54 +95,43 @@ $.Enrollment = function() {
         return false;
     };
 
+    this.getAllAuditSmsForSubscriber = function (phoneNumber) {
+        var url = 'filter/sms/all/for/' + phoneNumber;
+        $.ajax({
+            url:url,
+            dataType:'html',
+            success:updateSmsTable
+        });
+        return false;
+    };
 
-    var updateAuditsTable = function(response) {
+
+    var updateAuditsTable = function (response) {
         $('#audit_table').html(response);
     };
 
-    var bootstrap = function() {
+    var updateSmsTable = function (response) {
+        $('#sms_table').html(response);
+    };
+
+    var bootstrap = function () {
         $('#submit_enrollment').click(submitEnrollment);
         $('#search_enrollment').click(searchEnrollment);
         hitAudit();
         $('#audit_options').change(hitAudit);
         $('#refresh_audit').click(hitAudit);
-        $('input[name = "programName"]').click(function() {
+        $('input[name = "programName"]').click(function () {
             searchEnrollment();
         });
-        $('input[name = "status"]').click(function() {
+        $('input[name = "status"]').click(function () {
             searchEnrollment();
         });
-    };
-
-
-    this.rollover = function (subscriberNumber) {
-        var url = 'subscription/rollover/' + subscriberNumber;
-        if(confirm('Do you want to Rollover '+subscriberNumber+' to Child Care program?')) {
-            $.ajax({
-                url:url,
-                dataType:'html',
-                success: searchEnrollment
-            });
-        }
-        return false;
-    };
-
-    this.unRegister = function (subscriberNumber, programType) {
-        var url = 'subscription/unregister/' + subscriberNumber + '/' + programType;
-        if(confirm('Do you want to Unregister '+subscriberNumber+' from '+ programType +' ?')) {
-            $.ajax({
-                url:url,
-                dataType:'html',
-                success: searchEnrollment
-            });
-        }
-        return false;
     };
 
     $(bootstrap);
 };
 var enrollment;
-$(document).ready(function() {
+$(document).ready(function () {
     $("#tabs").tabs();
     enrollment = new $.Enrollment();
 });
