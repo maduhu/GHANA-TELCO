@@ -11,7 +11,13 @@ $.Enrollment = function () {
     };
 
     var submitEnrollment = function () {
-        var queryParam = "subscriberNumber=" + $('#subNo').val() + "&inputMessage=" + $('#smsText').val();
+        if ($('#subNo').val() == '') {
+            alert("Subscriber Number cannot be empty.");
+            return false;
+        }
+        var program = $('#program').val();
+        var startTimeId = '#startTime' + program;
+        var queryParam = "subscriberNumber=" + $('#subNo').val() + "&inputMessage=" + $('#program').val() + ' ' + $(startTimeId).val();
         var url = 'subscription/handle?' + queryParam;
         $.ajax({
             url:url,
@@ -85,6 +91,14 @@ $.Enrollment = function () {
         return false;
     };
 
+    var checkStartTime = function () {
+        $('#startTimeP').hide();
+        $('#startTimeC').hide();
+        var selected = '#startTime' + $('#program').val();
+        $(selected).prop('selectedIndex', 0);
+        $(selected).show();
+    }
+
     this.getAuditForSubscriber = function (phoneNumber) {
         var url = 'filter/' + $('#audit_options').val() + '/for/' + phoneNumber;
         $.ajax({
@@ -117,8 +131,10 @@ $.Enrollment = function () {
     var bootstrap = function () {
         $('#submit_enrollment').click(submitEnrollment);
         $('#search_enrollment').click(searchEnrollment);
+        $('#startTimeC').hide();
         hitAudit();
         $('#audit_options').change(hitAudit);
+        $('#program').change(checkStartTime);
         $('#refresh_audit').click(hitAudit);
         $('input[name = "programName"]').click(function () {
             searchEnrollment();

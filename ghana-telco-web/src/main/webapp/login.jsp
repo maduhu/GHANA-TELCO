@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/lib/formly.min.css"/>
 
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("form").formly({'onBlur':false, 'theme':'Light'});
         });
     </script>
@@ -29,10 +29,6 @@
 
             <div class="logo_center">
                 <img src="images/motech.jpeg"/>
-            </div>
-
-            <div class="logo_center title">
-                GHANA TELCO
             </div>
 
             <c:if test="${not empty param.login_error}">

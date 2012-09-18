@@ -17,9 +17,9 @@ public class TelcoUserSeed extends Seed {
     @Override
     protected void load() {
         allTelcoUsers.removeAll();
-        userService.register("admin", "telco$987", asList("SUPERVISOR", "USER"));
-        userService.register("grameen_user", "grameen$123", asList("SUPERVISOR", "USER"));
-        userService.register("mtn_user", "mtn$123", asList("SUPERVISOR", "USER"));
+        userService.register("admin", "1234qwer$", asList("SUPERVISOR", "USER"));
+        userService.register("grameen_user", "1234qwer$", asList("SUPERVISOR", "USER"));
+        userService.register("mtn_user", "1234qwer$", asList("SUPERVISOR", "USER"));
         userService.register("display", "display$987", asList("USER"));
     }
 }
