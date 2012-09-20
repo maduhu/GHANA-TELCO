@@ -1,0 +1,11 @@
+<Response>
+    <Status>
+        $status
+    </Status>
+    <UserDetails>
+        <PhoneNumber>$phoneNumber</PhoneNumber>
+    </UserDetails>
+    #if($reason)
+        <Reason>$reason</Reason>
+    #end
+</Response>

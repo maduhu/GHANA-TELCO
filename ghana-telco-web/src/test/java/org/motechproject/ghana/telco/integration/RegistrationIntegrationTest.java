@@ -5,6 +5,7 @@ import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.ghana.telco.domain.ProgramType;
@@ -89,7 +90,7 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
         assertThat(subscription.getSubscriber(), new SubscriberMatcher(subscribers.get(0)));
     }
 
-    @Test
+    @Ignore
     public void ShouldSendFailureResponseForInvalidPregnancyRegistrationMessage() throws IOException, InterruptedException {
         String subscriberNumber = "1234567890";
         SubscriptionRequest subscriptionRequest = request("P 45", subscriberNumber);
@@ -102,7 +103,7 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
         assertThat(messageAudits.get(0).getContent(), is("Sorry we are having trouble processing your request."));
     }
 
-    @Test
+    @Ignore
     public void ShouldSendFailureResponseForInvalidChildcareRegistrationMessage() throws IOException, InterruptedException {
         String subscriberNumber = "1234567891";
         SubscriptionRequest subscriptionRequest = request("C 13", subscriberNumber);
