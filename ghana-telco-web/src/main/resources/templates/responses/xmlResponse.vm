@@ -4,6 +4,10 @@
     </Status>
     <UserDetails>
         <PhoneNumber>$phoneNumber</PhoneNumber>
+        #if($program)
+            <Program>$program</Program>
+            <UserStatus>$userStatus</UserStatus>
+        #end
     </UserDetails>
     #if($reason)
         <Reason>$reason</Reason>

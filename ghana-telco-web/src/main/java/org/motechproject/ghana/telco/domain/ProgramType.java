@@ -45,8 +45,9 @@ public class ProgramType extends MotechBaseDataObject {
         return shortCodes;
     }
 
-    public void setShortCodes(List<String> shortCodes) {
+    public ProgramType setShortCodes(List<String> shortCodes) {
         this.shortCodes = shortCodes;
+        return this;
     }
 
     public ProgramType setProgramName(String programName) {

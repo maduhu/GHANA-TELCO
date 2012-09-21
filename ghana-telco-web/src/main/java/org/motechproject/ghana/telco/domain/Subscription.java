@@ -71,6 +71,11 @@ public class Subscription extends MotechBaseDataObject {
         return status.name();
     }
 
+    @JsonIgnore
+    public String getProgramCode() {
+        return programType.getShortCodes().get(0);
+    }
+
     public Subscription setStatus(SubscriptionStatus status) {
         this.status = status;
         return this;

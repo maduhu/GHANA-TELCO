@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.motechproject.ghana.telco.domain.ProgramType;
 import org.motechproject.ghana.telco.domain.Subscriber;
 import org.motechproject.ghana.telco.domain.Subscription;
@@ -19,8 +18,6 @@ import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.sms.api.SMSRecord;
 import org.motechproject.sms.api.service.SmsAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -34,8 +31,6 @@ import static org.junit.Assert.assertThat;
 import static org.motechproject.ghana.telco.domain.ProgramType.CHILDCARE;
 import static org.motechproject.ghana.telco.domain.ProgramType.PREGNANCY;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath*:testApplicationContext.xml")
 public class RegistrationIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
