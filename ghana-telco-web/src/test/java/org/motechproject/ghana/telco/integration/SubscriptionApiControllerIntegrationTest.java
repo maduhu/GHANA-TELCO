@@ -164,6 +164,7 @@ public class SubscriptionApiControllerIntegrationTest extends BaseIntegrationTes
     @After
     public void tearDown() {
         allProgramTypes.removeAll();
-        allSubscriptions.removeAll();
+        remove(allSubscriptions.getAll());
+        remove(allSubscribers.getAll());
     }
 }
