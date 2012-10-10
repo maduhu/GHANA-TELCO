@@ -33,19 +33,17 @@ public class ProgramMessageSeed extends Seed {
             String[] languages = {"EN"};
             for (String language : languages) {
                 Properties properties = loadAllProperties("programs/message_" + language + ".properties");
-                saveProperties(properties, language);
+                saveProperties(properties);
             }
         } catch (Exception e) {
             throw new MotechException("Encountered exception while loading seed", e);
         }
     }
 
-    private void saveProperties(Properties properties, String language) {
+    private void saveProperties(Properties properties) {
 
-        RepeatingCampaignMessage pregnancyCampaignMessage = (RepeatingCampaignMessage) messageCampaigns.getCampaignMessageByMessageName(ProgramType.PREGNANCY, ProgramType.PREGNANCY);
-        RepeatingCampaignMessage childCareCampaignMessage = (RepeatingCampaignMessage) messageCampaigns.getCampaignMessageByMessageName(ProgramType.CHILDCARE, ProgramType.CHILDCARE);
-        Map<String, String> pregnancyDayMap = createDayMap(pregnancyCampaignMessage);
-        Map<String, String> childCareDayMap = createDayMap(childCareCampaignMessage);
+        List<RepeatingCampaignMessage> allCampaignMessages = getAllCampaignMessages();
+        Map<String, Map<String,String>> campaignWeekDayMap = createMessageWeekDayMapFrom(allCampaignMessages);
 
         for (Object key : properties.keySet()) {
             String keyStr = (String) key;
@@ -54,22 +52,30 @@ public class ProgramMessageSeed extends Seed {
             String[] tokens = keyStr.split("-");
 
             String weekDay = tokens[2];
-            if (tokens[0].equals(ProgramType.PREGNANCY)) {
-                messageContentKey = keyStr.replace(weekDay, pregnancyDayMap.get(weekDay));
-            } else if (tokens[0].equals(ProgramType.CHILDCARE)) {
-                messageContentKey = keyStr.replace(weekDay, childCareDayMap.get(weekDay));
-            }
+            messageContentKey = keyStr.replace(weekDay, campaignWeekDayMap.get(tokens[0]).get(weekDay));
+
             allProgramMessages.add(new ProgramMessage(messageContentKey, tokens[0], messageContent));
         }
     }
 
-    private Map<String, String> createDayMap(RepeatingCampaignMessage campaignMessage) {
-        List<DayOfWeek> weekDayList = campaignMessage.weekDaysApplicable();
-        Map<String, String> weekDayMap = new HashMap<String, String>();
-        int count = 0;
-        for (DayOfWeek dayOfWeek : weekDayList) {
-            weekDayMap.put("{d" + (++count) + "}", dayOfWeek.name());
+    private List<RepeatingCampaignMessage> getAllCampaignMessages() {
+        List<RepeatingCampaignMessage> messages = messageCampaigns.get(ProgramType.CHILDCARE).messages();
+        messages.addAll(messageCampaigns.get(ProgramType.PREGNANCY).messages());
+        return messages;
+    }
+
+    private Map<String, Map<String, String>> createMessageWeekDayMapFrom(List<RepeatingCampaignMessage> campaignMessages) {
+        Map<String, Map<String, String>> campaignMessageWeekdayMap = new HashMap<String, Map<String, String>>();
+        for (RepeatingCampaignMessage campaignMessage : campaignMessages) {
+            List<DayOfWeek> weekDayList = campaignMessage.weekDaysApplicable();
+            Map<String, String> weekDayMap = new HashMap<String, String>();
+            int count = 0;
+            for (DayOfWeek dayOfWeek : weekDayList) {
+                weekDayMap.put("{d" + (++count) + "}", dayOfWeek.name());
+            }
+            campaignMessageWeekdayMap.put(campaignMessage.name(), weekDayMap);
         }
-        return weekDayMap;
+
+        return campaignMessageWeekdayMap;
     }
 }

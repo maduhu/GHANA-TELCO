@@ -10,7 +10,16 @@
                 "languages" : ["en"],
                 "messageKey": "PREGNANCY-cw{Offset}-{WeekDay}",
                 "calendarStartOfWeek" : "Sunday",
-                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
+                "weekDaysApplicable" : ["Wednesday", "Friday"],
+                "deliverTime" : "10:30"
+            },
+            {
+                "name" : "PREGNANCY2",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "PREGNANCY2-cw{Offset}-{WeekDay}",
+                "calendarStartOfWeek" : "Sunday",
+                "weekDaysApplicable" : ["Friday"],
                 "deliverTime" : "10:30"
             }
 
@@ -26,9 +35,19 @@
                 "name" : "CHILDCARE",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
-                "messageKey": "CHILD_CARE-cw{Offset}-{WeekDay}",
+                "messageKey": "CHILDCARE-cw{Offset}-{WeekDay}",
                 "calendarStartOfWeek" : "Sunday",
-                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
+                "weekDaysApplicable" : ["Wednesday", "Friday"],
+                "deliverTime" : "10:30"
+            },
+
+            {
+                "name" : "CHILDCARE2",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "CHILDCARE2-cw{Offset}-{WeekDay}",
+                "calendarStartOfWeek" : "Sunday",
+                "weekDaysApplicable" : ["Friday"],
                 "deliverTime" : "10:30"
             }
 

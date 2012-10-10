@@ -195,7 +195,7 @@ public abstract class BaseIntegrationTest extends BaseSpringTestContext {
         if (subscription.programName().equals("Pregnancy"))
             messageKey = "PREGNANCY-cw{Offset}-{WeekDay}";
         else
-            messageKey = "CHILD_CARE-cw{Offset}-{WeekDay}";
+            messageKey = "CHILDCARE-cw{Offset}-{WeekDay}";
         return messageKey;
     }
 
