@@ -9,25 +9,25 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>ghana-telco</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.10</version>
     </parent>
     <properties>
         <motech-api-version>0.5-SNAPSHOT</motech-api-version>
     </properties>
     <groupId>org.motechproject</groupId>
     <artifactId>ghana-telco-billing</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.10</version>
 
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>ghana-telco-billing-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.10</version>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>ghana-telco-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.10</version>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
