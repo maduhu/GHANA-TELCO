@@ -95,7 +95,7 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
         List<SMSRecord> smsRecords = smsAuditService.allOutboundMessagesBetween(DateTime.now().minusMinutes(1), DateTime.now());
         List<SMSRecord> subscriberOutboundMessages = filter(having(on(SMSRecord.class).getPhoneNo(), Matchers.is(subscriberNumber)), smsRecords);
         List<SMSRecord> messageAudits = sort(subscriberOutboundMessages, on(SMSRecord.class).getMessageTime(), sortComparator());
-        assertThat(messageAudits.get(0).getContent(), is("Sorry we are having trouble processing your request."));
+        assertThat(messageAudits.get(0).getContent(), is("We have received your message, but don't understand what to do. To sign up, send P <week of pregnancy>  or C <age of child in months>"));
     }
 
     @Ignore
@@ -108,7 +108,7 @@ public class RegistrationIntegrationTest extends BaseIntegrationTest {
         List<SMSRecord> smsRecords = smsAuditService.allOutboundMessagesBetween(DateTime.now().minusMinutes(1), DateTime.now());
         List<SMSRecord> subscriberOutboundMessages = filter(having(on(SMSRecord.class).getPhoneNo(), Matchers.is(subscriberNumber)), smsRecords);
         List<SMSRecord> messageAudits = sort(subscriberOutboundMessages, on(SMSRecord.class).getMessageTime(), sortComparator());
-        assertThat(messageAudits.get(0).getContent(), is("Sorry we are having trouble processing your request."));
+        assertThat(messageAudits.get(0).getContent(), is("We have received your message, but don't understand what to do. To sign up, send P <week of pregnancy>  or C <age of child in months>"));
     }
 
     @Test
