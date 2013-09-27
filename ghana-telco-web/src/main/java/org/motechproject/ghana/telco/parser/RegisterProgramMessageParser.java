@@ -18,7 +18,7 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 public class RegisterProgramMessageParser extends MessageParser {
 
     public static final String START_OF_PATTERN = "^(";
-    public static final String END_OF_PATTERN = ")\\s([\\d]{1,2})$";
+    public static final String END_OF_PATTERN = ")\\s*([\\d]{1,2})$";
 
     public RegisterProgramSMS parse(String input, String enrolledMobileNumber) {
         Matcher matcher = pattern().matcher(input);
