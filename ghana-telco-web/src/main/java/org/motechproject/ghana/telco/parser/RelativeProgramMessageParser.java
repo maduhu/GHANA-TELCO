@@ -17,7 +17,7 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 public class RelativeProgramMessageParser {
 
     private static final String START_OF_PATTERN = "^(";
-    private static final String END_OF_PATTERN = ")\\s([\\d]+)\\s(.*)$";
+    private static final String END_OF_PATTERN = ")\\s*([\\d]+)\\s(.*)$";
     private static final int MOBILE_INDEX = 2;
     private static final int INPUT_MESSAGE_INDEX = 3;
     private static final Pattern MOBILE_NUMBER_PATTERN = Pattern.compile("^0[\\d]{9}$");
