@@ -20,7 +20,7 @@ public class RelativeProgramMessageParser {
     private static final String END_OF_PATTERN = ")\\s*([\\d]+)\\s(.*)$";
     private static final int MOBILE_INDEX = 2;
     private static final int INPUT_MESSAGE_INDEX = 3;
-    private static final Pattern MOBILE_NUMBER_PATTERN = Pattern.compile("^0[\\d]{9}$");
+    private static final Pattern MOBILE_NUMBER_PATTERN = Pattern.compile("^0[\\d]{9}$|^233[\\d]{9}$");
     private Pattern pattern;
     private AllShortCodes allShortCodes;
 
@@ -41,6 +41,7 @@ public class RelativeProgramMessageParser {
         return null;
     }
 
+    //for testing phone numbers that begin with 0 or 233
     private boolean isValidMobileNumber(String mobileNumber) {
         return MOBILE_NUMBER_PATTERN.matcher(mobileNumber).find();
     }

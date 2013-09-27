@@ -30,7 +30,7 @@ public class RelativeProgramMessageParserTest {
 
     @Test
     public void ShouldParseRelativeMessage() {
-        String mobileNumber = "0234567891";
+        String mobileNumber = "233234567891";
         String inputMessage = "R " + mobileNumber + " P 12";
         String senderNumber = "0987654321";
 
