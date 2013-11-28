@@ -6,6 +6,7 @@ import org.motechproject.ghana.telco.domain.builder.SubscriptionBuilder;
 import org.motechproject.ghana.telco.domain.vo.Week;
 import org.motechproject.ghana.telco.domain.vo.WeekAndDay;
 import org.motechproject.ghana.telco.exception.InvalidMonthException;
+import org.motechproject.ghana.telco.sms.HTTPClient;
 import org.motechproject.ghana.telco.utils.DateUtils;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
+
+
 
 @Component
 public class RegisterProgramMessageParser extends MessageParser {
@@ -24,7 +27,7 @@ public class RegisterProgramMessageParser extends MessageParser {
         Matcher matcher = pattern().matcher(input);
         if (matcher.find()) {
             ProgramType programType = allProgramTypes.findByCampaignShortCode(matcher.group(1));
-            RegisterProgramSMS registerProgramSMS = null;
+            RegisterProgramSMS registerProgramSMS;
 
             try {
                 registerProgramSMS = new RegisterProgramSMS(input, new SubscriptionBuilder()
@@ -39,6 +42,7 @@ public class RegisterProgramMessageParser extends MessageParser {
             registerProgramSMS.setFromMobileNumber(enrolledMobileNumber);
             return registerProgramSMS;
         }
+
         return null;
     }
 

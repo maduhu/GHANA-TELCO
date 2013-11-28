@@ -41,14 +41,14 @@ public class CampaignProcess extends BaseSubscriptionProcess implements ISubscri
     @Override
     public Boolean stopExpired(Subscription subscription) {
         campaignService.stopAll(subscription.createCampaignRequest());
-        sendMessage(subscription, messageFor(ENROLLMENT_STOPPED));
+        sendMessageFree(subscription, messageFor(ENROLLMENT_STOPPED));
         return true;
     }
 
     @Override
     public Boolean stopByUser(Subscription subscription) {
         campaignService.stopAll(subscription.createCampaignRequest());
-        sendMessage(subscription, messageFor(STOP_PROGRAM_SUCCESS));
+        sendMessageFree(subscription, messageFor(STOP_PROGRAM_SUCCESS));
         return true;
     }
 

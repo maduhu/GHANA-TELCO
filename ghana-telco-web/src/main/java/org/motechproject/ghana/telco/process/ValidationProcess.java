@@ -37,7 +37,7 @@ public class ValidationProcess extends BaseSubscriptionProcess implements ISubsc
     public Boolean startFor(Subscription subscription) {
         String subscriberNumber = subscription.subscriberNumber();
         if (subscription.isNotValid()) {
-            sendMessage(subscription, messageFor(REQUEST_FAILURE));
+            sendMessageFree(subscription, messageFor(REQUEST_FAILURE));
             return false;
         }
         if (hasActiveSubscription(subscriberNumber, subscription)) {

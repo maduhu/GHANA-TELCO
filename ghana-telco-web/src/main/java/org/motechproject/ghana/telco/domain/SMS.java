@@ -2,6 +2,8 @@ package org.motechproject.ghana.telco.domain;
 
 import org.motechproject.ghana.telco.service.SMSHandler;
 
+import java.util.Date;
+
 public abstract class SMS<T> {
 
     String message;

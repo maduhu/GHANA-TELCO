@@ -32,9 +32,9 @@ public class UserMessageParserProcess extends BaseSubscriptionProcess {
             else
                 return inputMessageParser.parse(input, senderMobileNumber);
         } catch (InvalidMobileNumberException exception) {
-            sendMessage(senderMobileNumber, messageFor(MessageBundle.INVALID_MOBILE_NUMBER));
+            sendMessageFree(senderMobileNumber, messageFor(MessageBundle.INVALID_MOBILE_NUMBER));
         } catch (Exception e) {
-            sendMessage(senderMobileNumber, messageFor(MessageBundle.REQUEST_FAILURE));
+            sendMessageFree(senderMobileNumber, messageFor(MessageBundle.REQUEST_FAILURE));
         }
         return null;
     }

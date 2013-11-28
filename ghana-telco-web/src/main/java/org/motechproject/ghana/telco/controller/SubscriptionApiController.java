@@ -6,12 +6,15 @@ import org.apache.velocity.app.VelocityEngine;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.motechproject.ghana.telco.domain.RegisterProgramSMS;
+import org.motechproject.ghana.telco.domain.SMS;
 import org.motechproject.ghana.telco.domain.Subscription;
 import org.motechproject.ghana.telco.parser.RegisterProgramMessageParser;
+import org.motechproject.ghana.telco.process.UserMessageParserProcess;
 import org.motechproject.ghana.telco.repository.AllProgramTypes;
 import org.motechproject.ghana.telco.repository.AllSubscriptions;
 import org.motechproject.ghana.telco.service.SMSHandler;
 import org.motechproject.ghana.telco.service.SubscriptionService;
+import org.motechproject.ghana.telco.sms.HTTPClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +22,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
+import java.util.regex.Pattern;
+
 
 import static ch.lambdaj.Lambda.*;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+
 
 @Controller
 @RequestMapping("/api")
@@ -40,6 +49,33 @@ public class SubscriptionApiController {
     VelocityEngine velocityEngine;
     @Autowired
     private AllProgramTypes allProgramTypes;
+    @Autowired
+    private UserMessageParserProcess subscriptionParser;
+
+    @RequestMapping("/kannel/{messageSender}/{message}")
+    @ResponseBody
+    public void registerFromKannel(@PathVariable String messageSender, @PathVariable String message)  {
+        String start_pattern = "^\\s*start\\s*";
+        Pattern p = Pattern.compile(start_pattern,CASE_INSENSITIVE);
+
+        if (p.matcher(message).find())
+        {
+            String response = "To register, send 'P' and week of pregnancy (5-35) or 'C' and age of child in months " +
+                    "(1-12) e.g. P 24 or C 4. Send 'STOP' to unsubscribe";
+
+            HTTPClient cl = new HTTPClient();
+            cl.SendForFree(messageSender, response);
+
+        }  else {
+            message = message.replace("+"," ");
+            messageSender = messageSender.replace("%2B","");
+            SMS sms = subscriptionParser.process(messageSender, message);
+            if (sms != null)
+            {
+                sms.process(smsHandler);
+            }
+        }
+    }
 
     @RequestMapping("/register/{subscriptionNo}/{program}/{startTime}.json")
     @ResponseBody
